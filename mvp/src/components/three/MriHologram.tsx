@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { loadBrain3D, type Brain3D } from '@/lib/brain3d';
-import { createGravityRing } from './gravityRing';
 import { cn } from '@/lib/utils';
 
 /**
@@ -23,10 +22,12 @@ export type MriHologramProps = {
   scan?: boolean;
   /** jarak kamera relatif (1 = default) */
   zoom?: number;
-  /** cincin partikel gravitasi di sekeliling otak (hero landing) */
-  ring?: boolean;
-  /** ubah nilainya untuk memutar ulang animasi cincin */
-  ringKey?: number;
+  /** 0 = utuh, 1 = hemisfer kanan dan kiri terbelah */
+  split?: number;
+  /** 'light' untuk di atas latar putih (warna gelap, blending normal) */
+  theme?: 'dark' | 'light';
+  /** bila diberikan, roda tetikus (setelah otak diklik) dan cubit dua jari mengubah zoom */
+  onZoomChange?: (z: number) => void;
   className?: string;
   onReady?: (b: Brain3D) => void;
 };
@@ -78,6 +79,8 @@ const MID = new THREE.Color('#5fb3bf');
 const HIGH = new THREE.Color('#eaf7ef');
 const LESION = new THREE.Color('#ff9a62');
 const SCAN = new THREE.Color('#aad39c');
+// tema terang: jaringan terang digambar teal tua, supaya hologram menyatu dengan latar putih
+const LIGHT = { low: new THREE.Color('#5eead4'), mid: new THREE.Color('#0f766e'), high: new THREE.Color('#042f2e'), lesion: new THREE.Color('#ea580c'), scan: new THREE.Color('#0d9488'), ring: new THREE.Color('#0f766e'), dust: new THREE.Color('#14b8a6') };
 
 export default function MriHologram({
   caseId = 'sub-754',
@@ -88,16 +91,17 @@ export default function MriHologram({
   autoRotate = true,
   scan = true,
   zoom = 1,
-  ring = false,
-  ringKey = 0,
+  split = 0,
+  theme = 'dark',
+  onZoomChange,
   className,
   onReady,
 }: MriHologramProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'error' | 'nogl'>('loading');
   // props dibaca loop render lewat ref supaya scene tidak dibangun ulang tiap perubahan
-  const live = useRef({ series, explode, lesion, focusSlice, autoRotate, scan, zoom, ring, ringKey });
-  live.current = { series, explode, lesion, focusSlice, autoRotate, scan, zoom, ring, ringKey };
+  const live = useRef({ series, explode, lesion, focusSlice, autoRotate, scan, zoom, split, onZoomChange });
+  live.current = { series, explode, lesion, focusSlice, autoRotate, scan, zoom, split, onZoomChange };
   const readyCb = useRef(onReady);
   readyCb.current = onReady;
 
@@ -123,7 +127,9 @@ export default function MriHologram({
     host.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
+    const camera = new THREE.PerspectiveCamera(30, 1, 0.02, 100);
+    const light = theme === 'light';
+    const BLEND = light ? THREE.NormalBlending : THREE.AdditiveBlending;
     const pivot = new THREE.Group();
     scene.add(pivot);
 
@@ -143,7 +149,16 @@ export default function MriHologram({
       const w = X * sx * S;
       const h = Y * sy * S;
       const dz = sz * S;
-      const geo = new THREE.PlaneGeometry(w, h);
+      // tiap slice dibuat dari dua belahan (u 0..0,5 dan 0,5..1) supaya hemisfer bisa dipisah
+      const half = (u0: number) => {
+        const g = new THREE.PlaneGeometry(w / 2, h);
+        const uv = g.getAttribute('uv') as THREE.BufferAttribute;
+        for (let i = 0; i < uv.count; i++) uv.setX(i, u0 + uv.getX(i) * 0.5);
+        uv.needsUpdate = true;
+        return g;
+      };
+      const geoL = half(0);
+      const geoR = half(0.5);
       const textures: THREE.DataTexture[] = [];
       const mats: THREE.ShaderMaterial[] = [];
       const meshes: THREE.Mesh[] = [];
@@ -170,7 +185,7 @@ export default function MriHologram({
           transparent: true,
           depthWrite: false,
           side: THREE.DoubleSide,
-          blending: THREE.AdditiveBlending,
+          blending: BLEND,
           uniforms: {
             uTex: { value: tex },
             uSeries: { value: new THREE.Vector3(1, 0, 0) },
@@ -179,41 +194,45 @@ export default function MriHologram({
             uGlow: { value: 0 },
             uDim: { value: 1 },
             uTexel: { value: new THREE.Vector2(1 / X, 1 / Y) },
-            uLow: { value: LOW },
-            uMid: { value: MID },
-            uHigh: { value: HIGH },
-            uLesionCol: { value: LESION },
+            uLow: { value: light ? LIGHT.low : LOW },
+            uMid: { value: light ? LIGHT.mid : MID },
+            uHigh: { value: light ? LIGHT.high : HIGH },
+            uLesionCol: { value: light ? LIGHT.lesion : LESION },
           },
         });
         mats.push(mat);
-        const m = new THREE.Mesh(geo, mat);
         // bidang aksial: x gambar -> x dunia, y gambar -> z dunia, slice -> atas
-        m.rotation.x = -Math.PI / 2;
-        stack.add(m);
-        meshes.push(m);
+        for (const g of [geoL, geoR]) {
+          const m = new THREE.Mesh(g, mat);
+          m.rotation.x = -Math.PI / 2;
+          stack.add(m);
+          meshes.push(m);
+        }
       }
 
       // titik-titik lesi supaya lesi terasa bervolume, bukan hanya noda di tiap slice
       const pts: number[] = [];
       const ptSlice: number[] = [];
+      const ptSide: number[] = [];
       for (let z = 0; z < Z; z++)
         for (let y = 0; y < Y; y += 2)
           for (let x = 0; x < X; x += 2) {
             if (b.mask[z * X * Y + y * X + x] > 127) {
               pts.push((x / X - 0.5) * w, 0, (0.5 - y / Y) * h);
               ptSlice.push(z);
+              ptSide.push(x < X / 2 ? -1 : 1);
             }
           }
       const pgeo = new THREE.BufferGeometry();
       const ppos = new Float32Array(pts);
       pgeo.setAttribute('position', new THREE.BufferAttribute(ppos.slice(), 3));
-      const pmat = new THREE.PointsMaterial({ color: LESION, size: 0.045, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false, map: dotTexture() });
+      const pmat = new THREE.PointsMaterial({ color: light ? LIGHT.lesion : LESION, size: 0.045, transparent: true, opacity: 0.55, blending: BLEND, depthWrite: false, map: dotTexture() });
       const points = new THREE.Points(pgeo, pmat);
       stack.add(points);
 
       // bingkai pindai dan bingkai slice terfokus
       const frameGeo = new THREE.EdgesGeometry(new THREE.PlaneGeometry(w * 0.8, h * 0.8));
-      const scanMat = new THREE.LineBasicMaterial({ color: SCAN, transparent: true, opacity: 0.0, blending: THREE.AdditiveBlending });
+      const scanMat = new THREE.LineBasicMaterial({ color: light ? LIGHT.scan : SCAN, transparent: true, opacity: 0.0, blending: BLEND });
       const scanFrame = new THREE.LineSegments(frameGeo, scanMat);
       scanFrame.rotation.x = -Math.PI / 2;
       stack.add(scanFrame);
@@ -228,21 +247,11 @@ export default function MriHologram({
       for (let r = 0; r < 3; r++) {
         const rad = Math.max(w, h) * (0.5 + r * 0.14);
         const g = new THREE.BufferGeometry().setFromPoints(Array.from({ length: 96 }, (_, i) => new THREE.Vector3(Math.cos((i / 96) * Math.PI * 2) * rad, 0, Math.sin((i / 96) * Math.PI * 2) * rad)));
-        const ring = new THREE.LineLoop(g, new THREE.LineBasicMaterial({ color: new THREE.Color('#93c7cf'), transparent: true, opacity: 0.22 - r * 0.06 }));
+        const ring = new THREE.LineLoop(g, new THREE.LineBasicMaterial({ color: light ? LIGHT.ring : new THREE.Color('#93c7cf'), transparent: true, opacity: (light ? 0.3 : 0.22) - r * 0.07 }));
         base.add(ring);
         rings.push(ring);
       }
       pivot.add(base);
-
-      const reducedNow = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const gravity = live.current.ring ? createGravityRing(Math.max(w, h) * 0.78, { reduced: reducedNow, count: window.innerWidth < 768 ? 26000 : 52000 }) : null;
-      if (gravity) {
-        gravity.group.rotation.set(0.1, 0, 0.16);
-        pivot.add(gravity.group);
-        base.visible = false;
-      }
-      let ringKeySeen = live.current.ringKey;
-      let ringStarted = false;
 
       // debu cahaya di sekitar untuk kedalaman
       const dust = new THREE.BufferGeometry();
@@ -256,9 +265,9 @@ export default function MriHologram({
         dpos[i * 3 + 2] = Math.sin(a) * r;
       }
       dust.setAttribute('position', new THREE.BufferAttribute(dpos, 3));
-      const dustMat = new THREE.PointsMaterial({ color: new THREE.Color('#aad39c'), size: 0.02, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false, map: dotTexture() });
+      const dustMat = new THREE.PointsMaterial({ color: light ? LIGHT.dust : new THREE.Color('#aad39c'), size: 0.02, transparent: true, opacity: light ? 0.4 : 0.5, blending: BLEND, depthWrite: false, map: dotTexture() });
       const dustPts = new THREE.Points(dust, dustMat);
-      if (!gravity) scene.add(dustPts);
+      scene.add(dustPts);
 
       // interaksi: seret memutar, dengan inersia
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -270,13 +279,40 @@ export default function MriHologram({
       let lastY = 0;
       let idleAt = 0;
       const el = renderer.domElement;
+      const touches = new Map<number, [number, number]>();
+      let pinch0 = 0;
+      let zoom0 = 1;
+      let armed = false;
+      const setZoom = (z: number) => live.current.onZoomChange?.(Math.min(1.8, Math.max(0.3, z)));
+      const wheel = (e: WheelEvent) => {
+        if (!armed || !live.current.onZoomChange) return;
+        e.preventDefault();
+        setZoom(live.current.zoom * Math.exp(e.deltaY * 0.0012));
+      };
+      const leave = () => (armed = false);
+      el.addEventListener('wheel', wheel, { passive: false });
+      el.addEventListener('pointerleave', leave);
       const down = (e: PointerEvent) => {
+        armed = true;
+        touches.set(e.pointerId, [e.clientX, e.clientY]);
+        if (touches.size === 2) {
+          const [a, b2] = [...touches.values()];
+          pinch0 = Math.hypot(a[0] - b2[0], a[1] - b2[1]);
+          zoom0 = live.current.zoom;
+        }
         dragging = true;
         lastX = e.clientX;
         lastY = e.clientY;
         el.style.cursor = 'grabbing';
       };
       const move = (e: PointerEvent) => {
+        if (touches.has(e.pointerId)) touches.set(e.pointerId, [e.clientX, e.clientY]);
+        if (touches.size === 2 && pinch0 && live.current.onZoomChange) {
+          e.preventDefault();
+          const [a, b2] = [...touches.values()];
+          setZoom(zoom0 * (pinch0 / Math.max(1, Math.hypot(a[0] - b2[0], a[1] - b2[1]))));
+          return;
+        }
         if (!dragging) return;
         const dx = e.clientX - lastX;
         const dy = e.clientY - lastY;
@@ -289,7 +325,9 @@ export default function MriHologram({
           if (e.pointerType === 'mouse') pitch = Math.min(1.05, Math.max(0.05, pitch + dy * 0.004));
         }
       };
-      const up = () => {
+      const up = (e: PointerEvent) => {
+        touches.delete(e.pointerId);
+        if (touches.size < 2) pinch0 = 0;
         dragging = false;
         idleAt = performance.now();
         el.style.cursor = 'grab';
@@ -330,6 +368,7 @@ export default function MriHologram({
       let foc = -1;
       let focusAmt = 0;
       let zoomS = live.current.zoom;
+      let splitS = live.current.split;
       const dims = new Float32Array(Z).fill(1);
 
       function tick(now: number) {
@@ -345,6 +384,7 @@ export default function MriHologram({
         ser.lerp(W3(L.series), k);
         les += ((L.lesion ? 1 : 0) - les) * k;
         zoomS += (L.zoom - zoomS) * k;
+        splitS += (L.split - splitS) * k;
         if (L.focusSlice != null) foc = L.focusSlice;
         focusAmt += ((L.focusSlice != null ? 1 : 0) - focusAmt) * k;
 
@@ -364,7 +404,9 @@ export default function MriHologram({
         const scanZ = L.scan && !still ? ((Math.sin(t * 0.7) + 1) / 2) * (Z - 1) : -10;
         for (let z = 0; z < Z; z++) {
           const y = z * gap - height / 2;
-          meshes[z].position.y = y;
+          const sep = w * 0.38 * splitS;
+          meshes[z * 2].position.set(-w / 4 - sep, y, 0);
+          meshes[z * 2 + 1].position.set(w / 4 + sep, y, 0);
           const u = mats[z].uniforms;
           u.uSeries.value = ser;
           u.uLesion.value = les;
@@ -377,7 +419,10 @@ export default function MriHologram({
         }
         // titik lesi ikut posisi slice-nya
         const pa = pgeo.getAttribute('position') as THREE.BufferAttribute;
-        for (let i = 0; i < ptSlice.length; i++) pa.setY(i, ptSlice[i] * gap - height / 2 + Math.sin(t * 2 + i) * 0.004);
+        for (let i = 0; i < ptSlice.length; i++) {
+          pa.setY(i, ptSlice[i] * gap - height / 2 + Math.sin(t * 2 + i) * 0.004);
+          pa.setX(i, ppos[i * 3] + ptSide[i] * w * 0.38 * splitS);
+        }
         pa.needsUpdate = true;
         pmat.opacity = 0.5 * les;
 
@@ -392,17 +437,6 @@ export default function MriHologram({
         base.position.y = -height / 2 - 0.28;
         rings.forEach((r, i) => (r.rotation.y = t * (0.05 + i * 0.03) * (i % 2 ? -1 : 1)));
         dustPts.rotation.y = t * 0.03;
-        if (gravity) {
-          if (!ringStarted && t > 0.6) {
-            ringStarted = true;
-            gravity.play();
-          }
-          if (L.ringKey !== ringKeySeen) {
-            ringKeySeen = L.ringKey;
-            gravity.play();
-          }
-          gravity.tick(dt, t);
-        }
 
         renderer.render(scene, camera);
         raf = requestAnimationFrame(tick);
@@ -418,13 +452,15 @@ export default function MriHologram({
         window.removeEventListener('pointerup', up);
         textures.forEach((x) => x.dispose());
         mats.forEach((x) => x.dispose());
-        geo.dispose();
+        geoL.dispose();
+        geoR.dispose();
+        el.removeEventListener('wheel', wheel);
+        el.removeEventListener('pointerleave', leave);
         pgeo.dispose();
         pmat.dispose();
         frameGeo.dispose();
         dust.dispose();
         dustMat.dispose();
-        gravity?.dispose();
       };
     }
 
@@ -434,7 +470,7 @@ export default function MriHologram({
       renderer.dispose();
       renderer.domElement.remove();
     };
-  }, [caseId]);
+  }, [caseId, theme]);
 
   return (
     <div ref={hostRef} className={cn('relative h-full w-full', className)}>
