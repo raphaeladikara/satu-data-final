@@ -86,8 +86,7 @@ export default function Belajar() {
     <AppShell onHelp={tour.start} wide>
       <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
         <div>
-          <p className="font-display text-[12px] font-medium uppercase tracking-[0.2em] text-teal">Modul belajar</p>
-          <h1 className="mt-3 max-w-3xl font-serif text-[clamp(1.87rem,3.43vw,2.96rem)] leading-[1.12] tracking-[-0.01em]">
+          <h1 className="max-w-3xl font-serif text-[clamp(1.87rem,3.43vw,2.96rem)] leading-[1.12] tracking-[-0.01em]">
             Bangun dasarnya dulu, <em className="text-teal">baru baca kasusnya.</em>
           </h1>
           <p className="mt-3 max-w-2xl text-[15.5px] text-ink/60">Materi singkat per kompetensi, contoh kasus 3D interaktif, dan kuis cepat. Lulus kuis (≥ 2 dari 3 benar) untuk menandai modul selesai.</p>

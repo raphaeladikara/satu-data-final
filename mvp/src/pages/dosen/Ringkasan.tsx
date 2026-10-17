@@ -88,7 +88,7 @@ export default function Ringkasan() {
   if (data.kelas.length === 0)
     return (
       <AppShell>
-        <PageHead eyebrow="Dasbor dosen" title={<>Selamat datang. <em className="text-teal">Buat kelas pertamamu.</em></>} sub="Mahasiswa memasukkan kode kelas saat mendaftar atau di halaman Profil. Setelah itu progres mereka muncul di sini." />
+        <PageHead title={<>Selamat datang. <em className="text-teal">Buat kelas pertamamu.</em></>} sub="Mahasiswa memasukkan kode kelas saat mendaftar atau di halaman Profil. Setelah itu progres mereka muncul di sini." />
         <Link to="/dosen/kelas" className={buttonClass('primary', 'lg')}>
           Buat kelas <ArrowRight className="size-4" />
         </Link>
@@ -111,7 +111,6 @@ export default function Ringkasan() {
     <AppShell wide onHelp={tour.start}>
       <Tour steps={DOSEN_TOUR} open={tour.open} onClose={tour.close} />
       <PageHead
-        eyebrow="Dasbor dosen"
         title={
           <>
             Ringkasan kelas <em className="text-teal">{kelasName}</em>

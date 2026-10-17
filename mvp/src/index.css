@@ -151,6 +151,18 @@
     background: var(--color-leaf);
     color: var(--color-teal-900);
   }
+  .tw {
+    caret-color: var(--color-teal);
+    scrollbar-color: rgb(16 49 58 / 0.28) transparent;
+    text-underline-offset: 0.22em;
+    text-decoration-thickness: 1px;
+  }
+  .tw :where(table, .tabular, time) {
+    font-variant-numeric: tabular-nums;
+  }
+  .tw :where(input, textarea, select)::placeholder {
+    color: rgb(16 49 58 / 0.45);
+  }
 }
 
 @layer components {
@@ -184,6 +196,15 @@
   }
   .grain {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+/* transparansi dikurangi: kaca menjadi permukaan padat */
+@media (prefers-reduced-transparency: reduce) {
+  .tw [class*='backdrop-blur'] {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background-color: var(--color-paper) !important;
   }
 }
 

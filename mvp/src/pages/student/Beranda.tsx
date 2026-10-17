@@ -68,12 +68,11 @@ export default function Beranda() {
       <Tour steps={BERANDA_TOUR} open={tour.open} onClose={tour.close} />
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="font-display text-[12px] font-medium uppercase tracking-[0.2em] text-teal">{today}</p>
-          <h1 className="mt-2.5 font-serif text-[clamp(1.87rem,3.43vw,2.96rem)] leading-[1.12] tracking-[-0.01em]">
+          <h1 className="font-serif text-[clamp(1.87rem,3.43vw,2.96rem)] leading-[1.12] tracking-[-0.01em]">
             Halo, <em className="text-teal">{first}.</em>
           </h1>
           <p className="mt-2 text-[14.5px] text-ink/60">
-            {JENJANG[me.user.jenjang ?? ''] ?? 'Mahasiswa'} · {me.user.kelas ? `${me.user.kelas.nama} (dosen: ${me.user.kelas.dosen ?? '—'})` : 'belum bergabung ke kelas'} · <span className="font-mono text-[12.5px]">{me.user.id}</span>
+            {today} · {JENJANG[me.user.jenjang ?? ''] ?? 'Mahasiswa'} · {me.user.kelas ? `${me.user.kelas.nama} (dosen: ${me.user.kelas.dosen ?? '—'})` : 'belum bergabung ke kelas'} · <span className="font-mono text-[12.5px]">{me.user.id}</span>
           </p>
         </div>
         <div className="flex gap-2">

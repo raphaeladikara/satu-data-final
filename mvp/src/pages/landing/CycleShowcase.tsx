@@ -56,7 +56,7 @@ function ScrollCycle() {
   return (
     <div ref={ref} style={{ height: `${STEPS.length * 70 + 30}vh` }} className="relative">
       <div className="sticky top-0 flex h-screen items-center py-24">
-        <div className="grid w-full grid-cols-[0.78fr_1.22fr] items-center gap-10">
+        <div className="grid w-full grid-cols-[0.68fr_1.32fr] items-center gap-12">
           <StepList i={i} progress={p} onPick={jump} />
           <AppFrame i={i} />
         </div>

@@ -36,14 +36,14 @@ export default function Hero({ cases }: { cases: number }) {
           strength={1.05}
           radius={200}
           turbulence={1.1}
-          eyebrow="Final ICC 2026 · Tutor neuroradiologi adaptif"
           headline={'Latih matamu membaca\nMRI stroke.'}
           headlineAccent="MRI stroke."
           body="Baca kasus MRI nyata, tandai lesinya, lalu langsung tahu di bagian mana kamu keliru. Umpan baliknya setingkat voxel, tanpa harus menunggu radiolog."
           primaryCta={{ label: 'Mulai belajar gratis', href: '/daftar' }}
           secondaryCta={{ label: 'Saya dosen', href: '/daftar?peran=dosen' }}
           footnote={
-            <dl className="flex gap-6 border-t border-ink/10 pt-4">
+            <>
+            <dl className="flex gap-7 border-t border-ink/10 pt-4">
               {[
                 [String(cases), 'kasus MRI'],
                 ['6', 'modul'],
@@ -55,6 +55,8 @@ export default function Hero({ cases }: { cases: number }) {
                 </div>
               ))}
             </dl>
+            <p className="mt-4 text-[12.5px] text-ink/50">Tutor neuroradiologi adaptif · Final ICC Campus Data Week 2026</p>
+            </>
           }
         />
       </motion.div>

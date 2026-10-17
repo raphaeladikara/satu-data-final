@@ -11,7 +11,7 @@ import { Wordmark } from '@/components/BrandMark';
 import Hero, { LabStage } from './landing/Hero';
 import CycleShowcase from './landing/CycleShowcase';
 import Features from './landing/Features';
-import { CountUp, EASE, Eyebrow, Parallax, Reveal, ScrollWords } from './landing/bits';
+import { CountUp, EASE, Parallax, Reveal, ScrollWords } from './landing/bits';
 
 const ContributionSkyline = lazy(() => import('@/components/ui/contribution-skyline'));
 
@@ -50,14 +50,14 @@ export default function Landing() {
         <Lab />
 
         <section id="cara-kerja" className="mx-auto max-w-[1320px] scroll-mt-10 px-4 pt-24 sm:px-6 lg:pt-32">
-          <SectionHead eyebrow="Cara kerja" title={<>Satu siklus latihan terarah, <em className="text-teal">berulang sampai kompeten.</em></>} lead="Lima langkah ini terjadi setiap kali kamu mengerjakan satu kasus. Gulir untuk melihat tampilannya di aplikasi." />
+          <SectionHead title={<>Satu siklus latihan terarah, <em className="text-teal">berulang sampai kompeten.</em></>} lead="Lima langkah ini terjadi setiap kali kamu mengerjakan satu kasus. Gulir untuk melihat tampilannya di aplikasi." />
           <div className="mt-6 lg:mt-0">
             <CycleShowcase />
           </div>
         </section>
 
         <section id="fitur" className="mx-auto max-w-[1320px] scroll-mt-24 px-4 py-24 sm:px-6 lg:py-32">
-          <SectionHead eyebrow="Untuk mahasiswa" title={<>Semua yang kamu butuhkan untuk <em className="text-teal">berlatih mandiri.</em></>} />
+          <SectionHead title={<>Semua yang kamu butuhkan untuk <em className="text-teal">berlatih mandiri.</em></>} />
           <div className="mt-14">
             <Features />
           </div>
@@ -120,23 +120,22 @@ function Nav() {
   );
 }
 
-function SectionHead({ eyebrow, title, lead, tone = 'teal', className, center }: { eyebrow: string; title: React.ReactNode; lead?: string; tone?: 'teal' | 'light'; className?: string; center?: boolean }) {
+function SectionHead({ title, lead, tone = 'teal', className, center }: { title: React.ReactNode; lead?: string; tone?: 'teal' | 'light'; className?: string; center?: boolean }) {
   return (
-    <Reveal className={cn('max-w-3xl', center && 'mx-auto text-center', className)}>
-      <Eyebrow tone={tone}>{eyebrow}</Eyebrow>
-      <h2 className={cn('mt-4 text-[clamp(1.9rem,3.6vw,3.1rem)] leading-[1.12] tracking-[-0.012em]', tone === 'light' ? 'text-mint' : 'text-ink')}>{title}</h2>
-      {lead && <p className={cn('mt-5 max-w-2xl text-[16px] leading-relaxed', center && 'mx-auto', tone === 'light' ? 'text-mint/70' : 'text-ink/60')}>{lead}</p>}
-    </Reveal>
+    <div className={cn('max-w-3xl', center && 'mx-auto text-center', className)}>
+      <h2 className={cn('text-balance text-[clamp(1.9rem,3.6vw,3.1rem)] leading-[1.1] tracking-[-0.015em]', tone === 'light' ? 'text-mint' : 'text-ink')}>{title}</h2>
+      {lead && <p className={cn('mt-5 max-w-[60ch] text-pretty text-[16px] leading-relaxed', center && 'mx-auto', tone === 'light' ? 'text-mint/75' : 'text-ink/65')}>{lead}</p>}
+    </div>
   );
 }
 
 function Marquee() {
   const items = ['Cornerstone3D', 'SOOP · OpenNeuro ds004889', 'U-Net 2.5D', 'Bayesian Knowledge Tracing', 'Pemeriksa fakta tutor', 'UU PDP No. 27/2022', 'Mask buatan ahli', 'Dice · HD95 · recall per lesi'];
   return (
-    <div className="relative border-y border-ink/8 bg-paper/60 py-5 [mask-image:linear-gradient(90deg,transparent,black_12%,black_88%,transparent)]">
-      <div className="flex w-max animate-marquee gap-12 whitespace-nowrap">
+    <div className="relative border-y border-ink/8 bg-paper/60 py-4 [mask-image:linear-gradient(90deg,transparent,black_12%,black_88%,transparent)]">
+      <div className="flex w-max animate-marquee gap-10 whitespace-nowrap">
         {[...items, ...items].map((t, i) => (
-          <span key={i} className="flex items-center gap-12 font-display text-[19px] font-medium uppercase tracking-[0.14em] text-ink/45">
+          <span key={i} className="flex items-center gap-10 font-display text-[14px] font-medium uppercase tracking-[0.2em] text-ink/40">
             {t}
             <span className="size-1.5 rounded-full bg-sage" />
           </span>
@@ -151,12 +150,9 @@ function Marquee() {
 function Problem() {
   return (
     <section className="mx-auto max-w-[1320px] px-4 pt-24 sm:px-6 lg:pt-36">
-      <Reveal className="mx-auto max-w-5xl text-center">
-        <Eyebrow>Masalahnya</Eyebrow>
-      </Reveal>
       <ScrollWords
         text="Mahasiswa tidak butuh chatbot lagi. Mereka butuh tutor yang bisa diperiksa, dengan banyak kasus dan umpan balik yang cepat."
-        className="mx-auto mt-6 max-w-5xl justify-center text-center text-[clamp(1.75rem,3.6vw,3.05rem)] leading-[1.22] tracking-[-0.012em] text-ink"
+        className="mx-auto max-w-5xl justify-center text-center text-[clamp(1.75rem,3.6vw,3.05rem)] leading-[1.22] tracking-[-0.012em] text-ink"
       />
       <div className="mt-16 grid gap-4 md:grid-cols-3">
         <Reveal y={40} className="h-full">
@@ -270,19 +266,22 @@ function Lab() {
     <section id="coba" className="mx-auto max-w-[1320px] scroll-mt-24 px-4 pt-24 sm:px-6 lg:pt-32">
       <div className="grid items-center gap-12 lg:grid-cols-[0.8fr_1.2fr]">
         <div>
-          <SectionHead eyebrow="Coba sendiri" title={<>Otak pasien sungguhan, <em className="text-teal">bisa kamu putar.</em></>} lead="Ini volume MRI asli dari dataset SOOP, bukan ilustrasi. Putar hologramnya, pisahkan slice-nya, lalu nyalakan kunci lesi buatan ahli untuk melihat jawaban yang benar." />
-          <Reveal delay={0.1} className="mt-8 grid max-w-md grid-cols-3 gap-3">
+          <SectionHead title={<>Otak pasien sungguhan, <em className="text-teal">bisa kamu putar.</em></>} lead="Ini volume MRI asli dari dataset SOOP, bukan ilustrasi. Putar hologramnya, pisahkan slice-nya, lalu nyalakan kunci lesi buatan ahli untuk melihat jawaban yang benar." />
+          <dl className="mt-8 grid max-w-md grid-cols-3 border-t border-ink/10 pt-4">
             {[
-              ['DWI', 'difusi'],
-              ['FLAIR', 'anatomi'],
-              ['Mask', 'kunci ahli'],
-            ].map(([k, v]) => (
-              <div key={k} className="rounded-2xl bg-paper p-3.5 ring-1 ring-ink/8">
-                <b className="block font-display text-[17px] font-semibold uppercase tracking-[0.1em] text-teal">{k}</b>
-                <span className="text-[12.5px] text-ink/55">{v}</span>
+              ['DWI', 'difusi', 'bg-sky'],
+              ['FLAIR', 'anatomi', 'bg-sage'],
+              ['Mask', 'kunci ahli', 'bg-terra'],
+            ].map(([k, v, dot]) => (
+              <div key={k}>
+                <dt className="flex items-center gap-2 font-display text-[15px] font-semibold uppercase tracking-[0.12em] text-teal">
+                  <span className={cn('size-2 rounded-full', dot)} />
+                  {k}
+                </dt>
+                <dd className="mt-1 text-[13px] text-ink/60">{v}</dd>
               </div>
             ))}
-          </Reveal>
+          </dl>
         </div>
         <LabStage />
       </div>
@@ -350,18 +349,14 @@ function Dosen() {
       </div>
       <div className="relative mx-auto max-w-[1320px] px-4 sm:px-6">
         <div className="grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-end">
-          <SectionHead tone="light" eyebrow="Untuk dosen" title={<>Pantau setiap mahasiswa <em className="text-leaf">tanpa mengoreksi satu per satu.</em></>} lead="Buat kelas, bagikan kodenya, lalu lihat perkembangan kelas secara langsung. Setiap umpan balik yang diterima mahasiswa bisa ditelusuri kembali ke datanya." />
+          <SectionHead tone="light" title={<>Pantau setiap mahasiswa <em className="text-leaf">tanpa mengoreksi satu per satu.</em></>} lead="Buat kelas, bagikan kodenya, lalu lihat perkembangan kelas secara langsung. Setiap umpan balik yang diterima mahasiswa bisa ditelusuri kembali ke datanya." />
           <div>
-            <ul className="grid gap-2 sm:grid-cols-2">
-              {checks.map(([Icon, t], i) => (
-                <Reveal key={t} delay={i * 0.04}>
-                  <li className="flex h-full items-center gap-3 rounded-2xl bg-white/6 px-3.5 py-3 text-[13.5px] leading-snug text-mint/85 ring-1 ring-white/8">
-                    <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-leaf/15 text-leaf">
-                      <Icon className="size-4" />
-                    </span>
-                    {t}
-                  </li>
-                </Reveal>
+            <ul className="grid gap-x-8 sm:grid-cols-2">
+              {checks.map(([Icon, t]) => (
+                <li key={t} className="flex items-start gap-3 border-b border-white/10 py-3 text-[14px] leading-snug text-mint/85">
+                  <Icon className="mt-0.5 size-4 shrink-0 text-leaf" />
+                  {t}
+                </li>
               ))}
             </ul>
             <ButtonLink to="/daftar?peran=dosen" variant="light" size="lg" className="mt-8">
@@ -404,9 +399,9 @@ function Proof() {
   return (
     <section className="mx-auto max-w-[1320px] px-4 py-24 sm:px-6 lg:py-32">
       <Parallax offset={30}>
-        <div className="relative overflow-hidden rounded-[2.5rem] bg-[linear-gradient(115deg,#195764_0%,#2d746f_40%,#80a874_78%,#aad39c_100%)] p-8 text-mint sm:p-12 lg:p-16">
+        <div className="relative overflow-hidden rounded-[2.5rem] bg-[linear-gradient(115deg,#195764_0%,#22655f_45%,#3f7d63_100%)] p-8 text-mint sm:p-12 lg:p-16">
           <div className="grain pointer-events-none absolute inset-0 opacity-40 mix-blend-overlay" />
-          <Eyebrow tone="light">Uji kelayakan pada data nyata</Eyebrow>
+          <h2 className="relative max-w-xl text-[clamp(1.4rem,2.2vw,1.9rem)] leading-snug">Sudah diuji pada data pasien nyata, bukan data contoh.</h2>
           <div className="relative mt-10 grid gap-10 md:grid-cols-3 md:gap-6">
             {P.map((p, i) => (
               <Reveal key={i} delay={i * 0.08} className="md:border-l md:border-white/20 md:pl-6 md:first:border-0 md:first:pl-0">
@@ -424,35 +419,27 @@ function Proof() {
 
 function Privacy() {
   const P = [
-    [Database, 'Data terbuka', 'Data citra terbuka', 'Kasus berasal dari Stroke Outcome Optimization Project (SOOP), OpenNeuro ds004889, berlisensi CC0, dan sudah dianonimkan.', 'md:rounded-bl-[2.5rem]'],
-    [EyeOff, 'Pseudonim', 'Log tanpa identitas', 'NIM tidak pernah disimpan, hanya pseudonim hasil hash. Log belajar dipakai untuk personalisasi dan evaluasi, sesuai UU PDP No. 27/2022.', ''],
-    [ShieldCheck, 'Batas penggunaan', 'Alat bantu belajar', 'SINAPS tidak ditujukan untuk mendiagnosis pasien. Kunci jawaban selalu mask buatan ahli, bukan prediksi model.', 'md:rounded-br-[2.5rem]'],
+    [Database, 'Data citra terbuka', 'Kasus berasal dari Stroke Outcome Optimization Project (SOOP), OpenNeuro ds004889, berlisensi CC0, dan sudah dianonimkan.'],
+    [EyeOff, 'Log tanpa identitas', 'NIM tidak pernah disimpan, hanya pseudonim hasil hash. Log belajar dipakai untuk personalisasi dan evaluasi, sesuai UU PDP No. 27/2022.'],
+    [ShieldCheck, 'Alat bantu belajar', 'SINAPS tidak ditujukan untuk mendiagnosis pasien. Kunci jawaban selalu mask buatan ahli, bukan prediksi model.'],
   ] as const;
   return (
     <section id="privasi" className="mx-auto max-w-[1320px] scroll-mt-24 px-4 pb-24 sm:px-6 lg:pb-32">
-      <SectionHead eyebrow="Data & privasi" title={<>Dibangun hati-hati, <em className="text-teal">sejak dari datanya.</em></>} />
-      <div className="mt-12 grid gap-4 md:grid-cols-3">
-        {P.map(([Icon, e, t, d, cls], i) => (
-          <Reveal key={t} delay={i * 0.06} y={36} className="h-full">
-            <BentoCard className={cls} tone="deep" eyebrow={e} title={t} description={d} graphicClassName="h-[12rem]" graphic={<IconGraphic icon={Icon} />} />
-          </Reveal>
-        ))}
+      <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+        <SectionHead title={<>Dibangun hati-hati, <em className="text-teal">sejak dari datanya.</em></>} />
+        <dl className="divide-y divide-ink/10 border-y border-ink/10">
+          {P.map(([Icon, t, d]) => (
+            <div key={t} className="grid gap-2 py-6 sm:grid-cols-[15rem_1fr] sm:gap-8">
+              <dt className="flex items-center gap-2.5 text-[16px] font-bold text-ink">
+                <Icon className="size-[18px] shrink-0 text-teal" />
+                {t}
+              </dt>
+              <dd className="max-w-[60ch] text-[14.5px] leading-relaxed text-ink/65">{d}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
     </section>
-  );
-}
-
-function IconGraphic({ icon: Icon }: { icon: typeof Database }) {
-  return (
-    <div className="absolute inset-0 grid place-items-center pb-8">
-      <DotGrid />
-      {[0, 1, 2].map((k) => (
-        <span key={k} className="absolute rounded-full border border-sky/15" style={{ width: 90 + k * 64, height: 90 + k * 64, top: `calc(50% - 16px - ${(90 + k * 64) / 2}px)` }} />
-      ))}
-      <span className="relative grid size-16 place-items-center rounded-[1.25rem] bg-leaf/15 text-leaf ring-1 ring-leaf/30 shadow-[0_0_40px_-6px_rgba(170,211,156,.5)]">
-        <Icon className="size-7" />
-      </span>
-    </div>
   );
 }
 

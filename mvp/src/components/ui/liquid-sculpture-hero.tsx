@@ -1147,17 +1147,18 @@ const CSS = `
 .sh-eyebrow{margin:0 0 clamp(14px,1.6cqw,22px);display:flex;align-items:center;gap:12px;
   font-family:var(--font-display);font-size:12.5px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--sh-acc)}
 .sh-eyebrow::before{content:"";width:28px;height:1px;background:currentColor;opacity:.7}
-.sh-h1{font-family:var(--font-serif);font-weight:400;font-size:clamp(34px,min(4.1cqw,9cqh),76px);line-height:1.04;letter-spacing:-.022em;margin:0;
+.sh-h1{font-family:var(--font-serif);font-weight:400;font-size:clamp(34px,min(4.5cqw,9.4cqh),82px);line-height:1.04;letter-spacing:-.025em;margin:0;
   text-wrap:balance}
 .sh-h1 .sh-line{display:block}
 .sh-accent{font-style:italic;color:var(--sh-acc)}
 .sh-aside{max-width:420px;justify-self:end;padding-bottom:.4em}
-.sh-body{font-size:clamp(14.5px,1.05cqw,16.5px);line-height:1.6;margin:0 0 24px;opacity:.75;text-wrap:pretty}
+.sh-body{font-size:clamp(14.5px,1.05cqw,16.5px);line-height:1.6;margin:0 0 24px;color:color-mix(in srgb,var(--sh-fg) 72%,transparent);max-width:44ch;text-wrap:pretty}
 .sh-ctas{display:flex;flex-wrap:wrap;align-items:center;gap:22px}
 .sh-btn{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 24px;border-radius:999px;background:var(--color-teal);
   color:var(--color-mint);text-decoration:none;font-size:15px;font-weight:700;box-shadow:0 1px 0 rgba(255,255,255,.18) inset,0 12px 26px -12px rgba(25,87,100,.75);
   transition:transform .3s cubic-bezier(.2,.7,.2,1),background-color .2s}
 .sh-btn:hover{transform:translateY(-1px);background:var(--color-teal-600)}
+.sh-btn:active{transform:scale(.97);transition-duration:.1s}
 .sh-btn svg,.sh-txt svg{transition:transform .3s cubic-bezier(.2,.7,.2,1)}
 .sh-btn:hover svg,.sh-txt:hover svg{transform:translateX(3px)}
 .sh-txt{display:inline-flex;align-items:center;gap:8px;color:inherit;text-decoration:none;font-size:15px;font-weight:700;

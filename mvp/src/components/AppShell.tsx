@@ -100,13 +100,12 @@ export function AppShell({ children, onHelp, wide }: { children: ReactNode; onHe
   );
 }
 
-/** Judul halaman standar: eyebrow kecil, judul serif, keterangan, aksi di kanan. */
-export function PageHead({ eyebrow, title, sub, actions }: { eyebrow?: ReactNode; title: ReactNode; sub?: ReactNode; actions?: ReactNode }) {
+/** Judul halaman standar: judul serif, keterangan, aksi di kanan. Prop `eyebrow` lama diabaikan. */
+export function PageHead({ title, sub, actions }: { eyebrow?: ReactNode; title: ReactNode; sub?: ReactNode; actions?: ReactNode }) {
   return (
     <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0">
-        {eyebrow && <p className="font-display text-[12.5px] font-medium uppercase tracking-[0.2em] text-teal">{eyebrow}</p>}
-        <h1 className={cn('font-serif text-[clamp(1.64rem,2.96vw,2.57rem)] leading-[1.12] tracking-[-0.01em]', eyebrow && 'mt-2.5')}>{title}</h1>
+        <h1 className="text-balance font-serif text-[clamp(1.75rem,3vw,2.6rem)] leading-[1.1] tracking-[-0.015em]">{title}</h1>
         {sub && <div className="mt-2 max-w-3xl text-[15px] text-ink/60">{sub}</div>}
       </div>
       {actions && <div className="legacy flex flex-wrap items-center gap-2">{actions}</div>}
