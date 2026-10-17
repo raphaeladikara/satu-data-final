@@ -10,6 +10,6 @@ hanya disertakan sebagai PDF di `paper/`; sumber lengkap (generator paper, anali
 - [`Ketentuan Final ICC 2026.pdf`](Ketentuan%20Final%20ICC%202026.pdf) — PPT ketentuan dari panitia
 - [`guide_lomba_semifinal.md`](guide_lomba_semifinal.md) — ringkasan guidebook (tema, semifinal, data SOOP)
 - [`paper/`](paper/) — PDF draf semifinal Bab 1-3
-- `mvp/` — prototipe SINAPS (belum ada)
+- [`mvp/`](mvp/) — prototipe SINAPS (Cornerstone3D + FastAPI + BKT + tutor LLM), siap deploy Vercel
 
 **Batas pengumpulan: Jumat, 23 Oktober 2026, 23.59 WIB.** Final luring di Unair 27-28 Oktober 2026.

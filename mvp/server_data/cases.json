@@ -1,0 +1,3899 @@
+{
+ "sub-3": {
+  "id": "sub-3",
+  "sequences": {
+   "DWI": "93d5161073",
+   "ADC": "ea07331fb3",
+   "FLAIR": "9e854dad5f"
+  },
+  "findings": {
+   "volume_ml": 156.58,
+   "kategori_volume": "besar (>=30 ml)",
+   "jumlah_fokus": 5,
+   "multifokal": true,
+   "hemisfer": "bilateral",
+   "slice_lesi_terbesar": 17,
+   "fokus": [
+    {
+     "ml": 150.49,
+     "hemisfer": "kiri",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      10,
+      23
+     ],
+     "pusat_voxel": [
+      168.6,
+      94.5,
+      16.0
+     ],
+     "radc_median": 0.51
+    },
+    {
+     "ml": 5.32,
+     "hemisfer": "kanan",
+     "slice_terbesar": 6,
+     "rentang_slice": [
+      5,
+      7
+     ],
+     "pusat_voxel": [
+      94.8,
+      52.4,
+      5.1
+     ],
+     "radc_median": 1.38
+    },
+    {
+     "ml": 0.31,
+     "hemisfer": "kanan",
+     "slice_terbesar": 21,
+     "rentang_slice": [
+      21,
+      21
+     ],
+     "pusat_voxel": [
+      109.0,
+      108.4,
+      20.0
+     ],
+     "radc_median": 0.6
+    },
+    {
+     "ml": 0.28,
+     "hemisfer": "kanan",
+     "slice_terbesar": 19,
+     "rentang_slice": [
+      19,
+      19
+     ],
+     "pusat_voxel": [
+      96.7,
+      91.8,
+      18.0
+     ],
+     "radc_median": 0.95
+    },
+    {
+     "ml": 0.1,
+     "hemisfer": "kiri",
+     "slice_terbesar": 22,
+     "rentang_slice": [
+      22,
+      22
+     ],
+     "pusat_voxel": [
+      163.4,
+      130.4,
+      21.0
+     ],
+     "radc_median": 0.65
+    }
+   ],
+   "adc_relatif_lesi": 0.52,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 0.127
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 6,
+   "etiologi": "5: Cryptogenic Stroke"
+  }
+ },
+ "sub-94": {
+  "id": "sub-94",
+  "sequences": {
+   "DWI": "489f6343df",
+   "ADC": "6c1159bd3e",
+   "FLAIR": "794bcdb4cf"
+  },
+  "findings": {
+   "volume_ml": 8.37,
+   "kategori_volume": "sedang (5-30 ml)",
+   "jumlah_fokus": 1,
+   "multifokal": false,
+   "hemisfer": "kanan",
+   "slice_lesi_terbesar": 13,
+   "fokus": [
+    {
+     "ml": 8.28,
+     "hemisfer": "kanan",
+     "slice_terbesar": 13,
+     "rentang_slice": [
+      12,
+      15
+     ],
+     "pusat_voxel": [
+      92.1,
+      127.0,
+      12.4
+     ],
+     "radc_median": 0.68
+    }
+   ],
+   "adc_relatif_lesi": 0.68,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": -0.923
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 0,
+   "etiologi": "5: Cryptogenic Stroke"
+  }
+ },
+ "sub-137": {
+  "id": "sub-137",
+  "sequences": {
+   "DWI": "9c994d3154",
+   "ADC": "8aeb9d2a3b",
+   "FLAIR": "ffb8f8f582"
+  },
+  "findings": {
+   "volume_ml": 0.57,
+   "kategori_volume": "sangat kecil (<1 ml)",
+   "jumlah_fokus": 1,
+   "multifokal": false,
+   "hemisfer": "kiri",
+   "slice_lesi_terbesar": 17,
+   "fokus": [
+    {
+     "ml": 0.52,
+     "hemisfer": "kiri",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      16,
+      17
+     ],
+     "pusat_voxel": [
+      134.2,
+      103.5,
+      15.8
+     ],
+     "radc_median": 0.62
+    }
+   ],
+   "adc_relatif_lesi": 0.62,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 0.242
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 2,
+   "etiologi": "5: Cryptogenic Stroke"
+  }
+ },
+ "sub-203": {
+  "id": "sub-203",
+  "sequences": {
+   "DWI": "3d46af0c2d",
+   "ADC": "d253959a9f",
+   "FLAIR": "5d16cf1b80"
+  },
+  "findings": {
+   "volume_ml": 30.05,
+   "kategori_volume": "besar (>=30 ml)",
+   "jumlah_fokus": 2,
+   "multifokal": true,
+   "hemisfer": "kiri",
+   "slice_lesi_terbesar": 13,
+   "fokus": [
+    {
+     "ml": 29.93,
+     "hemisfer": "kiri",
+     "slice_terbesar": 13,
+     "rentang_slice": [
+      11,
+      16
+     ],
+     "pusat_voxel": [
+      136.8,
+      123.3,
+      12.5
+     ],
+     "radc_median": 0.94
+    },
+    {
+     "ml": 0.12,
+     "hemisfer": "kiri",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      15,
+      15
+     ],
+     "pusat_voxel": [
+      157.7,
+      100.2,
+      14.0
+     ],
+     "radc_median": 1.07
+    }
+   ],
+   "adc_relatif_lesi": 0.94,
+   "restriksi_sejati": false,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": -0.478
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 0,
+   "etiologi": "5: Cryptogenic Stroke"
+  }
+ },
+ "sub-267": {
+  "id": "sub-267",
+  "sequences": {
+   "DWI": "5ebc059536",
+   "ADC": "37aa0dff02",
+   "FLAIR": "527938d88a"
+  },
+  "findings": {
+   "volume_ml": 5.63,
+   "kategori_volume": "sedang (5-30 ml)",
+   "jumlah_fokus": 1,
+   "multifokal": false,
+   "hemisfer": "kiri",
+   "slice_lesi_terbesar": 16,
+   "fokus": [
+    {
+     "ml": 5.63,
+     "hemisfer": "kiri",
+     "slice_terbesar": 16,
+     "rentang_slice": [
+      13,
+      17
+     ],
+     "pusat_voxel": [
+      129.6,
+      102.9,
+      14.3
+     ],
+     "radc_median": 0.62
+    }
+   ],
+   "adc_relatif_lesi": 0.62,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": -0.75
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 3,
+   "etiologi": "5: Cryptogenic Stroke"
+  }
+ },
+ "sub-303": {
+  "id": "sub-303",
+  "sequences": {
+   "DWI": "bdd8c2d081",
+   "ADC": "e853a9ef94",
+   "FLAIR": "5fa216096c"
+  },
+  "findings": {
+   "volume_ml": 488.31,
+   "kategori_volume": "besar (>=30 ml)",
+   "jumlah_fokus": 1,
+   "multifokal": false,
+   "hemisfer": "kiri",
+   "slice_lesi_terbesar": 17,
+   "fokus": [
+    {
+     "ml": 488.31,
+     "hemisfer": "kiri",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      6,
+      25
+     ],
+     "pusat_voxel": [
+      135.8,
+      111.0,
+      15.7
+     ],
+     "radc_median": 0.49
+    }
+   ],
+   "adc_relatif_lesi": 0.49,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": -2.689
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 6,
+   "etiologi": "5: Cryptogenic Stroke"
+  }
+ },
+ "sub-577": {
+  "id": "sub-577",
+  "sequences": {
+   "DWI": "c780fd46da",
+   "ADC": "bfdf304a19",
+   "FLAIR": "2ea5bd7f6e"
+  },
+  "findings": {
+   "volume_ml": 1.63,
+   "kategori_volume": "kecil (1-5 ml)",
+   "jumlah_fokus": 1,
+   "multifokal": false,
+   "hemisfer": "kanan",
+   "slice_lesi_terbesar": 18,
+   "fokus": [
+    {
+     "ml": 1.63,
+     "hemisfer": "kanan",
+     "slice_terbesar": 18,
+     "rentang_slice": [
+      18,
+      20
+     ],
+     "pusat_voxel": [
+      118.8,
+      128.6,
+      17.5
+     ],
+     "radc_median": 0.86
+    }
+   ],
+   "adc_relatif_lesi": 0.86,
+   "restriksi_sejati": false,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": -0.212
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 1,
+   "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
+  }
+ },
+ "sub-580": {
+  "id": "sub-580",
+  "sequences": {
+   "DWI": "6e0516d66f",
+   "ADC": "b730db769e",
+   "FLAIR": "ce942c44af"
+  },
+  "findings": {
+   "volume_ml": 34.98,
+   "kategori_volume": "besar (>=30 ml)",
+   "jumlah_fokus": 6,
+   "multifokal": true,
+   "hemisfer": "kanan",
+   "slice_lesi_terbesar": 17,
+   "fokus": [
+    {
+     "ml": 21.95,
+     "hemisfer": "kanan",
+     "slice_terbesar": 16,
+     "rentang_slice": [
+      11,
+      20
+     ],
+     "pusat_voxel": [
+      90.5,
+      87.8,
+      14.6
+     ],
+     "radc_median": 0.89
+    },
+    {
+     "ml": 9.58,
+     "hemisfer": "kanan",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      12,
+      17
+     ],
+     "pusat_voxel": [
+      98.2,
+      143.3,
+      14.1
+     ],
+     "radc_median": 1.08
+    },
+    {
+     "ml": 1.24,
+     "hemisfer": "kanan",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      17,
+      17
+     ],
+     "pusat_voxel": [
+      126.8,
+      170.4,
+      16.0
+     ],
+     "radc_median": 1.16
+    },
+    {
+     "ml": 1.05,
+     "hemisfer": "kanan",
+     "slice_terbesar": 14,
+     "rentang_slice": [
+      14,
+      15
+     ],
+     "pusat_voxel": [
+      108.4,
+      133.5,
+      13.3
+     ],
+     "radc_median": 0.68
+    },
+    {
+     "ml": 0.77,
+     "hemisfer": "kanan",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      15,
+      15
+     ],
+     "pusat_voxel": [
+      107.5,
+      81.1,
+      14.0
+     ],
+     "radc_median": 0.85
+    },
+    {
+     "ml": 0.3,
+     "hemisfer": "kanan",
+     "slice_terbesar": 13,
+     "rentang_slice": [
+      13,
+      13
+     ],
+     "pusat_voxel": [
+      90.8,
+      114.7,
+      12.0
+     ],
+     "radc_median": 1.07
+    }
+   ],
+   "adc_relatif_lesi": 0.93,
+   "restriksi_sejati": false,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 1.041
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 5,
+   "etiologi": "2: Cardioembolism (e.g., atrial fibrillation/flutter, prosthetic heart valve, recent MI)"
+  }
+ },
+ "sub-652": {
+  "id": "sub-652",
+  "sequences": {
+   "DWI": "a27d582199",
+   "ADC": "b83a214bae",
+   "FLAIR": "3e54217dd3"
+  },
+  "findings": {
+   "volume_ml": 137.58,
+   "kategori_volume": "besar (>=30 ml)",
+   "jumlah_fokus": 3,
+   "multifokal": true,
+   "hemisfer": "kiri",
+   "slice_lesi_terbesar": 15,
+   "fokus": [
+    {
+     "ml": 137.27,
+     "hemisfer": "kiri",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      10,
+      21
+     ],
+     "pusat_voxel": [
+      249.8,
+      183.2,
+      14.4
+     ],
+     "radc_median": 0.45
+    },
+    {
+     "ml": 0.15,
+     "hemisfer": "kiri",
+     "slice_terbesar": 11,
+     "rentang_slice": [
+      11,
+      11
+     ],
+     "pusat_voxel": [
+      229.8,
+      281.8,
+      10.0
+     ],
+     "radc_median": 0.95
+    },
+    {
+     "ml": 0.14,
+     "hemisfer": "kiri",
+     "slice_terbesar": 13,
+     "rentang_slice": [
+      13,
+      13
+     ],
+     "pusat_voxel": [
+      236.3,
+      87.4,
+      12.0
+     ],
+     "radc_median": 0.98
+    }
+   ],
+   "adc_relatif_lesi": 0.45,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": -0.554
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 5,
+   "etiologi": "2: Cardioembolism (e.g., atrial fibrillation/flutter, prosthetic heart valve, recent MI)"
+  }
+ },
+ "sub-654": {
+  "id": "sub-654",
+  "sequences": {
+   "DWI": "fcc3d51390",
+   "ADC": "7549e11f7a",
+   "FLAIR": "5ed38bf3e3"
+  },
+  "findings": {
+   "volume_ml": 27.07,
+   "kategori_volume": "sedang (5-30 ml)",
+   "jumlah_fokus": 1,
+   "multifokal": false,
+   "hemisfer": "kanan",
+   "slice_lesi_terbesar": 15,
+   "fokus": [
+    {
+     "ml": 27.07,
+     "hemisfer": "kanan",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      13,
+      18
+     ],
+     "pusat_voxel": [
+      96.8,
+      119.9,
+      14.4
+     ],
+     "radc_median": 0.78
+    }
+   ],
+   "adc_relatif_lesi": 0.78,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": -1.432
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 0,
+   "etiologi": "4: Stroke of other determined etiology"
+  }
+ },
+ "sub-698": {
+  "id": "sub-698",
+  "sequences": {
+   "DWI": "47e33d0bfc",
+   "ADC": "7f30444238",
+   "FLAIR": "7f7bb6b914"
+  },
+  "findings": {
+   "volume_ml": 183.42,
+   "kategori_volume": "besar (>=30 ml)",
+   "jumlah_fokus": 2,
+   "multifokal": true,
+   "hemisfer": "bilateral",
+   "slice_lesi_terbesar": 9,
+   "fokus": [
+    {
+     "ml": 182.43,
+     "hemisfer": "kanan",
+     "slice_terbesar": 9,
+     "rentang_slice": [
+      4,
+      17
+     ],
+     "pusat_voxel": [
+      107.7,
+      63.6,
+      8.2
+     ],
+     "radc_median": 0.55
+    },
+    {
+     "ml": 0.8,
+     "hemisfer": "kiri",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      14,
+      15
+     ],
+     "pusat_voxel": [
+      123.8,
+      101.4,
+      13.5
+     ],
+     "radc_median": 0.59
+    }
+   ],
+   "adc_relatif_lesi": 0.55,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": -1.263
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 6,
+   "etiologi": "5: Cryptogenic Stroke"
+  }
+ },
+ "sub-724": {
+  "id": "sub-724",
+  "sequences": {
+   "DWI": "08106efbbb",
+   "ADC": "7e97394a82",
+   "FLAIR": "e25ac5abef"
+  },
+  "findings": {
+   "volume_ml": 343.01,
+   "kategori_volume": "besar (>=30 ml)",
+   "jumlah_fokus": 7,
+   "multifokal": true,
+   "hemisfer": "bilateral",
+   "slice_lesi_terbesar": 20,
+   "fokus": [
+    {
+     "ml": 314.12,
+     "hemisfer": "kiri",
+     "slice_terbesar": 20,
+     "rentang_slice": [
+      9,
+      25
+     ],
+     "pusat_voxel": [
+      153.2,
+      103.0,
+      16.1
+     ],
+     "radc_median": 0.67
+    },
+    {
+     "ml": 26.56,
+     "hemisfer": "kiri",
+     "slice_terbesar": 8,
+     "rentang_slice": [
+      6,
+      12
+     ],
+     "pusat_voxel": [
+      141.1,
+      83.2,
+      7.6
+     ],
+     "radc_median": 0.74
+    },
+    {
+     "ml": 0.7,
+     "hemisfer": "kanan",
+     "slice_terbesar": 10,
+     "rentang_slice": [
+      10,
+      10
+     ],
+     "pusat_voxel": [
+      99.4,
+      63.6,
+      9.0
+     ],
+     "radc_median": 0.74
+    },
+    {
+     "ml": 0.51,
+     "hemisfer": "kiri",
+     "slice_terbesar": 25,
+     "rentang_slice": [
+      25,
+      25
+     ],
+     "pusat_voxel": [
+      129.0,
+      124.7,
+      24.0
+     ],
+     "radc_median": 1.15
+    },
+    {
+     "ml": 0.43,
+     "hemisfer": "kanan",
+     "slice_terbesar": 11,
+     "rentang_slice": [
+      11,
+      11
+     ],
+     "pusat_voxel": [
+      102.0,
+      44.1,
+      10.0
+     ],
+     "radc_median": 0.69
+    },
+    {
+     "ml": 0.33,
+     "hemisfer": "kanan",
+     "slice_terbesar": 11,
+     "rentang_slice": [
+      11,
+      12
+     ],
+     "pusat_voxel": [
+      111.7,
+      39.0,
+      10.4
+     ],
+     "radc_median": 0.89
+    },
+    {
+     "ml": 0.15,
+     "hemisfer": "kanan",
+     "slice_terbesar": 21,
+     "rentang_slice": [
+      21,
+      21
+     ],
+     "pusat_voxel": [
+      113.0,
+      114.7,
+      20.0
+     ],
+     "radc_median": 0.73
+    }
+   ],
+   "adc_relatif_lesi": 0.67,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 0.272
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 6,
+   "etiologi": "5: Cryptogenic Stroke"
+  }
+ },
+ "sub-754": {
+  "id": "sub-754",
+  "sequences": {
+   "DWI": "590150eb2e",
+   "ADC": "d3c53a378b",
+   "FLAIR": "d364f72db8"
+  },
+  "findings": {
+   "volume_ml": 71.93,
+   "kategori_volume": "besar (>=30 ml)",
+   "jumlah_fokus": 2,
+   "multifokal": true,
+   "hemisfer": "kanan",
+   "slice_lesi_terbesar": 10,
+   "fokus": [
+    {
+     "ml": 70.94,
+     "hemisfer": "kanan",
+     "slice_terbesar": 10,
+     "rentang_slice": [
+      5,
+      14
+     ],
+     "pusat_voxel": [
+      103.2,
+      65.5,
+      8.8
+     ],
+     "radc_median": 0.56
+    },
+    {
+     "ml": 0.98,
+     "hemisfer": "kanan",
+     "slice_terbesar": 9,
+     "rentang_slice": [
+      9,
+      9
+     ],
+     "pusat_voxel": [
+      69.6,
+      120.6,
+      8.0
+     ],
+     "radc_median": 1.05
+    }
+   ],
+   "adc_relatif_lesi": 0.56,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": -0.857
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 3,
+   "etiologi": "2: Cardioembolism (e.g., atrial fibrillation/flutter, prosthetic heart valve, recent MI)"
+  }
+ },
+ "sub-763": {
+  "id": "sub-763",
+  "sequences": {
+   "DWI": "85fe562d1b",
+   "ADC": "cad94a4c53",
+   "FLAIR": "c880fb5f95"
+  },
+  "findings": {
+   "volume_ml": 8.32,
+   "kategori_volume": "sedang (5-30 ml)",
+   "jumlah_fokus": 1,
+   "multifokal": false,
+   "hemisfer": "kiri",
+   "slice_lesi_terbesar": 21,
+   "fokus": [
+    {
+     "ml": 8.32,
+     "hemisfer": "kiri",
+     "slice_terbesar": 21,
+     "rentang_slice": [
+      18,
+      23
+     ],
+     "pusat_voxel": [
+      179.0,
+      133.3,
+      19.3
+     ],
+     "radc_median": 0.75
+    }
+   ],
+   "adc_relatif_lesi": 0.75,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": -0.92
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 2,
+   "etiologi": "5: Cryptogenic Stroke"
+  }
+ },
+ "sub-830": {
+  "id": "sub-830",
+  "sequences": {
+   "DWI": "44b41b8606",
+   "ADC": "84315e4d08",
+   "FLAIR": "2ef91a5581"
+  },
+  "findings": {
+   "volume_ml": 62.19,
+   "kategori_volume": "besar (>=30 ml)",
+   "jumlah_fokus": 2,
+   "multifokal": true,
+   "hemisfer": "kiri",
+   "slice_lesi_terbesar": 13,
+   "fokus": [
+    {
+     "ml": 61.82,
+     "hemisfer": "kiri",
+     "slice_terbesar": 13,
+     "rentang_slice": [
+      6,
+      18
+     ],
+     "pusat_voxel": [
+      164.6,
+      142.7,
+      10.9
+     ],
+     "radc_median": 0.8
+    },
+    {
+     "ml": 0.37,
+     "hemisfer": "kiri",
+     "slice_terbesar": 13,
+     "rentang_slice": [
+      13,
+      13
+     ],
+     "pusat_voxel": [
+      182.4,
+      116.4,
+      12.0
+     ],
+     "radc_median": 0.68
+    }
+   ],
+   "adc_relatif_lesi": 0.8,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": -0.794
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 1,
+   "etiologi": "4: Stroke of other determined etiology"
+  }
+ },
+ "sub-898": {
+  "id": "sub-898",
+  "sequences": {
+   "DWI": "8994661465",
+   "ADC": "1d7babc890",
+   "FLAIR": "549f2d4dca"
+  },
+  "findings": {
+   "volume_ml": 8.82,
+   "kategori_volume": "sedang (5-30 ml)",
+   "jumlah_fokus": 2,
+   "multifokal": true,
+   "hemisfer": "bilateral",
+   "slice_lesi_terbesar": 6,
+   "fokus": [
+    {
+     "ml": 4.9,
+     "hemisfer": "kanan",
+     "slice_terbesar": 6,
+     "rentang_slice": [
+      6,
+      7
+     ],
+     "pusat_voxel": [
+      118.7,
+      88.9,
+      5.5
+     ],
+     "radc_median": 0.76
+    },
+    {
+     "ml": 3.92,
+     "hemisfer": "kiri",
+     "slice_terbesar": 6,
+     "rentang_slice": [
+      6,
+      7
+     ],
+     "pusat_voxel": [
+      166.1,
+      87.6,
+      5.4
+     ],
+     "radc_median": 0.86
+    }
+   ],
+   "adc_relatif_lesi": 0.8,
+   "restriksi_sejati": false,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 0.055
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 6,
+   "etiologi": "5: Cryptogenic Stroke"
+  }
+ },
+ "sub-901": {
+  "id": "sub-901",
+  "sequences": {
+   "DWI": "91ab89118b",
+   "ADC": "d945ec4f36",
+   "FLAIR": "a3f0a14d86"
+  },
+  "findings": {
+   "volume_ml": 7.02,
+   "kategori_volume": "sedang (5-30 ml)",
+   "jumlah_fokus": 3,
+   "multifokal": true,
+   "hemisfer": "kiri",
+   "slice_lesi_terbesar": 16,
+   "fokus": [
+    {
+     "ml": 5.16,
+     "hemisfer": "kiri",
+     "slice_terbesar": 16,
+     "rentang_slice": [
+      12,
+      17
+     ],
+     "pusat_voxel": [
+      146.9,
+      112.6,
+      14.1
+     ],
+     "radc_median": 0.72
+    },
+    {
+     "ml": 1.75,
+     "hemisfer": "kiri",
+     "slice_terbesar": 9,
+     "rentang_slice": [
+      9,
+      11
+     ],
+     "pusat_voxel": [
+      151.6,
+      95.6,
+      8.6
+     ],
+     "radc_median": 0.95
+    },
+    {
+     "ml": 0.11,
+     "hemisfer": "kiri",
+     "slice_terbesar": 11,
+     "rentang_slice": [
+      11,
+      11
+     ],
+     "pusat_voxel": [
+      151.4,
+      124.9,
+      10.0
+     ],
+     "radc_median": 0.87
+    }
+   ],
+   "adc_relatif_lesi": 0.81,
+   "restriksi_sejati": false,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 0.739
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 5,
+   "etiologi": "3: Small-vessel disease (e.g., Subcortical or brain stem lacunar infarction <1.5 cm)"
+  }
+ },
+ "sub-924": {
+  "id": "sub-924",
+  "sequences": {
+   "DWI": "5c958fe670",
+   "ADC": "80392ce51a",
+   "FLAIR": "1e25c3603e"
+  },
+  "findings": {
+   "volume_ml": 44.03,
+   "kategori_volume": "besar (>=30 ml)",
+   "jumlah_fokus": 4,
+   "multifokal": true,
+   "hemisfer": "kanan",
+   "slice_lesi_terbesar": 19,
+   "fokus": [
+    {
+     "ml": 31.89,
+     "hemisfer": "kanan",
+     "slice_terbesar": 19,
+     "rentang_slice": [
+      12,
+      22
+     ],
+     "pusat_voxel": [
+      148.8,
+      142.1,
+      17.4
+     ],
+     "radc_median": 0.9
+    },
+    {
+     "ml": 11.37,
+     "hemisfer": "kanan",
+     "slice_terbesar": 12,
+     "rentang_slice": [
+      9,
+      14
+     ],
+     "pusat_voxel": [
+      125.0,
+      78.8,
+      10.7
+     ],
+     "radc_median": 0.93
+    },
+    {
+     "ml": 0.6,
+     "hemisfer": "kanan",
+     "slice_terbesar": 11,
+     "rentang_slice": [
+      11,
+      12
+     ],
+     "pusat_voxel": [
+      151.3,
+      136.0,
+      10.4
+     ],
+     "radc_median": 0.91
+    },
+    {
+     "ml": 0.17,
+     "hemisfer": "kanan",
+     "slice_terbesar": 21,
+     "rentang_slice": [
+      21,
+      21
+     ],
+     "pusat_voxel": [
+      119.9,
+      198.0,
+      20.0
+     ],
+     "radc_median": 0.86
+    }
+   ],
+   "adc_relatif_lesi": 0.91,
+   "restriksi_sejati": false,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 0.356
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 1,
+   "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
+  }
+ },
+ "sub-934": {
+  "id": "sub-934",
+  "sequences": {
+   "DWI": "2c7a226537",
+   "ADC": "211ad4779c",
+   "FLAIR": "9fd1ce0dd2"
+  },
+  "findings": {
+   "volume_ml": 0.73,
+   "kategori_volume": "sangat kecil (<1 ml)",
+   "jumlah_fokus": 1,
+   "multifokal": false,
+   "hemisfer": "kiri",
+   "slice_lesi_terbesar": 6,
+   "fokus": [
+    {
+     "ml": 0.73,
+     "hemisfer": "kiri",
+     "slice_terbesar": 6,
+     "rentang_slice": [
+      6,
+      7
+     ],
+     "pusat_voxel": [
+      113.0,
+      85.8,
+      5.2
+     ],
+     "radc_median": 0.88
+    }
+   ],
+   "adc_relatif_lesi": 0.88,
+   "restriksi_sejati": false,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 0.134
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 3,
+   "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
+  }
+ },
+ "sub-998": {
+  "id": "sub-998",
+  "sequences": {
+   "DWI": "5407e0c330",
+   "ADC": "ab79ccc8c6",
+   "FLAIR": "0e21901733"
+  },
+  "findings": {
+   "volume_ml": 47.44,
+   "kategori_volume": "besar (>=30 ml)",
+   "jumlah_fokus": 51,
+   "multifokal": true,
+   "hemisfer": "bilateral",
+   "slice_lesi_terbesar": 12,
+   "fokus": [
+    {
+     "ml": 16.46,
+     "hemisfer": "kiri",
+     "slice_terbesar": 13,
+     "rentang_slice": [
+      10,
+      17
+     ],
+     "pusat_voxel": [
+      162.1,
+      42.2,
+      11.9
+     ],
+     "radc_median": 0.56
+    },
+    {
+     "ml": 4.11,
+     "hemisfer": "kiri",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      15,
+      19
+     ],
+     "pusat_voxel": [
+      148.8,
+      132.7,
+      16.0
+     ],
+     "radc_median": 0.71
+    },
+    {
+     "ml": 3.36,
+     "hemisfer": "kiri",
+     "slice_terbesar": 22,
+     "rentang_slice": [
+      18,
+      25
+     ],
+     "pusat_voxel": [
+      155.1,
+      84.0,
+      20.7
+     ],
+     "radc_median": 0.62
+    },
+    {
+     "ml": 2.05,
+     "hemisfer": "kanan",
+     "slice_terbesar": 7,
+     "rentang_slice": [
+      3,
+      7
+     ],
+     "pusat_voxel": [
+      95.9,
+      70.3,
+      4.6
+     ],
+     "radc_median": 0.52
+    },
+    {
+     "ml": 1.73,
+     "hemisfer": "kiri",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      13,
+      18
+     ],
+     "pusat_voxel": [
+      156.9,
+      100.2,
+      14.6
+     ],
+     "radc_median": 0.67
+    },
+    {
+     "ml": 1.64,
+     "hemisfer": "kiri",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      14,
+      16
+     ],
+     "pusat_voxel": [
+      175.1,
+      135.8,
+      13.9
+     ],
+     "radc_median": 0.96
+    },
+    {
+     "ml": 1.32,
+     "hemisfer": "kanan",
+     "slice_terbesar": 20,
+     "rentang_slice": [
+      20,
+      22
+     ],
+     "pusat_voxel": [
+      122.3,
+      64.6,
+      19.7
+     ],
+     "radc_median": 0.7
+    },
+    {
+     "ml": 1.11,
+     "hemisfer": "kiri",
+     "slice_terbesar": 12,
+     "rentang_slice": [
+      12,
+      13
+     ],
+     "pusat_voxel": [
+      180.9,
+      68.8,
+      11.2
+     ],
+     "radc_median": 0.78
+    },
+    {
+     "ml": 0.82,
+     "hemisfer": "kiri",
+     "slice_terbesar": 10,
+     "rentang_slice": [
+      10,
+      11
+     ],
+     "pusat_voxel": [
+      156.7,
+      121.5,
+      9.4
+     ],
+     "radc_median": 0.86
+    },
+    {
+     "ml": 0.77,
+     "hemisfer": "kiri",
+     "slice_terbesar": 8,
+     "rentang_slice": [
+      8,
+      8
+     ],
+     "pusat_voxel": [
+      142.7,
+      61.8,
+      7.0
+     ],
+     "radc_median": 0.67
+    },
+    {
+     "ml": 0.76,
+     "hemisfer": "kiri",
+     "slice_terbesar": 21,
+     "rentang_slice": [
+      20,
+      22
+     ],
+     "pusat_voxel": [
+      189.6,
+      84.3,
+      19.8
+     ],
+     "radc_median": 0.69
+    },
+    {
+     "ml": 0.76,
+     "hemisfer": "kanan",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      16,
+      18
+     ],
+     "pusat_voxel": [
+      116.2,
+      88.7,
+      16.0
+     ],
+     "radc_median": 0.65
+    },
+    {
+     "ml": 0.75,
+     "hemisfer": "kiri",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      14,
+      16
+     ],
+     "pusat_voxel": [
+      181.7,
+      105.5,
+      13.7
+     ],
+     "radc_median": 0.69
+    },
+    {
+     "ml": 0.66,
+     "hemisfer": "kiri",
+     "slice_terbesar": 16,
+     "rentang_slice": [
+      16,
+      17
+     ],
+     "pusat_voxel": [
+      186.0,
+      149.9,
+      15.5
+     ],
+     "radc_median": 0.86
+    },
+    {
+     "ml": 0.63,
+     "hemisfer": "kiri",
+     "slice_terbesar": 11,
+     "rentang_slice": [
+      11,
+      11
+     ],
+     "pusat_voxel": [
+      189.8,
+      118.5,
+      10.0
+     ],
+     "radc_median": 0.93
+    },
+    {
+     "ml": 0.52,
+     "hemisfer": "kiri",
+     "slice_terbesar": 16,
+     "rentang_slice": [
+      15,
+      16
+     ],
+     "pusat_voxel": [
+      161.6,
+      192.3,
+      14.6
+     ],
+     "radc_median": 1.12
+    },
+    {
+     "ml": 0.38,
+     "hemisfer": "kanan",
+     "slice_terbesar": 6,
+     "rentang_slice": [
+      6,
+      6
+     ],
+     "pusat_voxel": [
+      114.5,
+      53.2,
+      5.0
+     ],
+     "radc_median": 0.56
+    },
+    {
+     "ml": 0.36,
+     "hemisfer": "kanan",
+     "slice_terbesar": 21,
+     "rentang_slice": [
+      21,
+      22
+     ],
+     "pusat_voxel": [
+      116.5,
+      87.3,
+      20.1
+     ],
+     "radc_median": 0.62
+    },
+    {
+     "ml": 0.34,
+     "hemisfer": "kiri",
+     "slice_terbesar": 25,
+     "rentang_slice": [
+      25,
+      25
+     ],
+     "pusat_voxel": [
+      145.9,
+      124.0,
+      24.0
+     ],
+     "radc_median": 0.81
+    },
+    {
+     "ml": 0.31,
+     "hemisfer": "kanan",
+     "slice_terbesar": 5,
+     "rentang_slice": [
+      5,
+      5
+     ],
+     "pusat_voxel": [
+      103.1,
+      95.6,
+      4.0
+     ],
+     "radc_median": 0.58
+    },
+    {
+     "ml": 0.29,
+     "hemisfer": "kiri",
+     "slice_terbesar": 18,
+     "rentang_slice": [
+      18,
+      19
+     ],
+     "pusat_voxel": [
+      198.4,
+      92.1,
+      17.4
+     ],
+     "radc_median": 0.88
+    },
+    {
+     "ml": 0.28,
+     "hemisfer": "kanan",
+     "slice_terbesar": 6,
+     "rentang_slice": [
+      6,
+      6
+     ],
+     "pusat_voxel": [
+      99.0,
+      52.5,
+      5.0
+     ],
+     "radc_median": 0.47
+    },
+    {
+     "ml": 0.28,
+     "hemisfer": "kiri",
+     "slice_terbesar": 24,
+     "rentang_slice": [
+      24,
+      24
+     ],
+     "pusat_voxel": [
+      140.6,
+      73.2,
+      23.0
+     ],
+     "radc_median": 0.66
+    },
+    {
+     "ml": 0.26,
+     "hemisfer": "kanan",
+     "slice_terbesar": 22,
+     "rentang_slice": [
+      21,
+      22
+     ],
+     "pusat_voxel": [
+      126.8,
+      82.8,
+      20.7
+     ],
+     "radc_median": 0.6
+    },
+    {
+     "ml": 0.25,
+     "hemisfer": "kiri",
+     "slice_terbesar": 22,
+     "rentang_slice": [
+      22,
+      22
+     ],
+     "pusat_voxel": [
+      152.9,
+      127.1,
+      21.0
+     ],
+     "radc_median": 0.59
+    },
+    {
+     "ml": 0.24,
+     "hemisfer": "kiri",
+     "slice_terbesar": 23,
+     "rentang_slice": [
+      23,
+      23
+     ],
+     "pusat_voxel": [
+      169.4,
+      86.0,
+      22.0
+     ],
+     "radc_median": 0.71
+    },
+    {
+     "ml": 0.23,
+     "hemisfer": "kiri",
+     "slice_terbesar": 24,
+     "rentang_slice": [
+      24,
+      24
+     ],
+     "pusat_voxel": [
+      162.8,
+      75.2,
+      23.0
+     ],
+     "radc_median": 0.62
+    },
+    {
+     "ml": 0.22,
+     "hemisfer": "kiri",
+     "slice_terbesar": 18,
+     "rentang_slice": [
+      17,
+      19
+     ],
+     "pusat_voxel": [
+      153.1,
+      156.8,
+      17.0
+     ],
+     "radc_median": 0.78
+    },
+    {
+     "ml": 0.22,
+     "hemisfer": "kiri",
+     "slice_terbesar": 24,
+     "rentang_slice": [
+      24,
+      24
+     ],
+     "pusat_voxel": [
+      171.4,
+      114.5,
+      23.0
+     ],
+     "radc_median": 0.71
+    },
+    {
+     "ml": 0.2,
+     "hemisfer": "kanan",
+     "slice_terbesar": 19,
+     "rentang_slice": [
+      19,
+      19
+     ],
+     "pusat_voxel": [
+      126.8,
+      85.0,
+      18.0
+     ],
+     "radc_median": 0.59
+    },
+    {
+     "ml": 0.2,
+     "hemisfer": "kiri",
+     "slice_terbesar": 11,
+     "rentang_slice": [
+      11,
+      11
+     ],
+     "pusat_voxel": [
+      141.7,
+      60.6,
+      10.0
+     ],
+     "radc_median": 0.77
+    },
+    {
+     "ml": 0.2,
+     "hemisfer": "kanan",
+     "slice_terbesar": 13,
+     "rentang_slice": [
+      13,
+      13
+     ],
+     "pusat_voxel": [
+      115.3,
+      28.1,
+      12.0
+     ],
+     "radc_median": 0.61
+    },
+    {
+     "ml": 0.19,
+     "hemisfer": "kiri",
+     "slice_terbesar": 22,
+     "rentang_slice": [
+      22,
+      23
+     ],
+     "pusat_voxel": [
+      150.1,
+      112.8,
+      21.5
+     ],
+     "radc_median": 0.59
+    },
+    {
+     "ml": 0.16,
+     "hemisfer": "kiri",
+     "slice_terbesar": 18,
+     "rentang_slice": [
+      17,
+      18
+     ],
+     "pusat_voxel": [
+      159.8,
+      174.1,
+      16.6
+     ],
+     "radc_median": 0.98
+    },
+    {
+     "ml": 0.16,
+     "hemisfer": "kiri",
+     "slice_terbesar": 9,
+     "rentang_slice": [
+      9,
+      9
+     ],
+     "pusat_voxel": [
+      163.6,
+      50.6,
+      8.0
+     ],
+     "radc_median": 0.63
+    },
+    {
+     "ml": 0.15,
+     "hemisfer": "kanan",
+     "slice_terbesar": 14,
+     "rentang_slice": [
+      14,
+      14
+     ],
+     "pusat_voxel": [
+      124.6,
+      38.4,
+      13.0
+     ],
+     "radc_median": 0.78
+    },
+    {
+     "ml": 0.15,
+     "hemisfer": "kiri",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      15,
+      15
+     ],
+     "pusat_voxel": [
+      172.8,
+      185.0,
+      14.0
+     ],
+     "radc_median": 0.84
+    },
+    {
+     "ml": 0.15,
+     "hemisfer": "kiri",
+     "slice_terbesar": 14,
+     "rentang_slice": [
+      14,
+      14
+     ],
+     "pusat_voxel": [
+      161.7,
+      76.7,
+      13.0
+     ],
+     "radc_median": 0.96
+    },
+    {
+     "ml": 0.15,
+     "hemisfer": "kiri",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      17,
+      17
+     ],
+     "pusat_voxel": [
+      191.3,
+      137.7,
+      16.0
+     ],
+     "radc_median": 0.86
+    },
+    {
+     "ml": 0.14,
+     "hemisfer": "kanan",
+     "slice_terbesar": 19,
+     "rentang_slice": [
+      19,
+      19
+     ],
+     "pusat_voxel": [
+      122.6,
+      42.6,
+      18.0
+     ],
+     "radc_median": 0.8
+    },
+    {
+     "ml": 0.14,
+     "hemisfer": "kiri",
+     "slice_terbesar": 9,
+     "rentang_slice": [
+      9,
+      9
+     ],
+     "pusat_voxel": [
+      172.8,
+      49.5,
+      8.0
+     ],
+     "radc_median": 0.75
+    },
+    {
+     "ml": 0.14,
+     "hemisfer": "kiri",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      15,
+      15
+     ],
+     "pusat_voxel": [
+      195.3,
+      66.8,
+      14.0
+     ],
+     "radc_median": 0.67
+    },
+    {
+     "ml": 0.13,
+     "hemisfer": "kanan",
+     "slice_terbesar": 21,
+     "rentang_slice": [
+      20,
+      21
+     ],
+     "pusat_voxel": [
+      114.7,
+      75.2,
+      19.6
+     ],
+     "radc_median": 0.66
+    },
+    {
+     "ml": 0.13,
+     "hemisfer": "kiri",
+     "slice_terbesar": 12,
+     "rentang_slice": [
+      12,
+      12
+     ],
+     "pusat_voxel": [
+      194.6,
+      100.1,
+      11.0
+     ],
+     "radc_median": 0.94
+    },
+    {
+     "ml": 0.12,
+     "hemisfer": "kiri",
+     "slice_terbesar": 16,
+     "rentang_slice": [
+      16,
+      16
+     ],
+     "pusat_voxel": [
+      159.2,
+      123.0,
+      15.0
+     ],
+     "radc_median": 0.6
+    },
+    {
+     "ml": 0.12,
+     "hemisfer": "kiri",
+     "slice_terbesar": 20,
+     "rentang_slice": [
+      20,
+      20
+     ],
+     "pusat_voxel": [
+      149.9,
+      189.3,
+      19.0
+     ],
+     "radc_median": 1.05
+    },
+    {
+     "ml": 0.12,
+     "hemisfer": "kiri",
+     "slice_terbesar": 7,
+     "rentang_slice": [
+      7,
+      7
+     ],
+     "pusat_voxel": [
+      168.0,
+      72.7,
+      6.0
+     ],
+     "radc_median": 0.64
+    },
+    {
+     "ml": 0.11,
+     "hemisfer": "kanan",
+     "slice_terbesar": 18,
+     "rentang_slice": [
+      18,
+      18
+     ],
+     "pusat_voxel": [
+      111.6,
+      74.2,
+      17.0
+     ],
+     "radc_median": 0.77
+    },
+    {
+     "ml": 0.11,
+     "hemisfer": "kiri",
+     "slice_terbesar": 22,
+     "rentang_slice": [
+      22,
+      22
+     ],
+     "pusat_voxel": [
+      168.5,
+      67.2,
+      21.0
+     ],
+     "radc_median": 0.59
+    },
+    {
+     "ml": 0.11,
+     "hemisfer": "kiri",
+     "slice_terbesar": 19,
+     "rentang_slice": [
+      19,
+      19
+     ],
+     "pusat_voxel": [
+      187.3,
+      68.0,
+      18.0
+     ],
+     "radc_median": 0.64
+    },
+    {
+     "ml": 0.11,
+     "hemisfer": "kiri",
+     "slice_terbesar": 12,
+     "rentang_slice": [
+      12,
+      12
+     ],
+     "pusat_voxel": [
+      187.9,
+      102.1,
+      11.0
+     ],
+     "radc_median": 0.81
+    }
+   ],
+   "adc_relatif_lesi": 0.66,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 3.996
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 2,
+   "etiologi": "5: Cryptogenic Stroke"
+  }
+ },
+ "sub-1041": {
+  "id": "sub-1041",
+  "sequences": {
+   "DWI": "e3ba449965",
+   "ADC": "6f84946840",
+   "FLAIR": "cd4b07245f"
+  },
+  "findings": {
+   "volume_ml": 119.09,
+   "kategori_volume": "besar (>=30 ml)",
+   "jumlah_fokus": 5,
+   "multifokal": true,
+   "hemisfer": "kiri",
+   "slice_lesi_terbesar": 12,
+   "fokus": [
+    {
+     "ml": 118.1,
+     "hemisfer": "kiri",
+     "slice_terbesar": 12,
+     "rentang_slice": [
+      8,
+      21
+     ],
+     "pusat_voxel": [
+      153.9,
+      73.2,
+      12.9
+     ],
+     "radc_median": 0.56
+    },
+    {
+     "ml": 0.32,
+     "hemisfer": "kiri",
+     "slice_terbesar": 21,
+     "rentang_slice": [
+      21,
+      22
+     ],
+     "pusat_voxel": [
+      145.2,
+      99.8,
+      20.2
+     ],
+     "radc_median": 0.62
+    },
+    {
+     "ml": 0.24,
+     "hemisfer": "kiri",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      17,
+      17
+     ],
+     "pusat_voxel": [
+      150.6,
+      89.0,
+      16.0
+     ],
+     "radc_median": 0.72
+    },
+    {
+     "ml": 0.14,
+     "hemisfer": "kiri",
+     "slice_terbesar": 16,
+     "rentang_slice": [
+      16,
+      16
+     ],
+     "pusat_voxel": [
+      164.8,
+      114.8,
+      15.0
+     ],
+     "radc_median": 0.77
+    },
+    {
+     "ml": 0.1,
+     "hemisfer": "kiri",
+     "slice_terbesar": 20,
+     "rentang_slice": [
+      20,
+      20
+     ],
+     "pusat_voxel": [
+      155.4,
+      81.4,
+      19.0
+     ],
+     "radc_median": 0.82
+    }
+   ],
+   "adc_relatif_lesi": 0.56,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 0.246
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 3,
+   "etiologi": "5: Cryptogenic Stroke"
+  }
+ },
+ "sub-1043": {
+  "id": "sub-1043",
+  "sequences": {
+   "DWI": "67ad7a2c8c",
+   "ADC": "864da3808c",
+   "FLAIR": "25692d9d88"
+  },
+  "findings": {
+   "volume_ml": 0.26,
+   "kategori_volume": "sangat kecil (<1 ml)",
+   "jumlah_fokus": 1,
+   "multifokal": false,
+   "hemisfer": "kanan",
+   "slice_lesi_terbesar": 20,
+   "fokus": [
+    {
+     "ml": 0.26,
+     "hemisfer": "kanan",
+     "slice_terbesar": 20,
+     "rentang_slice": [
+      20,
+      20
+     ],
+     "pusat_voxel": [
+      133.9,
+      154.9,
+      19.0
+     ],
+     "radc_median": 0.72
+    }
+   ],
+   "adc_relatif_lesi": 0.72,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 0.581
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 1,
+   "etiologi": "5: Cryptogenic Stroke"
+  }
+ },
+ "sub-1150": {
+  "id": "sub-1150",
+  "sequences": {
+   "DWI": "5264cefcc5",
+   "ADC": "31ea719247",
+   "FLAIR": "0be0f9d18f"
+  },
+  "findings": {
+   "volume_ml": 87.62,
+   "kategori_volume": "besar (>=30 ml)",
+   "jumlah_fokus": 7,
+   "multifokal": true,
+   "hemisfer": "kanan",
+   "slice_lesi_terbesar": 17,
+   "fokus": [
+    {
+     "ml": 72.21,
+     "hemisfer": "kanan",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      9,
+      20
+     ],
+     "pusat_voxel": [
+      83.8,
+      117.2,
+      13.5
+     ],
+     "radc_median": 0.79
+    },
+    {
+     "ml": 10.33,
+     "hemisfer": "kanan",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      16,
+      20
+     ],
+     "pusat_voxel": [
+      76.6,
+      65.0,
+      16.9
+     ],
+     "radc_median": 0.71
+    },
+    {
+     "ml": 4.18,
+     "hemisfer": "kanan",
+     "slice_terbesar": 12,
+     "rentang_slice": [
+      11,
+      13
+     ],
+     "pusat_voxel": [
+      69.2,
+      77.1,
+      11.1
+     ],
+     "radc_median": 0.62
+    },
+    {
+     "ml": 0.21,
+     "hemisfer": "kanan",
+     "slice_terbesar": 20,
+     "rentang_slice": [
+      20,
+      21
+     ],
+     "pusat_voxel": [
+      78.4,
+      96.7,
+      19.2
+     ],
+     "radc_median": 0.92
+    },
+    {
+     "ml": 0.21,
+     "hemisfer": "kanan",
+     "slice_terbesar": 19,
+     "rentang_slice": [
+      19,
+      20
+     ],
+     "pusat_voxel": [
+      89.1,
+      91.7,
+      18.4
+     ],
+     "radc_median": 0.66
+    },
+    {
+     "ml": 0.18,
+     "hemisfer": "kanan",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      17,
+      17
+     ],
+     "pusat_voxel": [
+      89.2,
+      45.9,
+      16.0
+     ],
+     "radc_median": 0.68
+    },
+    {
+     "ml": 0.11,
+     "hemisfer": "kanan",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      17,
+      17
+     ],
+     "pusat_voxel": [
+      90.3,
+      54.3,
+      16.0
+     ],
+     "radc_median": 0.77
+    }
+   ],
+   "adc_relatif_lesi": 0.77,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 0.865
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 4,
+   "etiologi": "5: Cryptogenic Stroke"
+  }
+ },
+ "sub-1171": {
+  "id": "sub-1171",
+  "sequences": {
+   "DWI": "679bd0c0f8",
+   "ADC": "bab046e233",
+   "FLAIR": "0ed7b26c34"
+  },
+  "findings": {
+   "volume_ml": 21.89,
+   "kategori_volume": "sedang (5-30 ml)",
+   "jumlah_fokus": 11,
+   "multifokal": true,
+   "hemisfer": "kanan",
+   "slice_lesi_terbesar": 17,
+   "fokus": [
+    {
+     "ml": 17.22,
+     "hemisfer": "kanan",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      10,
+      20
+     ],
+     "pusat_voxel": [
+      153.7,
+      199.2,
+      14.5
+     ],
+     "radc_median": 0.64
+    },
+    {
+     "ml": 0.83,
+     "hemisfer": "kanan",
+     "slice_terbesar": 14,
+     "rentang_slice": [
+      14,
+      16
+     ],
+     "pusat_voxel": [
+      123.3,
+      184.6,
+      13.7
+     ],
+     "radc_median": 0.95
+    },
+    {
+     "ml": 0.81,
+     "hemisfer": "kanan",
+     "slice_terbesar": 22,
+     "rentang_slice": [
+      20,
+      23
+     ],
+     "pusat_voxel": [
+      146.0,
+      169.0,
+      20.6
+     ],
+     "radc_median": 0.73
+    },
+    {
+     "ml": 0.63,
+     "hemisfer": "kanan",
+     "slice_terbesar": 19,
+     "rentang_slice": [
+      18,
+      21
+     ],
+     "pusat_voxel": [
+      136.4,
+      219.4,
+      18.5
+     ],
+     "radc_median": 1.05
+    },
+    {
+     "ml": 0.62,
+     "hemisfer": "kanan",
+     "slice_terbesar": 18,
+     "rentang_slice": [
+      16,
+      18
+     ],
+     "pusat_voxel": [
+      132.6,
+      129.9,
+      16.5
+     ],
+     "radc_median": 0.66
+    },
+    {
+     "ml": 0.5,
+     "hemisfer": "kanan",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      15,
+      16
+     ],
+     "pusat_voxel": [
+      113.4,
+      162.6,
+      14.5
+     ],
+     "radc_median": 0.72
+    },
+    {
+     "ml": 0.28,
+     "hemisfer": "kanan",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      15,
+      15
+     ],
+     "pusat_voxel": [
+      156.5,
+      141.6,
+      14.0
+     ],
+     "radc_median": 0.7
+    },
+    {
+     "ml": 0.21,
+     "hemisfer": "kanan",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      17,
+      17
+     ],
+     "pusat_voxel": [
+      147.4,
+      150.1,
+      16.0
+     ],
+     "radc_median": 0.63
+    },
+    {
+     "ml": 0.19,
+     "hemisfer": "kanan",
+     "slice_terbesar": 19,
+     "rentang_slice": [
+      19,
+      19
+     ],
+     "pusat_voxel": [
+      123.3,
+      202.1,
+      18.0
+     ],
+     "radc_median": 0.64
+    },
+    {
+     "ml": 0.16,
+     "hemisfer": "kanan",
+     "slice_terbesar": 19,
+     "rentang_slice": [
+      19,
+      20
+     ],
+     "pusat_voxel": [
+      122.8,
+      234.0,
+      18.4
+     ],
+     "radc_median": 0.77
+    },
+    {
+     "ml": 0.1,
+     "hemisfer": "kanan",
+     "slice_terbesar": 14,
+     "rentang_slice": [
+      14,
+      14
+     ],
+     "pusat_voxel": [
+      181.6,
+      240.2,
+      13.0
+     ],
+     "radc_median": 0.61
+    }
+   ],
+   "adc_relatif_lesi": 0.66,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 2.119
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 5,
+   "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
+  }
+ },
+ "sub-1232": {
+  "id": "sub-1232",
+  "sequences": {
+   "DWI": "15932f1a36",
+   "ADC": "af48799617",
+   "FLAIR": "c3636e3213"
+  },
+  "findings": {
+   "volume_ml": 96.72,
+   "kategori_volume": "besar (>=30 ml)",
+   "jumlah_fokus": 21,
+   "multifokal": true,
+   "hemisfer": "kiri",
+   "slice_lesi_terbesar": 18,
+   "fokus": [
+    {
+     "ml": 69.48,
+     "hemisfer": "kiri",
+     "slice_terbesar": 19,
+     "rentang_slice": [
+      11,
+      23
+     ],
+     "pusat_voxel": [
+      178.4,
+      64.5,
+      15.7
+     ],
+     "radc_median": 0.54
+    },
+    {
+     "ml": 15.72,
+     "hemisfer": "kiri",
+     "slice_terbesar": 10,
+     "rentang_slice": [
+      7,
+      11
+     ],
+     "pusat_voxel": [
+      199.1,
+      145.2,
+      8.2
+     ],
+     "radc_median": 0.66
+    },
+    {
+     "ml": 2.03,
+     "hemisfer": "kiri",
+     "slice_terbesar": 12,
+     "rentang_slice": [
+      11,
+      12
+     ],
+     "pusat_voxel": [
+      205.2,
+      81.2,
+      10.7
+     ],
+     "radc_median": 0.64
+    },
+    {
+     "ml": 1.86,
+     "hemisfer": "kiri",
+     "slice_terbesar": 22,
+     "rentang_slice": [
+      20,
+      22
+     ],
+     "pusat_voxel": [
+      184.1,
+      114.7,
+      20.4
+     ],
+     "radc_median": 0.64
+    },
+    {
+     "ml": 1.33,
+     "hemisfer": "kiri",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      16,
+      18
+     ],
+     "pusat_voxel": [
+      177.5,
+      193.0,
+      15.9
+     ],
+     "radc_median": 0.65
+    },
+    {
+     "ml": 0.99,
+     "hemisfer": "kiri",
+     "slice_terbesar": 18,
+     "rentang_slice": [
+      17,
+      19
+     ],
+     "pusat_voxel": [
+      169.5,
+      145.3,
+      17.3
+     ],
+     "radc_median": 0.43
+    },
+    {
+     "ml": 0.87,
+     "hemisfer": "kiri",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      16,
+      17
+     ],
+     "pusat_voxel": [
+      210.1,
+      108.9,
+      15.6
+     ],
+     "radc_median": 0.77
+    },
+    {
+     "ml": 0.82,
+     "hemisfer": "kiri",
+     "slice_terbesar": 21,
+     "rentang_slice": [
+      21,
+      22
+     ],
+     "pusat_voxel": [
+      184.3,
+      163.6,
+      20.2
+     ],
+     "radc_median": 0.7
+    },
+    {
+     "ml": 0.56,
+     "hemisfer": "kiri",
+     "slice_terbesar": 16,
+     "rentang_slice": [
+      15,
+      16
+     ],
+     "pusat_voxel": [
+      156.9,
+      162.3,
+      14.7
+     ],
+     "radc_median": 0.85
+    },
+    {
+     "ml": 0.47,
+     "hemisfer": "kiri",
+     "slice_terbesar": 23,
+     "rentang_slice": [
+      23,
+      24
+     ],
+     "pusat_voxel": [
+      175.8,
+      124.4,
+      22.5
+     ],
+     "radc_median": 0.67
+    },
+    {
+     "ml": 0.44,
+     "hemisfer": "kiri",
+     "slice_terbesar": 13,
+     "rentang_slice": [
+      13,
+      13
+     ],
+     "pusat_voxel": [
+      214.8,
+      116.1,
+      12.0
+     ],
+     "radc_median": 0.72
+    },
+    {
+     "ml": 0.3,
+     "hemisfer": "kiri",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      15,
+      15
+     ],
+     "pusat_voxel": [
+      201.2,
+      125.3,
+      14.0
+     ],
+     "radc_median": 0.81
+    },
+    {
+     "ml": 0.2,
+     "hemisfer": "kiri",
+     "slice_terbesar": 20,
+     "rentang_slice": [
+      20,
+      20
+     ],
+     "pusat_voxel": [
+      204.8,
+      141.2,
+      19.0
+     ],
+     "radc_median": 0.6
+    },
+    {
+     "ml": 0.17,
+     "hemisfer": "kiri",
+     "slice_terbesar": 21,
+     "rentang_slice": [
+      21,
+      21
+     ],
+     "pusat_voxel": [
+      174.6,
+      95.6,
+      20.0
+     ],
+     "radc_median": 0.84
+    },
+    {
+     "ml": 0.17,
+     "hemisfer": "kiri",
+     "slice_terbesar": 12,
+     "rentang_slice": [
+      12,
+      12
+     ],
+     "pusat_voxel": [
+      186.9,
+      153.1,
+      11.0
+     ],
+     "radc_median": 0.93
+    },
+    {
+     "ml": 0.17,
+     "hemisfer": "kiri",
+     "slice_terbesar": 12,
+     "rentang_slice": [
+      12,
+      12
+     ],
+     "pusat_voxel": [
+      195.4,
+      96.7,
+      11.0
+     ],
+     "radc_median": 0.66
+    },
+    {
+     "ml": 0.15,
+     "hemisfer": "kiri",
+     "slice_terbesar": 20,
+     "rentang_slice": [
+      20,
+      20
+     ],
+     "pusat_voxel": [
+      188.3,
+      144.7,
+      19.0
+     ],
+     "radc_median": 0.85
+    },
+    {
+     "ml": 0.14,
+     "hemisfer": "kiri",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      15,
+      15
+     ],
+     "pusat_voxel": [
+      177.8,
+      134.0,
+      14.0
+     ],
+     "radc_median": 0.55
+    },
+    {
+     "ml": 0.14,
+     "hemisfer": "kiri",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      17,
+      17
+     ],
+     "pusat_voxel": [
+      161.9,
+      137.6,
+      16.0
+     ],
+     "radc_median": 1.22
+    },
+    {
+     "ml": 0.14,
+     "hemisfer": "kiri",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      15,
+      15
+     ],
+     "pusat_voxel": [
+      179.7,
+      120.1,
+      14.0
+     ],
+     "radc_median": 0.8
+    },
+    {
+     "ml": 0.1,
+     "hemisfer": "kiri",
+     "slice_terbesar": 16,
+     "rentang_slice": [
+      16,
+      16
+     ],
+     "pusat_voxel": [
+      173.2,
+      113.3,
+      15.0
+     ],
+     "radc_median": 0.49
+    }
+   ],
+   "adc_relatif_lesi": 0.58,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 2.407
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 2,
+   "etiologi": "5: Cryptogenic Stroke"
+  }
+ },
+ "sub-1269": {
+  "id": "sub-1269",
+  "sequences": {
+   "DWI": "6fe5d9286a",
+   "ADC": "97f33db929",
+   "FLAIR": "dbcd407994"
+  },
+  "findings": {
+   "volume_ml": 1.7,
+   "kategori_volume": "kecil (1-5 ml)",
+   "jumlah_fokus": 1,
+   "multifokal": false,
+   "hemisfer": "kanan",
+   "slice_lesi_terbesar": 8,
+   "fokus": [
+    {
+     "ml": 1.61,
+     "hemisfer": "kanan",
+     "slice_terbesar": 8,
+     "rentang_slice": [
+      8,
+      9
+     ],
+     "pusat_voxel": [
+      116.7,
+      104.4,
+      7.5
+     ],
+     "radc_median": 0.77
+    }
+   ],
+   "adc_relatif_lesi": 0.76,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": -0.23
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 1,
+   "etiologi": "4: Stroke of other determined etiology"
+  }
+ },
+ "sub-1301": {
+  "id": "sub-1301",
+  "sequences": {
+   "DWI": "c682666f92",
+   "ADC": "328400ff92",
+   "FLAIR": "0551a6a27b"
+  },
+  "findings": {
+   "volume_ml": 23.98,
+   "kategori_volume": "sedang (5-30 ml)",
+   "jumlah_fokus": 2,
+   "multifokal": true,
+   "hemisfer": "kiri",
+   "slice_lesi_terbesar": 18,
+   "fokus": [
+    {
+     "ml": 23.84,
+     "hemisfer": "kiri",
+     "slice_terbesar": 18,
+     "rentang_slice": [
+      17,
+      25
+     ],
+     "pusat_voxel": [
+      142.0,
+      106.4,
+      19.6
+     ],
+     "radc_median": 0.65
+    },
+    {
+     "ml": 0.14,
+     "hemisfer": "kiri",
+     "slice_terbesar": 19,
+     "rentang_slice": [
+      19,
+      19
+     ],
+     "pusat_voxel": [
+      168.2,
+      84.3,
+      18.0
+     ],
+     "radc_median": 0.91
+    }
+   ],
+   "adc_relatif_lesi": 0.66,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": -0.38
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 4,
+   "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
+  }
+ },
+ "sub-1320": {
+  "id": "sub-1320",
+  "sequences": {
+   "DWI": "c5c32b7a83",
+   "ADC": "3012f3cb56",
+   "FLAIR": "1b5e969ff0"
+  },
+  "findings": {
+   "volume_ml": 71.77,
+   "kategori_volume": "besar (>=30 ml)",
+   "jumlah_fokus": 3,
+   "multifokal": true,
+   "hemisfer": "kanan",
+   "slice_lesi_terbesar": 16,
+   "fokus": [
+    {
+     "ml": 71.43,
+     "hemisfer": "kanan",
+     "slice_terbesar": 16,
+     "rentang_slice": [
+      12,
+      22
+     ],
+     "pusat_voxel": [
+      80.7,
+      108.1,
+      16.2
+     ],
+     "radc_median": 1.5
+    },
+    {
+     "ml": 0.18,
+     "hemisfer": "kanan",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      15,
+      15
+     ],
+     "pusat_voxel": [
+      81.4,
+      38.1,
+      14.0
+     ],
+     "radc_median": 1.21
+    },
+    {
+     "ml": 0.15,
+     "hemisfer": "kanan",
+     "slice_terbesar": 20,
+     "rentang_slice": [
+      20,
+      21
+     ],
+     "pusat_voxel": [
+      92.7,
+      103.3,
+      19.3
+     ],
+     "radc_median": 1.15
+    }
+   ],
+   "adc_relatif_lesi": 1.49,
+   "restriksi_sejati": false,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": -0.271
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 4,
+   "etiologi": "2: Cardioembolism (e.g., atrial fibrillation/flutter, prosthetic heart valve, recent MI)"
+  }
+ },
+ "sub-1362": {
+  "id": "sub-1362",
+  "sequences": {
+   "DWI": "a554a8ba85",
+   "ADC": "43428e83d1",
+   "FLAIR": "6ee7a1b01d"
+  },
+  "findings": {
+   "volume_ml": 10.15,
+   "kategori_volume": "sedang (5-30 ml)",
+   "jumlah_fokus": 10,
+   "multifokal": true,
+   "hemisfer": "bilateral",
+   "slice_lesi_terbesar": 10,
+   "fokus": [
+    {
+     "ml": 6.07,
+     "hemisfer": "kiri",
+     "slice_terbesar": 10,
+     "rentang_slice": [
+      8,
+      16
+     ],
+     "pusat_voxel": [
+      119.9,
+      35.2,
+      10.3
+     ],
+     "radc_median": 0.79
+    },
+    {
+     "ml": 1.41,
+     "hemisfer": "kiri",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      14,
+      15
+     ],
+     "pusat_voxel": [
+      119.6,
+      102.3,
+      13.5
+     ],
+     "radc_median": 0.85
+    },
+    {
+     "ml": 0.67,
+     "hemisfer": "kiri",
+     "slice_terbesar": 10,
+     "rentang_slice": [
+      8,
+      10
+     ],
+     "pusat_voxel": [
+      129.4,
+      53.9,
+      8.1
+     ],
+     "radc_median": 0.8
+    },
+    {
+     "ml": 0.39,
+     "hemisfer": "kiri",
+     "slice_terbesar": 6,
+     "rentang_slice": [
+      6,
+      7
+     ],
+     "pusat_voxel": [
+      132.0,
+      52.5,
+      5.1
+     ],
+     "radc_median": 0.68
+    },
+    {
+     "ml": 0.33,
+     "hemisfer": "kiri",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      17,
+      18
+     ],
+     "pusat_voxel": [
+      120.0,
+      50.4,
+      16.1
+     ],
+     "radc_median": 0.79
+    },
+    {
+     "ml": 0.3,
+     "hemisfer": "kiri",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      17,
+      17
+     ],
+     "pusat_voxel": [
+      121.0,
+      62.3,
+      16.0
+     ],
+     "radc_median": 0.8
+    },
+    {
+     "ml": 0.18,
+     "hemisfer": "kanan",
+     "slice_terbesar": 14,
+     "rentang_slice": [
+      14,
+      14
+     ],
+     "pusat_voxel": [
+      96.6,
+      33.2,
+      13.0
+     ],
+     "radc_median": 0.95
+    },
+    {
+     "ml": 0.17,
+     "hemisfer": "kiri",
+     "slice_terbesar": 7,
+     "rentang_slice": [
+      6,
+      7
+     ],
+     "pusat_voxel": [
+      140.3,
+      60.6,
+      5.7
+     ],
+     "radc_median": 0.79
+    },
+    {
+     "ml": 0.15,
+     "hemisfer": "kiri",
+     "slice_terbesar": 13,
+     "rentang_slice": [
+      13,
+      13
+     ],
+     "pusat_voxel": [
+      123.2,
+      57.8,
+      12.0
+     ],
+     "radc_median": 0.78
+    },
+    {
+     "ml": 0.14,
+     "hemisfer": "kanan",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      17,
+      17
+     ],
+     "pusat_voxel": [
+      105.4,
+      49.6,
+      16.0
+     ],
+     "radc_median": 0.98
+    }
+   ],
+   "adc_relatif_lesi": 0.81,
+   "restriksi_sejati": false,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 2.316
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 1,
+   "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
+  }
+ },
+ "sub-1385": {
+  "id": "sub-1385",
+  "sequences": {
+   "DWI": "99dd322d7c",
+   "ADC": "ee5882e471",
+   "FLAIR": "9ab45a2838"
+  },
+  "findings": {
+   "volume_ml": 0.71,
+   "kategori_volume": "sangat kecil (<1 ml)",
+   "jumlah_fokus": 1,
+   "multifokal": false,
+   "hemisfer": "kiri",
+   "slice_lesi_terbesar": 8,
+   "fokus": [
+    {
+     "ml": 0.71,
+     "hemisfer": "kiri",
+     "slice_terbesar": 8,
+     "rentang_slice": [
+      8,
+      8
+     ],
+     "pusat_voxel": [
+      150.3,
+      124.8,
+      7.0
+     ],
+     "radc_median": 0.51
+    }
+   ],
+   "adc_relatif_lesi": 0.51,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 0.15
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 5,
+   "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
+  }
+ },
+ "sub-1394": {
+  "id": "sub-1394",
+  "sequences": {
+   "DWI": "20c30c7a47",
+   "ADC": "cd77ea49ad",
+   "FLAIR": "a7a8a74d4e"
+  },
+  "findings": {
+   "volume_ml": 1.72,
+   "kategori_volume": "kecil (1-5 ml)",
+   "jumlah_fokus": 5,
+   "multifokal": true,
+   "hemisfer": "bilateral",
+   "slice_lesi_terbesar": 17,
+   "fokus": [
+    {
+     "ml": 0.87,
+     "hemisfer": "kiri",
+     "slice_terbesar": 16,
+     "rentang_slice": [
+      16,
+      17
+     ],
+     "pusat_voxel": [
+      126.1,
+      102.0,
+      15.3
+     ],
+     "radc_median": 0.77
+    },
+    {
+     "ml": 0.23,
+     "hemisfer": "kanan",
+     "slice_terbesar": 16,
+     "rentang_slice": [
+      16,
+      16
+     ],
+     "pusat_voxel": [
+      75.0,
+      114.2,
+      15.0
+     ],
+     "radc_median": 1.41
+    },
+    {
+     "ml": 0.23,
+     "hemisfer": "kanan",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      17,
+      17
+     ],
+     "pusat_voxel": [
+      84.0,
+      108.5,
+      16.0
+     ],
+     "radc_median": 0.7
+    },
+    {
+     "ml": 0.2,
+     "hemisfer": "kanan",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      17,
+      17
+     ],
+     "pusat_voxel": [
+      86.0,
+      94.2,
+      16.0
+     ],
+     "radc_median": 0.71
+    },
+    {
+     "ml": 0.19,
+     "hemisfer": "kanan",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      17,
+      17
+     ],
+     "pusat_voxel": [
+      86.0,
+      127.5,
+      16.0
+     ],
+     "radc_median": 0.76
+    }
+   ],
+   "adc_relatif_lesi": 0.79,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 2.085
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 0,
+   "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
+  }
+ },
+ "sub-1413": {
+  "id": "sub-1413",
+  "sequences": {
+   "DWI": "e321f8f80b",
+   "ADC": "3e84af50aa",
+   "FLAIR": "65ac0ef4fd"
+  },
+  "findings": {
+   "volume_ml": 60.99,
+   "kategori_volume": "besar (>=30 ml)",
+   "jumlah_fokus": 1,
+   "multifokal": false,
+   "hemisfer": "kanan",
+   "slice_lesi_terbesar": 14,
+   "fokus": [
+    {
+     "ml": 60.99,
+     "hemisfer": "kanan",
+     "slice_terbesar": 14,
+     "rentang_slice": [
+      11,
+      19
+     ],
+     "pusat_voxel": [
+      72.8,
+      70.4,
+      13.2
+     ],
+     "radc_median": 0.74
+    }
+   ],
+   "adc_relatif_lesi": 0.74,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": -1.785
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 0,
+   "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
+  }
+ },
+ "sub-1424": {
+  "id": "sub-1424",
+  "sequences": {
+   "DWI": "495ab10733",
+   "ADC": "d418f8a1db",
+   "FLAIR": "c36da2f862"
+  },
+  "findings": {
+   "volume_ml": 3.59,
+   "kategori_volume": "kecil (1-5 ml)",
+   "jumlah_fokus": 6,
+   "multifokal": true,
+   "hemisfer": "kiri",
+   "slice_lesi_terbesar": 20,
+   "fokus": [
+    {
+     "ml": 2.04,
+     "hemisfer": "kiri",
+     "slice_terbesar": 20,
+     "rentang_slice": [
+      18,
+      21
+     ],
+     "pusat_voxel": [
+      154.7,
+      135.0,
+      18.7
+     ],
+     "radc_median": 0.77
+    },
+    {
+     "ml": 0.6,
+     "hemisfer": "kiri",
+     "slice_terbesar": 18,
+     "rentang_slice": [
+      18,
+      19
+     ],
+     "pusat_voxel": [
+      164.0,
+      155.4,
+      17.5
+     ],
+     "radc_median": 0.78
+    },
+    {
+     "ml": 0.32,
+     "hemisfer": "kiri",
+     "slice_terbesar": 20,
+     "rentang_slice": [
+      20,
+      21
+     ],
+     "pusat_voxel": [
+      166.5,
+      120.5,
+      19.4
+     ],
+     "radc_median": 0.76
+    },
+    {
+     "ml": 0.25,
+     "hemisfer": "kiri",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      16,
+      17
+     ],
+     "pusat_voxel": [
+      183.3,
+      84.1,
+      15.7
+     ],
+     "radc_median": 0.91
+    },
+    {
+     "ml": 0.2,
+     "hemisfer": "kiri",
+     "slice_terbesar": 18,
+     "rentang_slice": [
+      17,
+      18
+     ],
+     "pusat_voxel": [
+      164.5,
+      137.6,
+      16.7
+     ],
+     "radc_median": 0.77
+    },
+    {
+     "ml": 0.16,
+     "hemisfer": "kiri",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      15,
+      15
+     ],
+     "pusat_voxel": [
+      139.7,
+      143.5,
+      14.0
+     ],
+     "radc_median": 0.68
+    }
+   ],
+   "adc_relatif_lesi": 0.78,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 2.03
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 3,
+   "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
+  }
+ },
+ "sub-1517": {
+  "id": "sub-1517",
+  "sequences": {
+   "DWI": "9c23f7f10f",
+   "ADC": "27980a1df6",
+   "FLAIR": "11c18825f3"
+  },
+  "findings": {
+   "volume_ml": 251.99,
+   "kategori_volume": "besar (>=30 ml)",
+   "jumlah_fokus": 2,
+   "multifokal": true,
+   "hemisfer": "kanan",
+   "slice_lesi_terbesar": 13,
+   "fokus": [
+    {
+     "ml": 251.76,
+     "hemisfer": "kanan",
+     "slice_terbesar": 13,
+     "rentang_slice": [
+      6,
+      22
+     ],
+     "pusat_voxel": [
+      83.3,
+      105.7,
+      13.2
+     ],
+     "radc_median": 0.56
+    },
+    {
+     "ml": 0.22,
+     "hemisfer": "kanan",
+     "slice_terbesar": 19,
+     "rentang_slice": [
+      19,
+      19
+     ],
+     "pusat_voxel": [
+      95.0,
+      50.9,
+      18.0
+     ],
+     "radc_median": 1.07
+    }
+   ],
+   "adc_relatif_lesi": 0.56,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": -1.401
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 4,
+   "etiologi": "4: Stroke of other determined etiology"
+  }
+ },
+ "sub-1634": {
+  "id": "sub-1634",
+  "sequences": {
+   "DWI": "3c522c74a2",
+   "ADC": "6eac3bde2d",
+   "FLAIR": "acff40f15b"
+  },
+  "findings": {
+   "volume_ml": 128.71,
+   "kategori_volume": "besar (>=30 ml)",
+   "jumlah_fokus": 10,
+   "multifokal": true,
+   "hemisfer": "bilateral",
+   "slice_lesi_terbesar": 18,
+   "fokus": [
+    {
+     "ml": 126.43,
+     "hemisfer": "kiri",
+     "slice_terbesar": 18,
+     "rentang_slice": [
+      12,
+      23
+     ],
+     "pusat_voxel": [
+      147.1,
+      103.0,
+      16.4
+     ],
+     "radc_median": 0.72
+    },
+    {
+     "ml": 0.41,
+     "hemisfer": "kiri",
+     "slice_terbesar": 10,
+     "rentang_slice": [
+      9,
+      10
+     ],
+     "pusat_voxel": [
+      143.3,
+      35.7,
+      8.5
+     ],
+     "radc_median": 0.78
+    },
+    {
+     "ml": 0.34,
+     "hemisfer": "kiri",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      15,
+      15
+     ],
+     "pusat_voxel": [
+      121.1,
+      128.7,
+      14.0
+     ],
+     "radc_median": 0.78
+    },
+    {
+     "ml": 0.31,
+     "hemisfer": "kanan",
+     "slice_terbesar": 22,
+     "rentang_slice": [
+      21,
+      22
+     ],
+     "pusat_voxel": [
+      91.6,
+      85.1,
+      20.7
+     ],
+     "radc_median": 0.59
+    },
+    {
+     "ml": 0.31,
+     "hemisfer": "kiri",
+     "slice_terbesar": 12,
+     "rentang_slice": [
+      12,
+      12
+     ],
+     "pusat_voxel": [
+      130.1,
+      152.9,
+      11.0
+     ],
+     "radc_median": 0.85
+    },
+    {
+     "ml": 0.3,
+     "hemisfer": "kiri",
+     "slice_terbesar": 12,
+     "rentang_slice": [
+      12,
+      13
+     ],
+     "pusat_voxel": [
+      134.8,
+      31.2,
+      11.4
+     ],
+     "radc_median": 0.63
+    },
+    {
+     "ml": 0.19,
+     "hemisfer": "kiri",
+     "slice_terbesar": 13,
+     "rentang_slice": [
+      13,
+      13
+     ],
+     "pusat_voxel": [
+      122.7,
+      116.6,
+      12.0
+     ],
+     "radc_median": 0.72
+    },
+    {
+     "ml": 0.13,
+     "hemisfer": "kiri",
+     "slice_terbesar": 11,
+     "rentang_slice": [
+      11,
+      11
+     ],
+     "pusat_voxel": [
+      125.0,
+      145.2,
+      10.0
+     ],
+     "radc_median": 0.82
+    },
+    {
+     "ml": 0.12,
+     "hemisfer": "kiri",
+     "slice_terbesar": 12,
+     "rentang_slice": [
+      12,
+      12
+     ],
+     "pusat_voxel": [
+      129.4,
+      161.3,
+      11.0
+     ],
+     "radc_median": 0.85
+    },
+    {
+     "ml": 0.11,
+     "hemisfer": "kanan",
+     "slice_terbesar": 17,
+     "rentang_slice": [
+      17,
+      17
+     ],
+     "pusat_voxel": [
+      111.8,
+      52.5,
+      16.0
+     ],
+     "radc_median": 0.73
+    }
+   ],
+   "adc_relatif_lesi": 0.72,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 1.212
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 6,
+   "etiologi": "2: Cardioembolism (e.g., atrial fibrillation/flutter, prosthetic heart valve, recent MI)"
+  }
+ },
+ "sub-1671": {
+  "id": "sub-1671",
+  "sequences": {
+   "DWI": "abd5957ff7",
+   "ADC": "6ce28ea283",
+   "FLAIR": "86c810e5b0"
+  },
+  "findings": {
+   "volume_ml": 29.23,
+   "kategori_volume": "sedang (5-30 ml)",
+   "jumlah_fokus": 12,
+   "multifokal": true,
+   "hemisfer": "kiri",
+   "slice_lesi_terbesar": 14,
+   "fokus": [
+    {
+     "ml": 18.31,
+     "hemisfer": "kiri",
+     "slice_terbesar": 14,
+     "rentang_slice": [
+      8,
+      21
+     ],
+     "pusat_voxel": [
+      150.8,
+      40.4,
+      12.8
+     ],
+     "radc_median": 0.59
+    },
+    {
+     "ml": 7.6,
+     "hemisfer": "kiri",
+     "slice_terbesar": 20,
+     "rentang_slice": [
+      18,
+      23
+     ],
+     "pusat_voxel": [
+      154.3,
+      102.0,
+      19.5
+     ],
+     "radc_median": 0.42
+    },
+    {
+     "ml": 0.75,
+     "hemisfer": "kiri",
+     "slice_terbesar": 9,
+     "rentang_slice": [
+      9,
+      10
+     ],
+     "pusat_voxel": [
+      181.6,
+      79.2,
+      8.3
+     ],
+     "radc_median": 0.56
+    },
+    {
+     "ml": 0.71,
+     "hemisfer": "kiri",
+     "slice_terbesar": 18,
+     "rentang_slice": [
+      17,
+      19
+     ],
+     "pusat_voxel": [
+      150.1,
+      74.8,
+      17.3
+     ],
+     "radc_median": 0.73
+    },
+    {
+     "ml": 0.56,
+     "hemisfer": "kiri",
+     "slice_terbesar": 14,
+     "rentang_slice": [
+      14,
+      14
+     ],
+     "pusat_voxel": [
+      144.9,
+      145.8,
+      13.0
+     ],
+     "radc_median": 0.43
+    },
+    {
+     "ml": 0.28,
+     "hemisfer": "kiri",
+     "slice_terbesar": 21,
+     "rentang_slice": [
+      19,
+      22
+     ],
+     "pusat_voxel": [
+      153.1,
+      134.4,
+      19.6
+     ],
+     "radc_median": 0.58
+    },
+    {
+     "ml": 0.2,
+     "hemisfer": "kiri",
+     "slice_terbesar": 15,
+     "rentang_slice": [
+      15,
+      15
+     ],
+     "pusat_voxel": [
+      159.8,
+      180.9,
+      14.0
+     ],
+     "radc_median": 0.51
+    },
+    {
+     "ml": 0.19,
+     "hemisfer": "kiri",
+     "slice_terbesar": 20,
+     "rentang_slice": [
+      20,
+      20
+     ],
+     "pusat_voxel": [
+      156.5,
+      62.8,
+      19.0
+     ],
+     "radc_median": 0.78
+    },
+    {
+     "ml": 0.14,
+     "hemisfer": "kiri",
+     "slice_terbesar": 19,
+     "rentang_slice": [
+      19,
+      20
+     ],
+     "pusat_voxel": [
+      163.6,
+      75.3,
+      18.3
+     ],
+     "radc_median": 0.78
+    },
+    {
+     "ml": 0.14,
+     "hemisfer": "kiri",
+     "slice_terbesar": 9,
+     "rentang_slice": [
+      9,
+      9
+     ],
+     "pusat_voxel": [
+      180.3,
+      98.2,
+      8.0
+     ],
+     "radc_median": 0.61
+    },
+    {
+     "ml": 0.13,
+     "hemisfer": "kiri",
+     "slice_terbesar": 20,
+     "rentang_slice": [
+      19,
+      20
+     ],
+     "pusat_voxel": [
+      145.6,
+      63.7,
+      18.9
+     ],
+     "radc_median": 0.73
+    },
+    {
+     "ml": 0.13,
+     "hemisfer": "kiri",
+     "slice_terbesar": 20,
+     "rentang_slice": [
+      20,
+      21
+     ],
+     "pusat_voxel": [
+      144.1,
+      127.7,
+      19.3
+     ],
+     "radc_median": 0.41
+    }
+   ],
+   "adc_relatif_lesi": 0.55,
+   "restriksi_sejati": true,
+   "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
+   "indeks_kesulitan_D": 2.119
+  },
+  "model": null,
+  "luaran": {
+   "rankin_pulang": 5,
+   "etiologi": "4: Stroke of other determined etiology"
+  }
+ }
+}

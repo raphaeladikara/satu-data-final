@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "sinaps-api",
+      "runtimeExecutable": "mvp/.venv/Scripts/python.exe",
+      "runtimeArgs": ["-m", "uvicorn", "api.index:app", "--port", "8000", "--app-dir", "mvp"],
+      "port": 8000
+    },
+    {
+      "name": "sinaps-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "mvp", "run", "dev"],
+      "port": 5173
+    },
+    {
+      "name": "sinaps-preview",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "mvp", "run", "preview"],
+      "port": 4173
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "n_anotasi": 672,
+  "n_subjek": 36,
+  "per_jenis": {
+    "hampir_benar": 144,
+    "terlalu_luas": 144,
+    "terlalu_sempit": 144,
+    "salah_lokasi": 144,
+    "lesi_terlewat": 96
+  },
+  "akurasi_aturan": 0.9464285714285714,
+  "ik95_aturan": [
+    0.9181541092314118,
+    0.9700643356144852
+  ],
+  "akurasi_dice_saja": 0.4732142857142857,
+  "ik95_dice_saja": [
+    0.4056706761914767,
+    0.5374307860183248
+  ],
+  "recall_per_jenis": {
+    "hampir_benar": 0.986,
+    "lesi_terlewat": 0.812,
+    "salah_lokasi": 0.938,
+    "terlalu_luas": 1.0,
+    "terlalu_sempit": 0.951
+  },
+  "median_metrik_per_jenis": {
+    "hampir_benar": {
+      "dice": 0.955,
+      "lesion_recall": 1.0,
+      "vol_err": 0.0,
+      "hd95": 1.022
+    },
+    "lesi_terlewat": {
+      "dice": 0.993,
+      "lesion_recall": 0.5,
+      "vol_err": -0.014,
+      "hd95": 0.0
+    },
+    "salah_lokasi": {
+      "dice": 0.341,
+      "lesion_recall": 0.667,
+      "vol_err": 0.0,
+      "hd95": 9.791
+    },
+    "terlalu_luas": {
+      "dice": 0.733,
+      "lesion_recall": 1.0,
+      "vol_err": 0.728,
+      "hd95": 2.5
+    },
+    "terlalu_sempit": {
+      "dice": 0.587,
+      "lesion_recall": 0.833,
+      "vol_err": -0.585,
+      "hd95": 4.295
+    }
+  },
+  "ambang_per_fold": [
+    {
+      "loc_dice": 0.7,
+      "loc_vol": 0.1,
+      "miss_vol": -0.25,
+      "over_vol": 0.1,
+      "under_vol": -0.1
+    },
+    {
+      "loc_dice": 0.7,
+      "loc_vol": 0.1,
+      "miss_vol": -0.25,
+      "over_vol": 0.1,
+      "under_vol": -0.1
+    },
+    {
+      "loc_dice": 0.7,
+      "loc_vol": 0.1,
+      "miss_vol": -0.25,
+      "over_vol": 0.1,
+      "under_vol": -0.1
+    },
+    {
+      "loc_dice": 0.7,
+      "loc_vol": 0.1,
+      "miss_vol": -0.25,
+      "over_vol": 0.1,
+      "under_vol": -0.1
+    },
+    {
+      "loc_dice": 0.7,
+      "loc_vol": 0.1,
+      "miss_vol": -0.15,
+      "over_vol": 0.1,
+      "under_vol": -0.1
+    }
+  ],
+  "ambang_final_semua_data": {
+    "loc_dice": 0.7,
+    "loc_vol": 0.1,
+    "miss_vol": -0.25,
+    "over_vol": 0.1,
+    "under_vol": -0.1
+  },
+  "ambang_dipakai_mvp": {
+    "loc_dice": 0.6,
+    "loc_vol": 0.25,
+    "miss_vol": -0.25,
+    "over_vol": 0.15,
+    "under_vol": -0.15
+  }
+}

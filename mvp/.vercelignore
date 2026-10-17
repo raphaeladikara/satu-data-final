@@ -1,0 +1,5 @@
+pipeline/
+.venv/
+.local/
+node_modules/
+dist/

@@ -5,3 +5,11 @@ data/
 __pycache__/
 *.pyc
 ~$*
+
+# MVP
+**/node_modules/
+mvp/dist/
+mvp/.local/
+mvp/.vercel/
+mvp/pipeline/kaggle_out/
+*.tsbuildinfo

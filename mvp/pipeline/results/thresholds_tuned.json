@@ -1,0 +1,7 @@
+{
+  "loc_dice": 0.7,
+  "loc_vol": 0.1,
+  "miss_vol": -0.25,
+  "over_vol": 0.1,
+  "under_vol": -0.1
+}
