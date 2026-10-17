@@ -64,7 +64,7 @@ export default function Hero({ cases }: { cases: number }) {
 
         <div className="relative">
           {/* panggung hologram: tanpa bingkai, tepinya memudar ke latar */}
-          <div className="relative mx-auto aspect-square w-full max-w-[760px] lg:-mr-10 lg:w-[112%] lg:max-w-none">
+          <div className="relative mx-auto aspect-square w-full max-w-[min(100%,680px)] lg:max-w-[min(100%,calc(100svh-200px))]">
             <Hud spin={!reduce} />
             <div className="absolute inset-0 [mask-image:radial-gradient(closest-side,black_72%,transparent)]">
               <Suspense fallback={null}>
@@ -91,7 +91,7 @@ export default function Hero({ cases }: { cases: number }) {
             </dl>
           </div>
 
-          <div className="relative z-10 -mt-4 flex flex-col items-center gap-2.5">
+          <div className="relative z-10 -mt-2 flex flex-col items-center gap-2.5">
             <div className="flex flex-wrap items-center justify-center gap-1 rounded-full bg-white p-1 shadow-[0_8px_28px_-14px_rgba(15,23,42,.35)] ring-1 ring-line">
               {(['DWI', 'ADC', 'FLAIR'] as const).map((s) => (
                 <button key={s} onClick={() => setSeries(s)} aria-pressed={series === s} className={cn('h-9 rounded-full px-3.5 font-mono text-[12px] font-medium transition-colors', series === s ? 'bg-ink text-white' : 'text-ink/60 hover:bg-ink/5 hover:text-ink')}>

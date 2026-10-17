@@ -80,7 +80,7 @@ const HIGH = new THREE.Color('#eaf7ef');
 const LESION = new THREE.Color('#ff9a62');
 const SCAN = new THREE.Color('#aad39c');
 // tema terang: jaringan terang digambar teal tua, supaya hologram menyatu dengan latar putih
-const LIGHT = { low: new THREE.Color('#5eead4'), mid: new THREE.Color('#0f766e'), high: new THREE.Color('#042f2e'), lesion: new THREE.Color('#ea580c'), scan: new THREE.Color('#0d9488'), ring: new THREE.Color('#0f766e'), dust: new THREE.Color('#14b8a6') };
+const LIGHT = { low: new THREE.Color('#99f6e4'), mid: new THREE.Color('#14b8a6'), high: new THREE.Color('#115e59'), lesion: new THREE.Color('#ea580c'), scan: new THREE.Color('#0d9488'), ring: new THREE.Color('#0f766e'), dust: new THREE.Color('#14b8a6') };
 
 export default function MriHologram({
   caseId = 'sub-754',
@@ -415,7 +415,7 @@ export default function MriHologram({
           const target = focusAmt > 0.01 && z !== foc ? 1 - focusAmt * 0.72 : 1;
           dims[z] += (target - dims[z]) * k;
           u.uDim.value = dims[z];
-          u.uOpacity.value = 0.26 + ex * 0.14;
+          u.uOpacity.value = (0.26 + ex * 0.14) * (light ? 0.55 : 1);
         }
         // titik lesi ikut posisi slice-nya
         const pa = pgeo.getAttribute('position') as THREE.BufferAttribute;
