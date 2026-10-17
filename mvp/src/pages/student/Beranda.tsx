@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, ArrowUpRight, BookOpen, CalendarClock, CheckCircle2, ClipboardList, Flame, Gauge, GraduationCap, ScanLine, Sparkles, Target } from 'lucide-react';
+import { ArrowRight, CalendarClock, CheckCircle2, ClipboardList, Flame, Gauge, GraduationCap, History, ScanLine, Sparkles, Target } from 'lucide-react';
 import { api, fmt, JENJANG, type Me } from '../../api';
 import { useAuth } from '../../auth';
 import { AppShell } from '@/components/AppShell';
@@ -9,13 +9,14 @@ import { Empty, Loading, Page } from '../../components/Shell';
 import { buttonClass } from '@/components/ui/button';
 import { currentStreak, dailyCounts, todayWib, totalMinutes, type Session } from '@/lib/activity';
 import { cn } from '@/lib/utils';
-import { StatTile } from '@/components/ui/bento';
+import { AttemptTimeline } from '@/components/AttemptTimeline';
+import { BADGE, FILL, TEXT, diceTone, dueStatus, type Tone } from '@/lib/status';
 import { LESSONS, lessonById } from '../../content/lessons';
 import JoinClass from '../../components/JoinClass';
 import { Tour, useTour, type TourStep } from '../../components/Tour';
 
 const ContributionSkyline = lazy(() => import('@/components/ui/contribution-skyline'));
-const SKY = { light: ['#d6e9cd', '#aad39c', '#80a874', '#195764'], dark: ['#1e4d3b', '#3f7d57', '#80a874', '#aad39c'] };
+const SKY = { light: ['#ccfbf1', '#5eead4', '#14b8a6', '#0f766e'], dark: ['#134e4a', '#0f766e', '#14b8a6', '#5eead4'] };
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const BERANDA_TOUR: TourStep[] = [
@@ -63,20 +64,27 @@ export default function Beranda() {
         ? { kicker: `KC terlemah · ${fmt.pct(rec.p)}`, title: `Pelajari ${rec.kc} · ${rec.nama}`, body: 'Baca modulnya dulu, lalu latih dengan kasus yang dipilih sesuai penguasaanmu.', a: [`/belajar/${recLesson.id}`, `Buka modul ${rec.kc}`], b: ['/latihan', 'Latihan adaptif'] }
         : { kicker: `Sasaran · ${rec.kc} ${fmt.pct(rec.p)}`, title: 'Lanjutkan latihan adaptif', body: `Sistem akan memilih kasus untuk ${rec.kc} ${rec.nama} dengan tingkat kesulitan yang pas.`, a: ['/latihan', 'Kerjakan kasus berikutnya'], b: [`/latihan?kc=${rec.kc}`, `Latih ${rec.kc} saja`] };
 
+  // tugas terdekat yang belum tuntas: pengingat di kartu langkah berikutnya
+  const urgent = open[0];
+  const urgentDue = urgent ? dueStatus(urgent.due_at, false) : null;
+  const showGoal = !(isNew && !orientDone);
+  const goal = me.mastery[rec.kc] ?? rec.p;
+  const meanDice = me.ringkas.mean_dice;
+
   return (
     <AppShell onHelp={tour.start} wide>
       <Tour steps={BERANDA_TOUR} open={tour.open} onClose={tour.close} />
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-serif text-[clamp(1.87rem,3.43vw,2.96rem)] leading-[1.12] tracking-[-0.01em]">
+        <div className="min-w-0">
+          <h1 className="font-serif text-[clamp(1.8rem,3vw,2.5rem)] leading-[1.12] tracking-[-0.01em]">
             Halo, <em className="text-teal">{first}.</em>
           </h1>
-          <p className="mt-2 text-[14.5px] text-ink/60">
-            {today} · {JENJANG[me.user.jenjang ?? ''] ?? 'Mahasiswa'} · {me.user.kelas ? `${me.user.kelas.nama} (dosen: ${me.user.kelas.dosen ?? '—'})` : 'belum bergabung ke kelas'} · <span className="font-mono text-[12.5px]">{me.user.id}</span>
+          <p className="mt-1.5 text-[14px] text-ink/55">
+            {today} · {JENJANG[me.user.jenjang ?? ''] ?? 'Mahasiswa'} · {me.user.kelas ? `${me.user.kelas.nama} (dosen: ${me.user.kelas.dosen ?? '—'})` : 'belum bergabung ke kelas'} · <span className="font-mono text-[12px]">{me.user.id}</span>
           </p>
         </div>
-        <div className="flex gap-2">
-          <Chip icon={Flame} tone={streak ? 'terra' : 'muted'}>
+        <div className="flex flex-wrap gap-2">
+          <Chip icon={Flame} tone={streak ? 'warn' : 'none'}>
             {streak ? `${streak} hari berturut-turut` : 'Mulai rentetan hari ini'}
           </Chip>
           <Chip icon={CalendarClock}>{minutes} menit latihan</Chip>
@@ -84,7 +92,7 @@ export default function Beranda() {
       </div>
 
       {!me.user.kelas && (
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-[1.6rem] border border-leaf bg-mint p-5">
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-info/25 bg-info-soft/60 p-5">
           <div>
             <b className="text-[15px] font-semibold">Gabung ke kelas dosenmu</b>
             <p className="text-[13.5px] text-ink/60">Masukkan kode kelas supaya dosen bisa memantau progres dan memberi tugas.</p>
@@ -95,64 +103,91 @@ export default function Beranda() {
         </div>
       )}
 
-      <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-12">
-        <motion.section initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: EASE }} data-tour="next" className="relative overflow-hidden rounded-[2rem] bg-teal-900 p-7 text-mint lg:col-span-5">
-          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-16 size-64 rounded-full bg-teal-600/60 blur-3xl" />
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-20 right-10 size-56 rounded-full border border-sky/15" />
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-32 right-0 size-80 rounded-full border border-sky/10" />
-          <div className="relative flex h-full flex-col">
-            <span className="flex w-fit items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[12px]">
-              <Sparkles className="size-3.5 text-leaf" /> Langkah berikutnya · {next.kicker}
-            </span>
-            <h2 className="mt-5 font-serif text-[1.87rem] leading-[1.12]">{next.title}</h2>
-            <p className="mt-3 max-w-md text-[14.5px] leading-relaxed text-mint/75">{next.body}</p>
-            <div className="mt-auto flex flex-wrap gap-2 pt-7">
-              <Link to={next.a[0]} className={buttonClass('light', 'lg')}>
-                {next.a[1]} <ArrowRight className="size-4" />
-              </Link>
-              <Link to={next.b[0]} className={buttonClass('primary', 'lg', 'border border-white/15 bg-white/5 shadow-none hover:bg-white/10')}>
-                {next.b[1]}
-              </Link>
+      <div className="mt-7 grid grid-cols-1 gap-4 lg:grid-cols-12">
+        <div className="flex flex-col gap-4 lg:col-span-8">
+          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: EASE }} data-tour="next" className="relative overflow-hidden rounded-2xl card-surface">
+            <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-teal" />
+            <div className="grid gap-6 p-6 sm:p-7 md:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] md:items-center">
+              <div className="min-w-0">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-mint px-2.5 py-1 text-[12px] font-medium text-teal-900">
+                  <Sparkles className="size-3.5" /> Langkah berikutnya · {next.kicker}
+                </span>
+                <h2 className="mt-3 font-serif text-[1.6rem] leading-[1.15]">{next.title}</h2>
+                <p className="mt-2 text-[14.5px] leading-relaxed text-ink/60">{next.body}</p>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  <Link to={next.a[0]} className={buttonClass('primary', 'md', 'rounded-xl shadow-none')}>
+                    {next.a[1]} <ArrowRight className="size-4 transition-transform group-hover/btn:translate-x-0.5" />
+                  </Link>
+                  <Link to={next.b[0]} className={buttonClass('outline', 'md', 'rounded-xl')}>
+                    {next.b[1]}
+                  </Link>
+                </div>
+              </div>
+              {showGoal ? (
+                <GoalProgress kc={rec.kc} nama={rec.nama} value={goal} due={urgent && urgentDue ? { judul: urgent.judul, tone: urgentDue.tone, label: urgentDue.label } : null} />
+              ) : (
+                <ul className="space-y-2 rounded-xl bg-surface p-4 text-[13.5px] text-ink/70">
+                  {['Kenali DWI, ADC, dan FLAIR', 'Pahami orientasi radiologis (R di kiri layar)', 'Coba alat kuas dan titik di viewer'].map((x) => (
+                    <li key={x} className="flex gap-2">
+                      <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-teal" /> {x}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
-          </div>
-        </motion.section>
+          </motion.section>
 
-        <div className="grid grid-cols-2 gap-4 lg:col-span-3">
-          <StatTile layout="stack" icon={ScanLine} accent="leaf" label="kasus dikerjakan" value={String(me.ringkas.n_kasus)} />
-          <StatTile layout="stack" icon={Gauge} accent="sky" label="rerata Dice" value={me.ringkas.mean_dice === null ? '—' : fmt.num(me.ringkas.mean_dice)} />
-          <StatTile layout="stack" icon={Target} accent="terra" label="KC dikuasai" value={String(me.ringkas.kc_dikuasai)} of="/4" />
-          <StatTile layout="stack" icon={GraduationCap} accent="sand" label="modul selesai" value={String(doneLessons)} of={`/${LESSONS.length}`} />
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <Stat icon={ScanLine} tone="info" label="Kasus dikerjakan" value={String(me.ringkas.n_kasus)} />
+            <Stat icon={Gauge} tone={diceTone(meanDice)} label="Rerata Dice" value={meanDice === null ? '—' : fmt.num(meanDice)} hint={meanDice === null ? undefined : meanDice >= 0.7 ? 'baik' : meanDice >= 0.4 ? 'cukup' : 'perlu dilatih'} />
+            <Stat icon={Target} tone="ok" label="KC dikuasai" value={String(me.ringkas.kc_dikuasai)} of="/4" />
+            <Stat icon={GraduationCap} tone="teal" label="Modul selesai" value={String(doneLessons)} of={`/${LESSONS.length}`} />
+          </div>
         </div>
 
-        <section data-tour="mastery" className="rounded-[2rem] card-surface p-6 lg:col-span-4">
-          <div className="flex items-baseline justify-between">
-            <h2 className="text-[17px] font-semibold tracking-tight">Penguasaan kompetensi</h2>
-            <span className="text-[11.5px] text-ink/45">BKT · dikuasai ≥ 95%</span>
+        <section data-tour="mastery" className="rounded-2xl card-surface p-6 lg:col-span-4">
+          <div className="flex items-baseline justify-between gap-2">
+            <h2 className="text-[16px] font-semibold tracking-tight">Penguasaan kompetensi</h2>
+            <span className="text-[11.5px] text-ink/45">dikuasai ≥ 95%</span>
           </div>
           <ul className="mt-5 space-y-4">
             {Object.entries(me.kc).map(([k, info], i) => {
               const v = me.mastery[k] ?? 0;
+              const tone: Tone = !info.aktif ? 'none' : v >= 0.95 ? 'ok' : k === rec.kc ? 'bad' : 'info';
               return (
                 <li key={k} title={`Bukti: ${info.bukti}`}>
                   <div className="flex items-center gap-2.5 text-[13px]">
-                    <span className={cn('w-8 rounded-md py-0.5 text-center font-mono text-[10.5px] font-semibold', !info.aktif ? 'bg-ink/6 text-ink/40' : v >= 0.95 ? 'bg-sage text-white' : k === rec.kc ? 'bg-terra text-white' : 'bg-teal/10 text-teal')}>{k}</span>
-                    <span className={cn('flex-1 truncate', info.aktif ? 'text-ink/80' : 'text-ink/40')}>{info.nama}</span>
-                    <b className="font-medium tabular-nums">{info.aktif ? fmt.pct(v) : <span className="text-[11px] font-normal text-ink/40">belum di MVP</span>}</b>
+                    <span className={cn('w-8 rounded-md py-0.5 text-center font-mono text-[10.5px] font-semibold', info.aktif ? BADGE[tone] : 'bg-muted text-ink/35')}>{k}</span>
+                    <span className={cn('flex-1 truncate', info.aktif ? 'text-ink/80' : 'text-ink/35')}>{info.nama}</span>
+                    {info.aktif ? <b className={cn('font-semibold tabular-nums', TEXT[tone])}>{fmt.pct(v)}</b> : <span className="text-[11px] text-ink/35">belum di MVP</span>}
                   </div>
                   {info.aktif && (
-                    <div className="relative mt-1.5 h-2 overflow-hidden rounded-full bg-ink/6">
-                      <span className="absolute inset-y-0 left-[95%] w-px bg-sage" />
-                      <motion.span initial={{ width: 0 }} animate={{ width: `${v * 100}%` }} transition={{ duration: 1, delay: 0.1 + i * 0.07, ease: EASE }} className={cn('block h-full rounded-full', v >= 0.95 ? 'bg-sage' : k === rec.kc ? 'bg-terra' : 'bg-gradient-to-r from-teal to-teal-600')} />
+                    <div className="relative mt-1.5 h-2 rounded-full bg-muted">
+                      <motion.span initial={{ width: 0 }} animate={{ width: `${v * 100}%` }} transition={{ duration: 0.9, delay: 0.1 + i * 0.06, ease: EASE }} className={cn('block h-full rounded-full', FILL[tone])} />
+                      <span className="absolute -inset-y-0.5 left-[95%] w-0.5 rounded bg-ink/30" title="batas dikuasai 95%" />
                     </div>
                   )}
                 </li>
               );
             })}
           </ul>
-          <p className="mt-5 text-[12px] leading-relaxed text-ink/50">Prasyarat: K1 → K2 → K3/K6. KC yang prasyaratnya belum dikuasai belum dipilih otomatis.</p>
+          <div className="mt-5 flex flex-wrap gap-x-4 gap-y-1.5 border-t border-line pt-4 text-[11.5px] text-ink/55">
+            {(
+              [
+                ['ok', 'dikuasai'],
+                ['info', 'berkembang'],
+                ['bad', 'terlemah, prioritas'],
+              ] as const
+            ).map(([t, l]) => (
+              <span key={t} className="flex items-center gap-1.5">
+                <span className={cn('size-2 rounded-full', FILL[t])} /> {l}
+              </span>
+            ))}
+          </div>
+          <p className="mt-3 text-[12px] leading-relaxed text-ink/50">Prasyarat: K1 → K2 → K3/K6. KC yang prasyaratnya belum dikuasai belum dipilih otomatis.</p>
         </section>
 
-        <section data-tour="calendar" className="overflow-hidden rounded-[2rem] card-surface p-2 lg:col-span-8">
+        <section data-tour="calendar" className="overflow-hidden rounded-2xl card-surface p-2 lg:col-span-8">
           <Suspense fallback={<div className="h-[360px]" />}>
             <ContributionSkyline
               className="!border-0 !bg-transparent"
@@ -173,12 +208,13 @@ export default function Beranda() {
           </Suspense>
         </section>
 
-        <section data-tour="tasks" className="flex flex-col rounded-[2rem] card-surface p-6 lg:col-span-4">
+        <section data-tour="tasks" className="flex flex-col rounded-2xl card-surface p-6 lg:col-span-4">
           <div className="flex items-baseline justify-between">
-            <h2 className="flex items-center gap-2 text-[17px] font-semibold tracking-tight">
+            <h2 className="flex items-center gap-2 text-[16px] font-semibold tracking-tight">
               <ClipboardList className="size-4 text-teal" /> Tugas aktif
+              {open.length > 0 && <span className="rounded-full bg-muted px-2 py-px text-[11px] font-medium text-ink/55">{open.length}</span>}
             </h2>
-            <Link to="/tugas" className="text-[12.5px] text-teal hover:underline">
+            <Link to="/tugas" className="text-[12.5px] font-medium text-teal hover:underline">
               Semua tugas
             </Link>
           </div>
@@ -187,29 +223,31 @@ export default function Beranda() {
               <Empty title="Belum ada kelas">Tugas muncul setelah kamu bergabung ke kelas.</Empty>
             ) : open.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center gap-2 py-6 text-center">
-                <CheckCircle2 className="size-9 text-sage" />
+                <CheckCircle2 className="size-9 text-ok" />
                 <b className="text-[15px] font-medium">Semua tugas tuntas</b>
                 <p className="text-[13px] text-ink/55">Tidak ada yang tertunda. Lanjutkan latihan adaptif.</p>
               </div>
             ) : (
               <ul className="space-y-2.5">
                 {open.slice(0, 4).map((t) => {
-                  const late = t.due_at && t.due_at < Date.now() / 1000;
+                  const d = dueStatus(t.due_at, false);
                   const pct = t.selesai / Math.max(1, t.total);
                   return (
                     <li key={t.id}>
-                      <Link to="/tugas" className="block rounded-2xl border border-ink/8 bg-muslin/60 p-4 transition-colors hover:border-ink/20">
+                      <Link to="/tugas" className="group block rounded-xl border border-line p-4 transition-[border-color,box-shadow] hover:border-ink/20 hover:shadow-sm">
                         <div className="flex items-start justify-between gap-2">
                           <b className="text-[14px] font-medium leading-snug">{t.judul}</b>
-                          <ArrowUpRight className="size-4 shrink-0 text-ink/35" />
+                          <span className={cn('shrink-0 rounded-md px-1.5 py-0.5 text-[11px] font-semibold', BADGE[d.tone])}>{d.label}</span>
                         </div>
-                        <p className={cn('mt-1 text-[12px]', late ? 'font-medium text-terra' : 'text-ink/55')}>
-                          {t.selesai}/{t.total} selesai{t.due_at ? ` · tenggat ${fmt.dateTime(t.due_at)}` : ''}
-                          {late ? ' · lewat tenggat' : ''}
-                        </p>
-                        <span className="mt-2.5 block h-1.5 overflow-hidden rounded-full bg-ink/8">
-                          <span className={cn('block h-full rounded-full', late ? 'bg-terra' : 'bg-teal')} style={{ width: `${pct * 100}%` }} />
-                        </span>
+                        <div className="mt-3 flex items-center gap-2.5">
+                          <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+                            <span className={cn('block h-full rounded-full', FILL[d.tone])} style={{ width: `${pct * 100}%` }} />
+                          </span>
+                          <span className="text-[12px] tabular-nums text-ink/55">
+                            {t.selesai}/{t.total}
+                          </span>
+                        </div>
+                        {t.due_at && <p className="mt-1.5 text-[11.5px] text-ink/45">tenggat {fmt.dateTime(t.due_at)}</p>}
                       </Link>
                     </li>
                   );
@@ -219,61 +257,96 @@ export default function Beranda() {
           </div>
         </section>
 
-        <section className="rounded-[2rem] card-surface p-6 lg:col-span-12">
+        <section className="rounded-2xl card-surface p-6 lg:col-span-12">
           <div className="flex items-baseline justify-between">
-            <h2 className="flex items-center gap-2 text-[17px] font-semibold tracking-tight">
-              <BookOpen className="size-4 text-teal" /> Percobaan terakhir
+            <h2 className="flex items-center gap-2 text-[16px] font-semibold tracking-tight">
+              <History className="size-4 text-teal" /> Percobaan terakhir
             </h2>
-            <Link to="/riwayat" className="text-[12.5px] text-teal hover:underline">
+            <Link to="/riwayat" className="text-[12.5px] font-medium text-teal hover:underline">
               Riwayat lengkap
             </Link>
           </div>
-          <div className="mt-4">
-            {me.attempts.length === 0 ? (
-              <Empty title="Belum ada kasus yang dikirim">Hasil penilaian otomatis akan muncul di sini.</Empty>
-            ) : (
-              <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-                {me.attempts.slice(0, 5).map((r) => (
-                  <li key={r.id}>
-                    <Link to={`/riwayat/${r.id}`} className="group flex h-full flex-col rounded-2xl border border-ink/8 bg-muslin/50 p-4 transition-all hover:-translate-y-0.5 hover:border-ink/20 hover:bg-paper">
-                      <div className="flex items-center justify-between">
-                        <span className="font-mono text-[12px] text-ink/60">{r.case_id}</span>
-                        <span className={cn('rounded-full px-2 py-0.5 text-[10.5px] font-medium', r.tier === 'mudah' ? 'bg-leaf/40 text-teal-900' : r.tier === 'sedang' ? 'bg-[#f6ead0] text-[#8a5d10]' : 'bg-terra-soft text-[#8f4a2c]')}>{r.tier}</span>
-                      </div>
-                      <div className="mt-3 flex items-end gap-2">
-                        <b className="font-serif text-[1.72rem] leading-none text-teal">{r.dice === null ? '—' : fmt.num(r.dice)}</b>
-                        <span className="pb-1 text-[11px] text-ink/45">Dice</span>
-                      </div>
-                      <div className="mt-3 flex flex-wrap gap-1">
-                        {Object.entries(r.kc).map(([k, ok]) => (
-                          <span key={k} className={cn('rounded-md px-1.5 py-0.5 font-mono text-[10px] font-semibold', ok ? 'bg-leaf/45 text-teal-900' : 'bg-terra-soft text-[#8f4a2c]')}>
-                            {k}
-                          </span>
-                        ))}
-                      </div>
-                      <p className="mt-3 line-clamp-2 text-[12px] text-ink/55">{r.jenis ?? 'Tanpa delineasi'}</p>
-                      <p className="mt-auto pt-3 text-[11px] text-ink/40">{fmt.dateTime(r.submitted_at)}</p>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          <div className="mt-4">{me.attempts.length === 0 ? <Empty title="Belum ada kasus yang dikirim">Hasil penilaian otomatis akan muncul di sini.</Empty> : <AttemptTimeline rows={me.attempts.slice(0, 6)} compact />}</div>
         </section>
       </div>
     </AppShell>
   );
 }
 
-function Chip({ icon: Icon, children, tone = 'muted' }: { icon: typeof Flame; children: React.ReactNode; tone?: 'terra' | 'muted' }) {
+/** Kemajuan KC sasaran menuju batas dikuasai 95% (gaya "goal progress"), plus pengingat tenggat terdekat. */
+function GoalProgress({ kc, nama, value, due }: { kc: string; nama: string; value: number; due: { judul: string; tone: Tone; label: string } | null }) {
+  const tone: Tone = value >= 0.95 ? 'ok' : value >= 0.6 ? 'info' : value >= 0.3 ? 'warn' : 'bad';
+  const gap = Math.max(0, Math.round((0.95 - value) * 100));
   return (
-    <span className={cn('flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-[13px] font-medium', tone === 'terra' ? 'border-terra/30 bg-terra-soft/60 text-[#8f4a2c]' : 'border-ink/10 bg-paper text-ink/65')}>
+    <div className="rounded-xl bg-surface p-5">
+      <div className="flex items-baseline justify-between gap-2 text-[13px]">
+        <span className="truncate text-ink/60">
+          <b className="font-semibold text-ink">{kc}</b> · {nama}
+        </span>
+        <span className="shrink-0 tabular-nums">
+          <b className={cn('text-[18px] font-semibold', TEXT[tone])}>{fmt.pct(value)}</b>
+          <span className="text-ink/40"> / 95%</span>
+        </span>
+      </div>
+      <div className="relative mt-3 h-2.5 rounded-full bg-ink/8">
+        <motion.span initial={{ width: 0 }} animate={{ width: `${value * 100}%` }} transition={{ duration: 1, ease: EASE }} className={cn('absolute inset-y-0 left-0 rounded-full', FILL[tone])} />
+        {/* sisa jarak ke target diarsir */}
+        <span className="absolute inset-y-0 bg-[repeating-linear-gradient(135deg,rgb(15_23_42/.14)_0_3px,transparent_3px_7px)]" style={{ left: `${value * 100}%`, width: `${Math.max(0, 95 - value * 100)}%` }} />
+        <span className="absolute -inset-y-1 left-[95%] w-0.5 rounded bg-ink/40" title="batas dikuasai 95%" />
+        <motion.span initial={{ left: '0%' }} animate={{ left: `${value * 100}%` }} transition={{ duration: 1, ease: EASE }} className={cn('absolute top-1/2 size-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-white shadow', FILL[tone])} />
+      </div>
+      <p className="mt-3 text-[13px] leading-relaxed text-ink/60">
+        {gap === 0 ? (
+          <>
+            <b className={TEXT.ok}>Sudah dikuasai.</b> Pertahankan dengan kasus yang lebih sulit.
+          </>
+        ) : (
+          <>
+            Kurang <b className={TEXT[tone]}>{gap} poin</b> lagi menuju batas dikuasai.
+          </>
+        )}
+      </p>
+      {due && (
+        <Link to="/tugas" className="mt-3 flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-[12.5px] transition-colors hover:border-ink/20">
+          <span className={cn('size-2 shrink-0 rounded-full', FILL[due.tone])} />
+          <span className="min-w-0 flex-1 truncate text-ink/70">{due.judul}</span>
+          <b className={cn('shrink-0 font-semibold', TEXT[due.tone])}>{due.label}</b>
+        </Link>
+      )}
+    </div>
+  );
+}
+
+const STAT_TONE: Record<string, string> = { ...BADGE, teal: 'bg-mint text-teal' };
+
+function Stat({ icon: Icon, tone, label, value, of, hint }: { icon: typeof Flame; tone: Tone | 'teal'; label: string; value: string; of?: string; hint?: string }) {
+  return (
+    <div className="flex items-center gap-3 rounded-2xl card-surface p-4">
+      <span className={cn('grid size-10 shrink-0 place-items-center rounded-xl', STAT_TONE[tone])}>
+        <Icon className="size-[18px]" />
+      </span>
+      <div className="min-w-0">
+        <b className="block text-[1.4rem] font-semibold leading-none tabular-nums">
+          {value}
+          {of && <span className="text-[0.95rem] font-normal text-ink/35">{of}</span>}
+        </b>
+        <p className="mt-1 truncate text-[12px] text-ink/55">
+          {label}
+          {hint && <span className={cn('ml-1 font-medium', tone !== 'teal' && TEXT[tone])}>· {hint}</span>}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function Chip({ icon: Icon, children, tone = 'none' }: { icon: typeof Flame; children: React.ReactNode; tone?: Tone }) {
+  return (
+    <span className={cn('flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium', tone === 'none' ? 'border border-line bg-white text-ink/65' : BADGE[tone])}>
       <Icon className="size-4" />
       {children}
     </span>
   );
 }
-
 
 export function AttemptTable({ rows, base = '/riwayat' }: { rows: Me['attempts']; base?: string }) {
   return (

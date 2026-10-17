@@ -71,75 +71,81 @@ export function Modul() {
 
   return (
     <AppShell onHelp={tour.start} wide>
-      <motion.div className="fixed inset-x-0 top-0 z-50 h-1 origin-left bg-gradient-to-r from-teal via-sage to-leaf" style={{ scaleX: progress }} aria-hidden="true" />
+      <motion.div className="fixed inset-x-0 top-0 z-50 h-1 origin-left bg-teal" style={{ scaleX: progress }} aria-hidden="true" />
 
-      <nav className="flex items-center gap-1.5 text-[13px] text-ink/55">
-        <Link to="/belajar" className="hover:text-ink">
-          Modul belajar
-        </Link>
-        <ChevronRight className="size-3.5" />
-        <span className="text-ink/80">{kc}</span>
-      </nav>
-
-      <header className="mt-5 grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-teal px-3 py-1 font-mono text-[11px] font-semibold text-mint">{kc}</span>
-            <span className="flex items-center gap-1 rounded-full border border-ink/10 px-3 py-1 text-[12px] text-ink/60">
-              <Clock className="size-3.5" /> {lesson.menit} menit
-            </span>
-            {st?.completed && (
-              <span className="flex items-center gap-1 rounded-full bg-leaf/50 px-3 py-1 text-[12px] font-medium text-teal-900">
-                <Check className="size-3.5" /> Selesai · kuis {fmt.pct(st.best_score)}
-              </span>
-            )}
-            {!lesson.dinilai && lesson.kc && <span className="rounded-full bg-sand-2 px-3 py-1 text-[12px] text-ink/60">belum dinilai di MVP</span>}
-          </div>
-          <h1 className="mt-4 max-w-4xl font-serif text-[clamp(1.79rem,3.43vw,3.04rem)] leading-[1.12] tracking-[-0.01em]">{lesson.judul}</h1>
-          <p className="mt-3 max-w-2xl text-[16px] text-ink/60">{lesson.ringkas}</p>
-        </div>
-        <div className="flex gap-2">
-          {(
-            [
-              [BookOpenText, 'Materi', true],
-              [FlaskConical, 'Lab 3D', hasLab],
-              [ListChecks, 'Kuis', true],
-            ] as const
-          ).map(([Icon, l, on]) =>
-            on ? (
-              <span key={l} className="flex items-center gap-2 rounded-2xl card-surface px-3.5 py-2.5 text-[13px] text-ink/70">
-                <Icon className="size-4 text-teal" /> {l}
-              </span>
-            ) : null,
-          )}
-        </div>
-      </header>
-
-      <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[230px_minmax(0,1fr)]">
+      <div className="mx-auto grid max-w-[1180px] grid-cols-1 gap-x-12 lg:grid-cols-[248px_minmax(0,1fr)]">
+        {/* kolom kiri: navigasi modul menempel; judul dan materi berbagi kolom kanan supaya satu garis baca */}
         <aside className="hidden lg:block">
-          <nav data-tour="toc" className="sticky top-28 rounded-[1.4rem] card-surface p-3" aria-label="Daftar isi">
-            <p className="px-2 pb-2 pt-1 font-display text-[12px] font-medium uppercase tracking-[0.2em] text-ink/45">Daftar isi</p>
-            <ol className="space-y-0.5">
-              {toc.map(([h, t], i) => (
-                <li key={h}>
-                  <a href={`#${h}`} className={cn('flex gap-2.5 rounded-xl px-2 py-2 text-[13px] leading-snug transition-colors', active === h ? 'bg-mint font-medium text-teal-900' : 'text-ink/60 hover:bg-ink/4 hover:text-ink')}>
-                    <span className={cn('mt-px font-mono text-[10.5px]', active === h ? 'text-teal' : 'text-ink/35')}>{String(i + 1).padStart(2, '0')}</span>
-                    {t}
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </nav>
+          <div className="sticky top-24 space-y-3">
+            <Link to="/belajar" className="flex items-center gap-1.5 px-1 text-[13px] text-ink/55 transition-colors hover:text-ink">
+              <ArrowLeft className="size-3.5" /> Semua modul
+            </Link>
+            <nav data-tour="toc" className="rounded-2xl card-surface p-2" aria-label="Daftar isi">
+              <p className="px-2.5 pb-1.5 pt-2 text-[11.5px] font-semibold uppercase tracking-wide text-ink/40">Daftar isi</p>
+              <ol>
+                {toc.map(([h, t], i) => {
+                  const ai = toc.findIndex(([x]) => x === active);
+                  const state = h === active ? 'now' : i < ai ? 'read' : 'todo';
+                  return (
+                    <li key={h}>
+                      <a href={`#${h}`} className={cn('flex items-start gap-2.5 rounded-lg px-2.5 py-2 text-[13px] leading-snug transition-colors', state === 'now' ? 'bg-mint font-medium text-teal-900' : 'text-ink/60 hover:bg-ink/4 hover:text-ink')}>
+                        <span className={cn('mt-px grid size-4 shrink-0 place-items-center rounded-full text-[9px] font-semibold', state === 'read' ? 'bg-teal text-white' : state === 'now' ? 'ring-2 ring-teal' : 'ring-1 ring-ink/20 text-ink/40')}>
+                          {state === 'read' ? <Check className="size-2.5" strokeWidth={3} /> : state === 'todo' ? i + 1 : null}
+                        </span>
+                        {t}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ol>
+            </nav>
+            <div className="rounded-2xl bg-surface p-4 text-[12.5px] text-ink/60">
+              <div className="flex items-center justify-between">
+                <span>Kuis</span>
+                {st?.completed ? <b className="font-semibold text-ok-ink">Lulus · {fmt.pct(st.best_score)}</b> : <b className="font-medium text-ink/45">{st?.n_tries ? `terbaik ${fmt.pct(st.best_score)}` : 'belum dicoba'}</b>}
+              </div>
+              <p className="mt-1.5 leading-relaxed text-ink/45">Lulus bila ≥ {Math.round(PASS * 100)}% benar.</p>
+            </div>
+          </div>
         </aside>
 
-        <article className="min-w-0 max-w-[860px]">
-          <section data-tour="goals" className="rounded-[1.6rem] bg-mint p-6">
+        <div className="min-w-0">
+          <nav className="flex items-center gap-1.5 text-[13px] text-ink/50 lg:hidden">
+            <Link to="/belajar" className="hover:text-ink">
+              Modul belajar
+            </Link>
+            <ChevronRight className="size-3.5" />
+            <span className="text-ink/75">{kc}</span>
+          </nav>
+          <header className="mt-4 max-w-[760px] lg:mt-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-md bg-teal px-2 py-0.5 font-mono text-[11.5px] font-semibold text-white">{kc}</span>
+              <span className="flex items-center gap-1 text-[12.5px] text-ink/55">
+                <Clock className="size-3.5" /> {lesson.menit} menit
+              </span>
+              <span className="text-ink/25">·</span>
+              <span className="flex items-center gap-1 text-[12.5px] text-ink/55">
+                {hasLab ? 'Materi, lab 3D, kuis' : 'Materi dan kuis'}
+              </span>
+              {st?.completed && (
+                <span className="flex items-center gap-1 rounded-md bg-ok-soft px-2 py-0.5 text-[12px] font-semibold text-ok-ink">
+                  <Check className="size-3.5" /> Selesai
+                </span>
+              )}
+              {!lesson.dinilai && lesson.kc && <span className="rounded-md bg-muted px-2 py-0.5 text-[12px] text-ink/55">belum dinilai di MVP</span>}
+            </div>
+            <h1 className="mt-3 font-serif text-[clamp(1.8rem,3vw,2.6rem)] leading-[1.12] tracking-[-0.01em]">{lesson.judul}</h1>
+            <p className="mt-3 text-[16.5px] leading-relaxed text-ink/60">{lesson.ringkas}</p>
+          </header>
+
+        <article className="mt-8 min-w-0 max-w-[760px]">
+          <section data-tour="goals" className="rounded-2xl border border-line bg-surface p-6">
             <h2 className="flex items-center gap-2 text-[15px] font-semibold text-teal-900">
               <Target className="size-4" /> Setelah modul ini kamu bisa
             </h2>
             <ul className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3">
               {lesson.tujuan.map((t, i) => (
-                <li key={t} className="rounded-2xl bg-paper/80 p-4 text-[14px] leading-snug text-ink/80">
+                <li key={t} className="rounded-xl bg-white p-4 text-[14px] leading-snug text-ink/80 shadow-[0_0_0_1px_var(--color-line)]">
                   <span className="mb-2 grid size-7 place-items-center rounded-full bg-teal font-mono text-[11px] text-mint">{i + 1}</span>
                   {t}
                 </li>
@@ -179,7 +185,7 @@ export function Modul() {
 
           <QuizBlock lessonId={lesson.id} items={lesson.kuis} onSaved={reload} />
 
-          <section className="mt-12 flex flex-col gap-5 overflow-hidden rounded-[1.8rem] bg-[linear-gradient(120deg,#195764,#2d746f_55%,#80a874)] p-7 text-mint sm:flex-row sm:items-center">
+          <section className="mt-12 flex flex-col gap-5 overflow-hidden rounded-[1.8rem] bg-teal-900 p-7 text-white sm:flex-row sm:items-center">
             <div className="flex-1">
               <p className="font-mono text-[11px] uppercase tracking-wider text-leaf">Langkah berikutnya</p>
               <b className="mt-2 block font-serif text-[1.4rem] font-normal leading-tight">{lesson.kc && lesson.dinilai ? `Latih ${lesson.kc} dengan kasus nyata` : 'Siap mencoba latihan adaptif?'}</b>
@@ -211,6 +217,7 @@ export function Modul() {
             )}
           </nav>
         </article>
+        </div>
       </div>
 
       <Tour steps={steps} open={tour.open} onClose={tour.close} />

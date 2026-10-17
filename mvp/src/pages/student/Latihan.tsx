@@ -7,6 +7,9 @@ import { SinapsViewer, initCornerstone, rleDecode, rleEncode, type Mode } from '
 import MasteryBars from '../../components/MasteryBars';
 import { TopBar } from '../../components/Shell';
 import { Tour, useTour, type TourStep } from '../../components/Tour';
+import { Target } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { TIER_TONE } from '@/lib/status';
 
 const id = (x: number, d: number) => x.toFixed(d).replace('.', ',');
 const SEQ_NAMES = ['DWI', 'ADC', 'FLAIR'];
@@ -333,17 +336,18 @@ export default function Latihan() {
   const canSubmit = !result && !submitting && !loading;
 
   return (
-    <div className="app">
+    <div className="app app-theme">
       <TopBar onHelp={tour.start}>
         {att && (
-          <div className="case-info" data-tour="case">
-            <span className="case-id">SOOP {att.case.id}</span>
-            <span>
+          <div className="flex min-w-0 items-center gap-2.5 text-[13px]" data-tour="case">
+            <span className="shrink-0 font-mono text-[13px] font-semibold text-ink">{att.case.id}</span>
+            <span className={cn('shrink-0 rounded-md px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide', TIER_TONE[att.tier] ?? 'bg-muted text-ink/60')}>{att.tier}</span>
+            <span className="hidden shrink-0 whitespace-nowrap text-ink/55 md:inline">
               {v?.jenis_kelamin}, {v?.usia ?? '?'} th · NIHSS {v?.nihss ?? '?'}
             </span>
-            <span className={`tier tier-${att.tier}`}>{att.tier}</span>
-            <span className="target" title={att.reason}>
-              Sasaran: {att.target_kc === 'bebas' ? 'pilihan sendiri' : `${att.target_kc} ${kcInfo[att.target_kc]?.nama ?? ''}`}
+            <span className="hidden min-w-0 items-center gap-1.5 truncate rounded-md bg-info-soft px-2 py-1 text-[12.5px] font-medium text-info-ink sm:flex" title={att.reason}>
+              <Target className="size-3.5 shrink-0" />
+              <span className="truncate">Sasaran: {att.target_kc === 'bebas' ? 'pilihan sendiri' : `${att.target_kc} ${kcInfo[att.target_kc]?.nama ?? ''}`}</span>
             </span>
           </div>
         )}

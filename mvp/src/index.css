@@ -55,6 +55,22 @@
   --color-chart-4: var(--color-terra);
   --color-chart-5: var(--color-chambray);
 
+  /* warna status (dipakai halaman app): tegas supaya urgensi terbaca sekilas */
+  --color-ok: #16a34a;
+  --color-ok-soft: #dcfce7;
+  --color-ok-ink: #15803d;
+  --color-warn: #d97706;
+  --color-warn-soft: #fef3c7;
+  --color-warn-ink: #b45309;
+  --color-bad: #dc2626;
+  --color-bad-soft: #fee2e2;
+  --color-bad-ink: #b91c1c;
+  --color-info: #2563eb;
+  --color-info-soft: #dbeafe;
+  --color-info-ink: #1d4ed8;
+  --color-line: #e5e7eb;
+  --color-surface: #f8fafc;
+
   --radius-4xl: 2rem;
   --radius-5xl: 2.5rem;
 
@@ -197,6 +213,122 @@
   .grain {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
+}
+
+/* ===== tema aplikasi (di balik login): putih bersih, teal hanya aksen, Geist untuk UI =====
+   Token Tailwind dan variabel gaya lama ditimpa di sini, jadi landing page tidak ikut berubah. */
+@layer components {
+.app-theme {
+  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --tracking-tight: -0.015em;
+  --color-muslin: #ffffff;
+  --color-paper: #ffffff;
+  --color-mint: #e6f4f1;
+  --color-sand: #e5e7eb;
+  --color-sand-2: #f3f4f6;
+  --color-ink: #0f172a;
+  --color-teal: #0f766e;
+  --color-teal-600: #0d6b63;
+  --color-teal-800: #115e59;
+  --color-teal-900: #134e4a;
+  --color-teal-950: #042f2e;
+  --color-sage: #16a34a;
+  --color-leaf: #bbf7d0;
+  --color-sky: #ccfbf1;
+  --color-terra: #dc2626;
+  --color-terra-soft: #fee2e2;
+  --color-background: #ffffff;
+  --color-muted: #f3f4f6;
+  --color-muted-foreground: #64748b;
+  --color-border: #e5e7eb;
+  /* variabel gaya lama */
+  --bg: #ffffff;
+  --panel: #ffffff;
+  --panel-2: #f8fafc;
+  --line: #e5e7eb;
+  --text: #0f172a;
+  --muted: #64748b;
+  --accent: #0f766e;
+  --accent-2: #115e59;
+  --bad: #dc2626;
+  --ok: #16a34a;
+  font-family: var(--font-sans);
+  background: #ffffff;
+}
+body:has(.app-theme) {
+  background: #ffffff;
+}
+.app-theme .card-surface,
+.app-theme .card {
+  background: #ffffff;
+  box-shadow:
+    0 0 0 1px var(--color-line),
+    0 1px 2px rgb(15 23 42 / 0.04),
+    0 8px 24px -16px rgb(15 23 42 / 0.12);
+}
+.app-theme .legacy-dark .card {
+  background: var(--panel);
+  box-shadow: 0 0 0 1px var(--line);
+}
+.app-theme .kpi {
+  color: var(--color-ink);
+  background: #ffffff;
+  box-shadow: 0 0 0 1px var(--color-line);
+}
+.app-theme .kpi::after {
+  display: none;
+}
+.app-theme .kpi b {
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+}
+.app-theme .kpi b small,
+.app-theme .kpi span {
+  color: #64748b;
+  font-family: var(--font-sans);
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+.app-theme .tier-mudah,
+.app-theme .pill.ok {
+  background: var(--color-ok-soft);
+  color: var(--color-ok-ink);
+}
+.app-theme .tier-sedang {
+  background: var(--color-warn-soft);
+  color: var(--color-warn-ink);
+}
+.app-theme .tier-sulit,
+.app-theme .pill.bad,
+.app-theme .chip {
+  background: var(--color-bad-soft);
+  color: var(--color-bad-ink);
+}
+.app-theme .notice,
+.app-theme .next-step {
+  background: var(--color-surface);
+  border-color: var(--color-line);
+}
+.app-theme .btn.primary,
+.app-theme a.btn.primary {
+  box-shadow: none;
+}
+.app-theme .btn.primary:hover:not(:disabled) {
+  background: var(--color-teal-800);
+  border-color: var(--color-teal-800);
+}
+.app-theme .avatar {
+  background: var(--color-teal);
+}
+.app-theme .warn {
+  color: var(--color-warn-ink);
+}
+.app-theme .late,
+.app-theme .btn.danger {
+  color: var(--color-bad-ink);
+}
+
 }
 
 /* transparansi dikurangi: kaca menjadi permukaan padat */
