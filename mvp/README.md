@@ -34,10 +34,12 @@ setiap tingkat kesulitan punya minimal 10 kasus). Subjek bank tidak pernah dipak
 |---|---|---|
 | Morfologi 1.451 mask akut | `pipeline/mask_stats.py` | median 8,4 ml (IQR 1,7–34,5), 17% < 1 ml, 60% multifokal; tersil D: −0,169 dan 0,774 |
 | Aturan jenis kesalahan (672 anotasi sintetis, 36 subjek, 5-fold tingkat subjek) | `pipeline/eval_error_rules.py` | akurasi 94,6% (IK 95% 91,8–97,0) vs 47,3% (IK 95% 40,6–53,7) bila hanya Dice; hasil di `pipeline/results/` |
-| Segmentasi U-Net 2.5D pada 36 subjek bank | `pipeline/kaggle/train_unet.py` | `pipeline/kaggle_out/metrics.json` setelah kernel Kaggle selesai |
+| Segmentasi U-Net 2.5D (1.170 pasien latih, 30 epoch, T4 50 menit) pada 36 subjek bank | `pipeline/kaggle/train_unet.py` | Dice rerata 0,738 (IK 95% 0,645–0,813), median 0,816; recall per lesi 0,80; Dice 0,805 untuk lesi ≥ 5 ml (n=28) dan 0,503 untuk < 5 ml (n=8); hasil di `pipeline/results/unet25d/` |
 
 Angka aturan jenis kesalahan berasal dari kesalahan sintetis, jadi dibaca sebagai batas atas
-(sama seperti catatan di Subbab III.E).
+(sama seperti catatan di Subbab III.E). Prediksi U-Net tidak dijalankan di Vercel: mask prediksi untuk
+36 kasus dihitung sekali di Kaggle, lalu `build_bank.py` menyimpannya di `server_data/cases/<sub>.npz`.
+Bobot `unet25d.pt` (30 MB) tidak masuk repo; simpan dari keluaran kernel Kaggle.
 
 ## Menjalankan lokal
 
@@ -73,7 +75,7 @@ uv venv .venv && uv pip install --python .venv nibabel numpy scipy pandas reques
 .venv/Scripts/python mask_stats.py
 .venv/Scripts/python download_soop.py images --n-train 0
 .venv/Scripts/kaggle kernels push -p kaggle --accelerator NvidiaTeslaT4   # latih U-Net di Kaggle GPU
-.venv/Scripts/kaggle kernels output raphaeladikara/sinaps-unet25d -p kaggle_out
+.venv/Scripts/kaggle kernels output raphaeladikara/sinaps-unet25d-run2 -p kaggle_out
 .venv/Scripts/python build_bank.py          # citra + kunci jawaban + prediksi model
 .venv/Scripts/python eval_error_rules.py    # uji aturan jenis kesalahan
 ```

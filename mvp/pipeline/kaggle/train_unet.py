@@ -203,55 +203,136 @@ def subjects():
     return ids[:int(os.environ["SMOKE"])] if os.environ.get("SMOKE") else ids
 
 
+LOG_FILE = OUT / "train_log.txt"
+T_START = time.time()
+
+
+def fmt_dur(sec):
+    sec = int(max(0, sec))
+    return f"{sec // 3600}j{sec % 3600 // 60:02d}m" if sec >= 3600 else f"{sec // 60}m{sec % 60:02d}d"
+
+
+def log(msg):
+    """Cetak dengan jam + waktu berjalan, langsung di-flush, dan salin ke train_log.txt."""
+    line = f"[{time.strftime('%H:%M:%S')} +{fmt_dur(time.time() - T_START)}] {msg}"
+    print(line, flush=True)
+    try:
+        with open(LOG_FILE, "a", encoding="utf-8") as f:
+            f.write(line + "\n")
+    except OSError:
+        pass
+
+
+def ram_gb():
+    try:
+        with open("/proc/self/status") as f:
+            for ln in f:
+                if ln.startswith("VmRSS:"):
+                    return int(ln.split()[1]) / 1e6
+    except OSError:
+        pass
+    return float("nan")
+
+
+def gpu_gb(device):
+    return torch.cuda.max_memory_allocated() / 1e9 if device.type == "cuda" else 0.0
+
+
 def main():
     torch.manual_seed(SEED)
     np.random.seed(SEED)
     OUT.mkdir(parents=True, exist_ok=True)
+    LOG_FILE.write_text("", encoding="utf-8")
+    log(f"=== SINAPS U-Net 2.5D | EPOCHS={EPOCHS} RES={RES} SMOKE={os.environ.get('SMOKE', '-')} ===")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print("device", device, torch.cuda.get_device_name(0) if device.type == "cuda" else "")
+    log(f"torch {torch.__version__} | device {device} {torch.cuda.get_device_name(0) if device.type == 'cuda' else ''}")
+    if device.type == "cuda":
+        cap = "sm_%d%d" % torch.cuda.get_device_capability(0)
+        log(f"arsitektur GPU {cap}; build torch mendukung {torch.cuda.get_arch_list()}")
+        torch.zeros(1, device=device).add_(1)  # gagal cepat bila GPU tidak didukung build torch ini
+        log("tes operasi GPU: OK")
+    else:
+        log("PERINGATAN: GPU tidak terdeteksi, training di CPU akan sangat lambat. Cek Settings > Accelerator.")
 
-    t0 = time.time()
+    # ---- 1. unduh ----
+    log("[1/5] Mengunduh daftar subjek dari OpenNeuro...")
+    ids = subjects()
+    bank = BANK[:3] if os.environ.get("SMOKE") else BANK
+    todo = ids + bank
+    log(f"[1/5] {len(ids)} subjek calon latih + {len(bank)} subjek bank. Mengunduh DWI, ADC, mask (32 thread)...")
+    t = time.time()
+    fetched, gagal = {}, 0
     with cf.ThreadPoolExecutor(32) as ex:
-        bank = BANK[:3] if os.environ.get("SMOKE") else BANK
-        fetched = dict(ex.map(fetch_subject, subjects() + bank))
-    print(f"unduh {len(fetched)} subjek dalam {time.time() - t0:.0f} dtk")
+        futs = [ex.submit(fetch_subject, s) for s in todo]
+        for i, fu in enumerate(cf.as_completed(futs), 1):
+            s, paths = fu.result()
+            fetched[s] = paths
+            gagal += paths is None
+            if i % 100 == 0 or i == len(todo):
+                rate = i / (time.time() - t)
+                log(f"[1/5] unduh {i}/{len(todo)} | tanpa mask/gagal {gagal} | {rate:.1f} subjek/dtk | "
+                    f"sisa ~{fmt_dur((len(todo) - i) / rate)}")
+    log(f"[1/5] selesai dalam {fmt_dur(time.time() - t)}")
 
     rng = np.random.default_rng(SEED)
     train_ids = [s for s in fetched if s not in BANK and fetched[s]]
-    train_ids = list(rng.permutation(train_ids))
+    train_ids = list(rng.permutation(sorted(train_ids, key=lambda s: int(s[4:]))))
     n_val = 2 if os.environ.get("SMOKE") else max(20, len(train_ids) // 20)
     val_ids, tr_ids = train_ids[:n_val], train_ids[n_val:]
 
-    xs, ys, used = [], [], []
-    for s in tr_ids:
-        sub = load_subject(fetched[s])
+    # ---- 2. praproses ----
+    log(f"[2/5] Praproses {len(tr_ids)} subjek latih (normalisasi, 2.5D, resize {RES} px)...")
+    t = time.time()
+    xs, ys, used, skip = [], [], [], 0
+    for i, s in enumerate(tr_ids, 1):
+        try:
+            sub = load_subject(fetched[s])
+        except Exception as e:  # berkas rusak tidak boleh menghentikan seluruh run
+            log(f"[2/5] lewati {s}: {type(e).__name__}: {e}")
+            sub = None
         if sub is None or not sub[2].any():
-            continue
-        dwi, adc, g, _ = sub
-        d, a, b = normalize(dwi, adc)
-        x = stack25d(to_slices(d), to_slices(a))
-        y = (to_slices(g.astype(np.float32)) > 0.5).float()
-        keep = torch.from_numpy(b.any(axis=(0, 1)))  # hanya slice yang memuat otak
-        xs.append(x[keep].half())
-        ys.append(y[keep].bool())
-        used.append(s)
+            skip += 1
+        else:
+            dwi, adc, g, _ = sub
+            d, a, b = normalize(dwi, adc)
+            x = stack25d(to_slices(d), to_slices(a))
+            y = (to_slices(g.astype(np.float32)) > 0.5).float()
+            keep = torch.from_numpy(b.any(axis=(0, 1)))  # hanya slice yang memuat otak
+            xs.append(x[keep].half())
+            ys.append(y[keep].bool())
+            used.append(s)
+        if i % 100 == 0 or i == len(tr_ids):
+            rate = i / (time.time() - t)
+            log(f"[2/5] praproses {i}/{len(tr_ids)} | dipakai {len(used)} dilewati {skip} | "
+                f"RAM {ram_gb():.1f} GB | sisa ~{fmt_dur((len(tr_ids) - i) / rate)}")
     X, Y = torch.cat(xs), torch.cat(ys)
-    print(f"latih: {len(used)} pasien, {len(X)} slice; validasi: {len(val_ids)} pasien")
+    del xs, ys
+    pos = float(Y.float().mean()) * 100
+    log(f"[2/5] selesai: {len(used)} pasien, {len(X)} slice ({pos:.2f}% voxel lesi) | RAM {ram_gb():.1f} GB")
 
+    val = []
+    for s in val_ids:
+        v = load_subject(fetched[s])
+        if v is not None:
+            val.append((s, v))
+    log(f"[2/5] validasi: {len(val)} pasien")
+
+    # ---- 3. training ----
     model = UNet().to(device)
+    n_param = sum(p.numel() for p in model.parameters()) / 1e6
     opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)
-    steps = EPOCHS * math.ceil(len(X) / 64)
-    sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=2e-3, total_steps=steps, pct_start=0.1)
+    it_per_ep = math.ceil(len(X) / 64)
+    sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=2e-3, total_steps=EPOCHS * it_per_ep, pct_start=0.1)
     scaler = torch.amp.GradScaler(enabled=device.type == "cuda")
-    val = [(s, load_subject(fetched[s])) for s in val_ids]
-    val = [(s, v) for s, v in val if v is not None]
-
+    log(f"[3/5] Training {EPOCHS} epoch x {it_per_ep} iterasi (batch 64), model {n_param:.1f} juta parameter")
+    t_train = time.time()
     best, hist = -1.0, []
+    log_every = max(1, it_per_ep // 4)
     for ep in range(EPOCHS):
         model.train()
         perm = torch.randperm(len(X))
-        tot = 0.0
-        for i in range(0, len(X), 64):
+        tot, t_ep = 0.0, time.time()
+        for it, i in enumerate(range(0, len(X), 64), 1):
             idx = perm[i:i + 64]
             xb, yb = X[idx].float().to(device), Y[idx].float().to(device)[:, None]
             if torch.rand(1) < 0.5:  # flip kiri-kanan
@@ -263,24 +344,39 @@ def main():
                 inter = (p * yb).sum((1, 2, 3))
                 soft_dice = 1 - (2 * inter + 1) / (p.sum((1, 2, 3)) + yb.sum((1, 2, 3)) + 1)
                 loss = F.binary_cross_entropy_with_logits(logit.float(), yb) + soft_dice.mean()
+            if not torch.isfinite(loss):
+                raise RuntimeError(f"loss tidak hingga (NaN/Inf) di epoch {ep + 1} iterasi {it}")
             opt.zero_grad(set_to_none=True)
             scaler.scale(loss).backward()
             scaler.step(opt)
             scaler.update()
             sched.step()
             tot += loss.item() * len(idx)
+            if it % log_every == 0 and it < it_per_ep:
+                rate = it / (time.time() - t_ep)
+                log(f"[3/5] epoch {ep + 1}/{EPOCHS} iterasi {it}/{it_per_ep} | loss {tot / min(i + 64, len(X)):.4f} | "
+                    f"{rate:.1f} it/dtk | GPU {gpu_gb(device):.1f} GB")
+        t_val = time.time()
         vd = [dice(predict_volume(model, d, a, device) > 0.5, g) for _, (d, a, g, _) in val]
         hist.append({"epoch": ep + 1, "loss": tot / len(X), "val_dice": float(np.mean(vd))})
-        print(hist[-1], f"{time.time() - t0:.0f} dtk", flush=True)
-        if np.mean(vd) > best:
+        improved = np.mean(vd) > best
+        if improved:
             best = float(np.mean(vd))
             torch.save(model.state_dict(), OUT / "unet25d.pt")
+        per_ep = (time.time() - t_train) / (ep + 1)
+        log(f"[3/5] EPOCH {ep + 1}/{EPOCHS} | loss {hist[-1]['loss']:.4f} | val Dice {hist[-1]['val_dice']:.3f} "
+            f"(terbaik {best:.3f}{', disimpan' if improved else ''}) | {fmt_dur(t_val - t_ep)} latih + "
+            f"{fmt_dur(time.time() - t_val)} validasi | sisa training ~{fmt_dur(per_ep * (EPOCHS - ep - 1))}")
+        (OUT / "history.json").write_text(json.dumps(hist, indent=1))
 
+    # ---- 4. evaluasi bank ----
+    log(f"[4/5] Evaluasi model terbaik (val Dice {best:.3f}) pada {len(bank)} subjek bank (data uji)...")
     model.load_state_dict(torch.load(OUT / "unet25d.pt", map_location=device))
     rows = []
     (OUT / "pred_bank").mkdir(exist_ok=True)
-    for s in BANK:
+    for s in bank:
         if not fetched.get(s):
+            log(f"[4/5] {s}: tidak terunduh, dilewati")
             continue
         dwi, adc, g, sp = load_subject(fetched[s])
         p = predict_volume(model, dwi, adc, device)
@@ -289,12 +385,17 @@ def main():
         vol = g.sum() * float(np.prod(sp)) / 1000
         rows.append({"participant_id": s, "dice": dice(pm, g), "lesion_recall": lesion_recall(pm, g, sp),
                      "gt_ml": vol, "pred_ml": pm.sum() * float(np.prod(sp)) / 1000})
+        r = rows[-1]
+        log(f"[4/5] {s}: Dice {r['dice']:.3f} | recall per lesi {r['lesion_recall']:.2f} | "
+            f"kunci {r['gt_ml']:.1f} ml, prediksi {r['pred_ml']:.1f} ml")
     df = pd.DataFrame(rows)
     df.to_csv(OUT / "test_per_subject.csv", index=False)
     big, small = df[df.gt_ml >= 5], df[df.gt_ml < 5]
     metrics = {
         "n_train_patients": len(used), "n_train_slices": len(X), "n_val": len(val), "epochs": EPOCHS,
-        "best_val_dice": best, "history": hist,
+        "best_val_dice": best, "history": hist, "torch": torch.__version__,
+        "gpu": torch.cuda.get_device_name(0) if device.type == "cuda" else "cpu",
+        "train_minutes": round((time.time() - t_train) / 60, 1),
         "test": {
             "n": len(df), "dice_mean": float(df.dice.mean()), "dice_median": float(df.dice.median()),
             "dice_ci95": boot_ci(df.dice), "lesion_recall_mean": float(df.lesion_recall.mean()),
@@ -303,8 +404,23 @@ def main():
         },
     }
     (OUT / "metrics.json").write_text(json.dumps(metrics, indent=2))
-    print(json.dumps(metrics["test"], indent=2))
+    m = metrics["test"]
+    log(f"[4/5] HASIL UJI: Dice rerata {m['dice_mean']:.3f} (IK95% {m['dice_ci95'][0]:.3f}-{m['dice_ci95'][1]:.3f}), "
+        f"median {m['dice_median']:.3f}, recall per lesi {m['lesion_recall_mean']:.2f}")
+
+    # ---- 5. bungkus ----
+    import zipfile
+    with zipfile.ZipFile(OUT / "sinaps_out.zip", "w", zipfile.ZIP_DEFLATED) as z:
+        for p in ["unet25d.pt", "metrics.json", "history.json", "test_per_subject.csv", "train_log.txt", *sorted(
+                f"pred_bank/{q.name}" for q in (OUT / "pred_bank").glob("*.npz"))]:
+            z.write(OUT / p, p)
+    log(f"[5/5] SELESAI. Unduh {OUT / 'sinaps_out.zip'} lalu ekstrak ke mvp/pipeline/kaggle_out/")
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        import traceback
+        log("ERROR, run berhenti:\n" + traceback.format_exc())
+        raise

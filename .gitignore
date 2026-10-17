@@ -13,3 +13,6 @@ mvp/.local/
 mvp/.vercel/
 mvp/pipeline/kaggle_out/
 *.tsbuildinfo
+mvp/.vite/
+# keluaran mentah Kaggle (bobot model 30 MB); ringkasan metrik ada di mvp/pipeline/results/unet25d/
+mvp/results/

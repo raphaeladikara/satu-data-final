@@ -1,0 +1,228 @@
+[10:18:14 +0m00d] === SINAPS U-Net 2.5D | EPOCHS=30 RES=128 SMOKE=- ===
+[10:18:14 +0m00d] torch 2.11.0+cu128 | device cuda Tesla T4
+[10:18:14 +0m00d] arsitektur GPU sm_75; build torch mendukung ['sm_75', 'sm_80', 'sm_86', 'sm_90', 'sm_100', 'sm_120']
+[10:18:15 +0m00d] tes operasi GPU: OK
+[10:18:15 +0m00d] [1/5] Mengunduh daftar subjek dari OpenNeuro...
+[10:18:15 +0m00d] [1/5] 1469 subjek calon latih + 36 subjek bank. Mengunduh DWI, ADC, mask (32 thread)...
+[10:18:26 +0m12d] [1/5] unduh 100/1505 | tanpa mask/gagal 0 | 8.9 subjek/dtk | sisa ~2m37d
+[10:18:37 +0m23d] [1/5] unduh 200/1505 | tanpa mask/gagal 20 | 9.0 subjek/dtk | sisa ~2m24d
+[10:18:46 +0m31d] [1/5] unduh 300/1505 | tanpa mask/gagal 26 | 9.8 subjek/dtk | sisa ~2m03d
+[10:18:57 +0m43d] [1/5] unduh 400/1505 | tanpa mask/gagal 44 | 9.5 subjek/dtk | sisa ~1m56d
+[10:19:09 +0m55d] [1/5] unduh 500/1505 | tanpa mask/gagal 62 | 9.2 subjek/dtk | sisa ~1m49d
+[10:19:26 +1m11d] [1/5] unduh 600/1505 | tanpa mask/gagal 91 | 8.5 subjek/dtk | sisa ~1m46d
+[10:19:39 +1m25d] [1/5] unduh 700/1505 | tanpa mask/gagal 110 | 8.3 subjek/dtk | sisa ~1m36d
+[10:19:49 +1m34d] [1/5] unduh 800/1505 | tanpa mask/gagal 128 | 8.5 subjek/dtk | sisa ~1m22d
+[10:19:59 +1m45d] [1/5] unduh 900/1505 | tanpa mask/gagal 143 | 8.6 subjek/dtk | sisa ~1m10d
+[10:20:10 +1m56d] [1/5] unduh 1000/1505 | tanpa mask/gagal 158 | 8.7 subjek/dtk | sisa ~0m58d
+[10:20:19 +2m04d] [1/5] unduh 1100/1505 | tanpa mask/gagal 172 | 8.9 subjek/dtk | sisa ~0m45d
+[10:20:28 +2m13d] [1/5] unduh 1200/1505 | tanpa mask/gagal 182 | 9.0 subjek/dtk | sisa ~0m33d
+[10:20:40 +2m25d] [1/5] unduh 1300/1505 | tanpa mask/gagal 200 | 9.0 subjek/dtk | sisa ~0m22d
+[10:20:48 +2m34d] [1/5] unduh 1400/1505 | tanpa mask/gagal 213 | 9.1 subjek/dtk | sisa ~0m11d
+[10:21:05 +2m50d] [1/5] unduh 1500/1505 | tanpa mask/gagal 233 | 8.8 subjek/dtk | sisa ~0m00d
+[10:21:07 +2m53d] [1/5] unduh 1505/1505 | tanpa mask/gagal 238 | 8.7 subjek/dtk | sisa ~0m00d
+[10:21:07 +2m53d] [1/5] selesai dalam 2m52d
+[10:21:07 +2m53d] [2/5] Praproses 1170 subjek latih (normalisasi, 2.5D, resize 128 px)...
+[10:21:35 +3m21d] [2/5] praproses 100/1170 | dipakai 100 dilewati 0 | RAM 1.6 GB | sisa ~5m00d
+[10:22:04 +3m49d] [2/5] praproses 200/1170 | dipakai 200 dilewati 0 | RAM 2.1 GB | sisa ~4m33d
+[10:22:30 +4m16d] [2/5] praproses 300/1170 | dipakai 300 dilewati 0 | RAM 2.7 GB | sisa ~4m00d
+[10:22:57 +4m43d] [2/5] praproses 400/1170 | dipakai 400 dilewati 0 | RAM 3.2 GB | sisa ~3m31d
+[10:23:22 +5m08d] [2/5] praproses 500/1170 | dipakai 500 dilewati 0 | RAM 3.8 GB | sisa ~3m00d
+[10:23:50 +5m36d] [2/5] praproses 600/1170 | dipakai 600 dilewati 0 | RAM 4.4 GB | sisa ~2m34d
+[10:24:16 +6m02d] [2/5] praproses 700/1170 | dipakai 700 dilewati 0 | RAM 4.9 GB | sisa ~2m06d
+[10:24:43 +6m29d] [2/5] praproses 800/1170 | dipakai 800 dilewati 0 | RAM 5.5 GB | sisa ~1m39d
+[10:25:10 +6m56d] [2/5] praproses 900/1170 | dipakai 900 dilewati 0 | RAM 6.1 GB | sisa ~1m12d
+[10:25:39 +7m25d] [2/5] praproses 1000/1170 | dipakai 1000 dilewati 0 | RAM 6.7 GB | sisa ~0m46d
+[10:26:07 +7m52d] [2/5] praproses 1100/1170 | dipakai 1100 dilewati 0 | RAM 7.2 GB | sisa ~0m19d
+[10:26:26 +8m11d] [2/5] praproses 1170/1170 | dipakai 1170 dilewati 0 | RAM 7.6 GB | sisa ~0m00d
+[10:26:29 +8m15d] [2/5] selesai: 1170 pasien, 29444 slice (0.34% voxel lesi) | RAM 13.7 GB
+[10:26:31 +8m17d] [2/5] validasi: 61 pasien
+[10:26:37 +8m22d] [3/5] Training 30 epoch x 461 iterasi (batch 64), model 7.8 juta parameter
+[10:26:59 +8m44d] [3/5] epoch 1/30 iterasi 115/461 | loss 1.4678 | 5.2 it/dtk | GPU 1.8 GB
+[10:27:21 +9m06d] [3/5] epoch 1/30 iterasi 230/461 | loss 1.4078 | 5.2 it/dtk | GPU 1.8 GB
+[10:27:43 +9m29d] [3/5] epoch 1/30 iterasi 345/461 | loss 1.3605 | 5.2 it/dtk | GPU 1.8 GB
+[10:28:04 +9m50d] [3/5] epoch 1/30 iterasi 460/461 | loss 1.3113 | 5.2 it/dtk | GPU 1.8 GB
+[10:28:21 +10m07d] [3/5] EPOCH 1/30 | loss 1.3113 | val Dice 0.484 (terbaik 0.484, disimpan) | 1m27d latih + 0m16d validasi | sisa training ~50m31d
+[10:28:42 +10m27d] [3/5] epoch 2/30 iterasi 115/461 | loss 1.0558 | 5.6 it/dtk | GPU 1.8 GB
+[10:29:05 +10m50d] [3/5] epoch 2/30 iterasi 230/461 | loss 1.0073 | 5.3 it/dtk | GPU 1.8 GB
+[10:29:27 +11m12d] [3/5] epoch 2/30 iterasi 345/461 | loss 0.9670 | 5.3 it/dtk | GPU 1.8 GB
+[10:29:47 +11m33d] [3/5] epoch 2/30 iterasi 460/461 | loss 0.9352 | 5.4 it/dtk | GPU 1.8 GB
+[10:30:03 +11m49d] [3/5] EPOCH 2/30 | loss 0.9352 | val Dice 0.587 (terbaik 0.587, disimpan) | 1m25d latih + 0m16d validasi | sisa training ~48m14d
+[10:30:24 +12m10d] [3/5] epoch 3/30 iterasi 115/461 | loss 0.6716 | 5.5 it/dtk | GPU 1.8 GB
+[10:30:47 +12m33d] [3/5] epoch 3/30 iterasi 230/461 | loss 0.5236 | 5.3 it/dtk | GPU 1.8 GB
+[10:31:08 +12m54d] [3/5] epoch 3/30 iterasi 345/461 | loss 0.4248 | 5.3 it/dtk | GPU 1.8 GB
+[10:31:28 +13m14d] [3/5] epoch 3/30 iterasi 460/461 | loss 0.3766 | 5.4 it/dtk | GPU 1.8 GB
+[10:31:44 +13m30d] [3/5] EPOCH 3/30 | loss 0.3765 | val Dice 0.428 (terbaik 0.587) | 1m24d latih + 0m15d validasi | sisa training ~46m06d
+[10:32:05 +13m50d] [3/5] epoch 4/30 iterasi 115/461 | loss 0.2010 | 5.6 it/dtk | GPU 1.8 GB
+[10:32:27 +14m13d] [3/5] epoch 4/30 iterasi 230/461 | loss 0.1994 | 5.3 it/dtk | GPU 1.8 GB
+[10:32:48 +14m33d] [3/5] epoch 4/30 iterasi 345/461 | loss 0.1963 | 5.4 it/dtk | GPU 1.8 GB
+[10:33:08 +14m53d] [3/5] epoch 4/30 iterasi 460/461 | loss 0.1948 | 5.5 it/dtk | GPU 1.8 GB
+[10:33:24 +15m09d] [3/5] EPOCH 4/30 | loss 0.1947 | val Dice 0.403 (terbaik 0.587) | 1m23d latih + 0m15d validasi | sisa training ~44m07d
+[10:33:44 +15m30d] [3/5] epoch 5/30 iterasi 115/461 | loss 0.1942 | 5.6 it/dtk | GPU 1.8 GB
+[10:34:07 +15m52d] [3/5] epoch 5/30 iterasi 230/461 | loss 0.1886 | 5.4 it/dtk | GPU 1.8 GB
+[10:34:27 +16m13d] [3/5] epoch 5/30 iterasi 345/461 | loss 0.1842 | 5.4 it/dtk | GPU 1.8 GB
+[10:34:47 +16m33d] [3/5] epoch 5/30 iterasi 460/461 | loss 0.1867 | 5.5 it/dtk | GPU 1.8 GB
+[10:35:03 +16m49d] [3/5] EPOCH 5/30 | loss 0.1868 | val Dice 0.438 (terbaik 0.587) | 1m23d latih + 0m15d validasi | sisa training ~42m13d
+[10:35:24 +17m09d] [3/5] epoch 6/30 iterasi 115/461 | loss 0.1685 | 5.6 it/dtk | GPU 1.8 GB
+[10:35:46 +17m32d] [3/5] epoch 6/30 iterasi 230/461 | loss 0.1725 | 5.4 it/dtk | GPU 1.8 GB
+[10:36:07 +17m52d] [3/5] epoch 6/30 iterasi 345/461 | loss 0.1726 | 5.4 it/dtk | GPU 1.8 GB
+[10:36:27 +18m12d] [3/5] epoch 6/30 iterasi 460/461 | loss 0.1728 | 5.5 it/dtk | GPU 1.8 GB
+[10:36:43 +18m28d] [3/5] EPOCH 6/30 | loss 0.1727 | val Dice 0.451 (terbaik 0.587) | 1m23d latih + 0m16d validasi | sisa training ~40m25d
+[10:37:03 +18m49d] [3/5] epoch 7/30 iterasi 115/461 | loss 0.1711 | 5.6 it/dtk | GPU 1.8 GB
+[10:37:26 +19m11d] [3/5] epoch 7/30 iterasi 230/461 | loss 0.1724 | 5.4 it/dtk | GPU 1.8 GB
+[10:37:47 +19m32d] [3/5] epoch 7/30 iterasi 345/461 | loss 0.1671 | 5.4 it/dtk | GPU 1.8 GB
+[10:38:07 +19m52d] [3/5] epoch 7/30 iterasi 460/461 | loss 0.1668 | 5.5 it/dtk | GPU 1.8 GB
+[10:38:23 +20m08d] [3/5] EPOCH 7/30 | loss 0.1668 | val Dice 0.482 (terbaik 0.587) | 1m23d latih + 0m15d validasi | sisa training ~38m38d
+[10:38:43 +20m28d] [3/5] epoch 8/30 iterasi 115/461 | loss 0.1699 | 5.7 it/dtk | GPU 1.8 GB
+[10:39:05 +20m50d] [3/5] epoch 8/30 iterasi 230/461 | loss 0.1608 | 5.4 it/dtk | GPU 1.8 GB
+[10:39:26 +21m11d] [3/5] epoch 8/30 iterasi 345/461 | loss 0.1611 | 5.4 it/dtk | GPU 1.8 GB
+[10:39:46 +21m31d] [3/5] epoch 8/30 iterasi 460/461 | loss 0.1606 | 5.5 it/dtk | GPU 1.8 GB
+[10:40:02 +21m47d] [3/5] EPOCH 8/30 | loss 0.1606 | val Dice 0.548 (terbaik 0.587) | 1m23d latih + 0m16d validasi | sisa training ~36m54d
+[10:40:22 +22m08d] [3/5] epoch 9/30 iterasi 115/461 | loss 0.1615 | 5.6 it/dtk | GPU 1.8 GB
+[10:40:45 +22m30d] [3/5] epoch 9/30 iterasi 230/461 | loss 0.1603 | 5.4 it/dtk | GPU 1.8 GB
+[10:41:06 +22m51d] [3/5] epoch 9/30 iterasi 345/461 | loss 0.1639 | 5.4 it/dtk | GPU 1.8 GB
+[10:41:26 +23m11d] [3/5] epoch 9/30 iterasi 460/461 | loss 0.1589 | 5.5 it/dtk | GPU 1.8 GB
+[10:41:42 +23m27d] [3/5] EPOCH 9/30 | loss 0.1590 | val Dice 0.532 (terbaik 0.587) | 1m24d latih + 0m15d validasi | sisa training ~35m12d
+[10:42:02 +23m48d] [3/5] epoch 10/30 iterasi 115/461 | loss 0.1684 | 5.6 it/dtk | GPU 1.8 GB
+[10:42:25 +24m10d] [3/5] epoch 10/30 iterasi 230/461 | loss 0.1594 | 5.4 it/dtk | GPU 1.8 GB
+[10:42:46 +24m31d] [3/5] epoch 10/30 iterasi 345/461 | loss 0.1550 | 5.4 it/dtk | GPU 1.8 GB
+[10:43:06 +24m51d] [3/5] epoch 10/30 iterasi 460/461 | loss 0.1534 | 5.5 it/dtk | GPU 1.8 GB
+[10:43:22 +25m07d] [3/5] EPOCH 10/30 | loss 0.1534 | val Dice 0.567 (terbaik 0.587) | 1m23d latih + 0m15d validasi | sisa training ~33m29d
+[10:43:42 +25m27d] [3/5] epoch 11/30 iterasi 115/461 | loss 0.1464 | 5.6 it/dtk | GPU 1.8 GB
+[10:44:04 +25m50d] [3/5] epoch 11/30 iterasi 230/461 | loss 0.1443 | 5.4 it/dtk | GPU 1.8 GB
+[10:44:25 +26m11d] [3/5] epoch 11/30 iterasi 345/461 | loss 0.1478 | 5.4 it/dtk | GPU 1.8 GB
+[10:44:45 +26m31d] [3/5] epoch 11/30 iterasi 460/461 | loss 0.1458 | 5.5 it/dtk | GPU 1.8 GB
+[10:45:01 +26m47d] [3/5] EPOCH 11/30 | loss 0.1458 | val Dice 0.580 (terbaik 0.587) | 1m23d latih + 0m15d validasi | sisa training ~31m47d
+[10:45:22 +27m07d] [3/5] epoch 12/30 iterasi 115/461 | loss 0.1407 | 5.7 it/dtk | GPU 1.8 GB
+[10:45:44 +27m29d] [3/5] epoch 12/30 iterasi 230/461 | loss 0.1410 | 5.4 it/dtk | GPU 1.8 GB
+[10:46:05 +27m50d] [3/5] epoch 12/30 iterasi 345/461 | loss 0.1401 | 5.4 it/dtk | GPU 1.8 GB
+[10:46:25 +28m10d] [3/5] epoch 12/30 iterasi 460/461 | loss 0.1393 | 5.5 it/dtk | GPU 1.8 GB
+[10:46:41 +28m26d] [3/5] EPOCH 12/30 | loss 0.1393 | val Dice 0.553 (terbaik 0.587) | 1m23d latih + 0m15d validasi | sisa training ~30m06d
+[10:47:01 +28m47d] [3/5] epoch 13/30 iterasi 115/461 | loss 0.1411 | 5.6 it/dtk | GPU 1.8 GB
+[10:47:24 +29m09d] [3/5] epoch 13/30 iterasi 230/461 | loss 0.1389 | 5.4 it/dtk | GPU 1.8 GB
+[10:47:45 +29m30d] [3/5] epoch 13/30 iterasi 345/461 | loss 0.1372 | 5.4 it/dtk | GPU 1.8 GB
+[10:48:05 +29m50d] [3/5] epoch 13/30 iterasi 460/461 | loss 0.1364 | 5.5 it/dtk | GPU 1.8 GB
+[10:48:21 +30m07d] [3/5] EPOCH 13/30 | loss 0.1364 | val Dice 0.586 (terbaik 0.587) | 1m24d latih + 0m16d validasi | sisa training ~28m26d
+[10:48:42 +30m28d] [3/5] epoch 14/30 iterasi 115/461 | loss 0.1381 | 5.6 it/dtk | GPU 1.8 GB
+[10:49:05 +30m50d] [3/5] epoch 14/30 iterasi 230/461 | loss 0.1376 | 5.3 it/dtk | GPU 1.8 GB
+[10:49:26 +31m11d] [3/5] epoch 14/30 iterasi 345/461 | loss 0.1348 | 5.4 it/dtk | GPU 1.8 GB
+[10:49:46 +31m31d] [3/5] epoch 14/30 iterasi 460/461 | loss 0.1338 | 5.5 it/dtk | GPU 1.8 GB
+[10:50:02 +31m47d] [3/5] EPOCH 14/30 | loss 0.1338 | val Dice 0.581 (terbaik 0.587) | 1m24d latih + 0m15d validasi | sisa training ~26m45d
+[10:50:23 +32m08d] [3/5] epoch 15/30 iterasi 115/461 | loss 0.1363 | 5.5 it/dtk | GPU 1.8 GB
+[10:50:45 +32m31d] [3/5] epoch 15/30 iterasi 230/461 | loss 0.1330 | 5.3 it/dtk | GPU 1.8 GB
+[10:51:06 +32m51d] [3/5] epoch 15/30 iterasi 345/461 | loss 0.1355 | 5.4 it/dtk | GPU 1.8 GB
+[10:51:26 +33m11d] [3/5] epoch 15/30 iterasi 460/461 | loss 0.1350 | 5.5 it/dtk | GPU 1.8 GB
+[10:51:42 +33m27d] [3/5] EPOCH 15/30 | loss 0.1350 | val Dice 0.612 (terbaik 0.612, disimpan) | 1m24d latih + 0m15d validasi | sisa training ~25m05d
+[10:52:03 +33m48d] [3/5] epoch 16/30 iterasi 115/461 | loss 0.1344 | 5.6 it/dtk | GPU 1.8 GB
+[10:52:25 +34m10d] [3/5] epoch 16/30 iterasi 230/461 | loss 0.1331 | 5.4 it/dtk | GPU 1.8 GB
+[10:52:46 +34m31d] [3/5] epoch 16/30 iterasi 345/461 | loss 0.1329 | 5.4 it/dtk | GPU 1.8 GB
+[10:53:06 +34m51d] [3/5] epoch 16/30 iterasi 460/461 | loss 0.1319 | 5.5 it/dtk | GPU 1.8 GB
+[10:53:22 +35m07d] [3/5] EPOCH 16/30 | loss 0.1320 | val Dice 0.596 (terbaik 0.612) | 1m23d latih + 0m15d validasi | sisa training ~23m24d
+[10:53:42 +35m28d] [3/5] epoch 17/30 iterasi 115/461 | loss 0.1330 | 5.6 it/dtk | GPU 1.8 GB
+[10:54:04 +35m50d] [3/5] epoch 17/30 iterasi 230/461 | loss 0.1295 | 5.4 it/dtk | GPU 1.8 GB
+[10:54:25 +36m11d] [3/5] epoch 17/30 iterasi 345/461 | loss 0.1345 | 5.4 it/dtk | GPU 1.8 GB
+[10:54:45 +36m31d] [3/5] epoch 17/30 iterasi 460/461 | loss 0.1324 | 5.5 it/dtk | GPU 1.8 GB
+[10:55:01 +36m47d] [3/5] EPOCH 17/30 | loss 0.1324 | val Dice 0.612 (terbaik 0.612) | 1m23d latih + 0m16d validasi | sisa training ~21m43d
+[10:55:22 +37m07d] [3/5] epoch 18/30 iterasi 115/461 | loss 0.1271 | 5.7 it/dtk | GPU 1.8 GB
+[10:55:44 +37m29d] [3/5] epoch 18/30 iterasi 230/461 | loss 0.1266 | 5.4 it/dtk | GPU 1.8 GB
+[10:56:05 +37m51d] [3/5] epoch 18/30 iterasi 345/461 | loss 0.1267 | 5.4 it/dtk | GPU 1.8 GB
+[10:56:25 +38m11d] [3/5] epoch 18/30 iterasi 460/461 | loss 0.1276 | 5.5 it/dtk | GPU 1.8 GB
+[10:56:41 +38m27d] [3/5] EPOCH 18/30 | loss 0.1276 | val Dice 0.598 (terbaik 0.612) | 1m23d latih + 0m16d validasi | sisa training ~20m03d
+[10:57:02 +38m47d] [3/5] epoch 19/30 iterasi 115/461 | loss 0.1234 | 5.6 it/dtk | GPU 1.8 GB
+[10:57:24 +39m09d] [3/5] epoch 19/30 iterasi 230/461 | loss 0.1248 | 5.4 it/dtk | GPU 1.8 GB
+[10:57:45 +39m30d] [3/5] epoch 19/30 iterasi 345/461 | loss 0.1248 | 5.4 it/dtk | GPU 1.8 GB
+[10:58:05 +39m51d] [3/5] epoch 19/30 iterasi 460/461 | loss 0.1242 | 5.5 it/dtk | GPU 1.8 GB
+[10:58:21 +40m07d] [3/5] EPOCH 19/30 | loss 0.1243 | val Dice 0.608 (terbaik 0.612) | 1m23d latih + 0m15d validasi | sisa training ~18m22d
+[10:58:42 +40m27d] [3/5] epoch 20/30 iterasi 115/461 | loss 0.1288 | 5.6 it/dtk | GPU 1.8 GB
+[10:59:04 +40m49d] [3/5] epoch 20/30 iterasi 230/461 | loss 0.1239 | 5.4 it/dtk | GPU 1.8 GB
+[10:59:25 +41m10d] [3/5] epoch 20/30 iterasi 345/461 | loss 0.1248 | 5.4 it/dtk | GPU 1.8 GB
+[10:59:45 +41m31d] [3/5] epoch 20/30 iterasi 460/461 | loss 0.1229 | 5.5 it/dtk | GPU 1.8 GB
+[11:00:01 +41m46d] [3/5] EPOCH 20/30 | loss 0.1230 | val Dice 0.599 (terbaik 0.612) | 1m23d latih + 0m15d validasi | sisa training ~16m42d
+[11:00:22 +42m07d] [3/5] epoch 21/30 iterasi 115/461 | loss 0.1183 | 5.6 it/dtk | GPU 1.8 GB
+[11:00:44 +42m29d] [3/5] epoch 21/30 iterasi 230/461 | loss 0.1201 | 5.4 it/dtk | GPU 1.8 GB
+[11:01:05 +42m51d] [3/5] epoch 21/30 iterasi 345/461 | loss 0.1190 | 5.4 it/dtk | GPU 1.8 GB
+[11:01:25 +43m11d] [3/5] epoch 21/30 iterasi 460/461 | loss 0.1192 | 5.5 it/dtk | GPU 1.8 GB
+[11:01:41 +43m27d] [3/5] EPOCH 21/30 | loss 0.1192 | val Dice 0.610 (terbaik 0.612) | 1m24d latih + 0m16d validasi | sisa training ~15m02d
+[11:02:02 +43m47d] [3/5] epoch 22/30 iterasi 115/461 | loss 0.1171 | 5.6 it/dtk | GPU 1.8 GB
+[11:02:24 +44m10d] [3/5] epoch 22/30 iterasi 230/461 | loss 0.1177 | 5.3 it/dtk | GPU 1.8 GB
+[11:02:45 +44m31d] [3/5] epoch 22/30 iterasi 345/461 | loss 0.1181 | 5.4 it/dtk | GPU 1.8 GB
+[11:03:06 +44m51d] [3/5] epoch 22/30 iterasi 460/461 | loss 0.1190 | 5.5 it/dtk | GPU 1.8 GB
+[11:03:21 +45m07d] [3/5] EPOCH 22/30 | loss 0.1190 | val Dice 0.635 (terbaik 0.635, disimpan) | 1m24d latih + 0m15d validasi | sisa training ~13m21d
+[11:03:42 +45m28d] [3/5] epoch 23/30 iterasi 115/461 | loss 0.1204 | 5.5 it/dtk | GPU 1.8 GB
+[11:04:05 +45m50d] [3/5] epoch 23/30 iterasi 230/461 | loss 0.1223 | 5.3 it/dtk | GPU 1.8 GB
+[11:04:26 +46m11d] [3/5] epoch 23/30 iterasi 345/461 | loss 0.1212 | 5.4 it/dtk | GPU 1.8 GB
+[11:04:46 +46m31d] [3/5] epoch 23/30 iterasi 460/461 | loss 0.1199 | 5.5 it/dtk | GPU 1.8 GB
+[11:05:02 +46m47d] [3/5] EPOCH 23/30 | loss 0.1199 | val Dice 0.639 (terbaik 0.639, disimpan) | 1m24d latih + 0m16d validasi | sisa training ~11m41d
+[11:05:23 +47m08d] [3/5] epoch 24/30 iterasi 115/461 | loss 0.1163 | 5.5 it/dtk | GPU 1.8 GB
+[11:05:45 +47m31d] [3/5] epoch 24/30 iterasi 230/461 | loss 0.1162 | 5.3 it/dtk | GPU 1.8 GB
+[11:06:06 +47m51d] [3/5] epoch 24/30 iterasi 345/461 | loss 0.1161 | 5.4 it/dtk | GPU 1.8 GB
+[11:06:26 +48m12d] [3/5] epoch 24/30 iterasi 460/461 | loss 0.1165 | 5.5 it/dtk | GPU 1.8 GB
+[11:06:43 +48m29d] [3/5] EPOCH 24/30 | loss 0.1166 | val Dice 0.619 (terbaik 0.639) | 1m24d latih + 0m16d validasi | sisa training ~10m01d
+[11:07:04 +48m49d] [3/5] epoch 25/30 iterasi 115/461 | loss 0.1129 | 5.5 it/dtk | GPU 1.8 GB
+[11:07:26 +49m12d] [3/5] epoch 25/30 iterasi 230/461 | loss 0.1162 | 5.3 it/dtk | GPU 1.8 GB
+[11:07:47 +49m33d] [3/5] epoch 25/30 iterasi 345/461 | loss 0.1167 | 5.4 it/dtk | GPU 1.8 GB
+[11:08:07 +49m53d] [3/5] epoch 25/30 iterasi 460/461 | loss 0.1168 | 5.5 it/dtk | GPU 1.8 GB
+[11:08:25 +50m10d] [3/5] EPOCH 25/30 | loss 0.1168 | val Dice 0.581 (terbaik 0.639) | 1m24d latih + 0m17d validasi | sisa training ~8m21d
+[11:08:45 +50m31d] [3/5] epoch 26/30 iterasi 115/461 | loss 0.1201 | 5.5 it/dtk | GPU 1.8 GB
+[11:09:08 +50m53d] [3/5] epoch 26/30 iterasi 230/461 | loss 0.1180 | 5.3 it/dtk | GPU 1.8 GB
+[11:09:29 +51m14d] [3/5] epoch 26/30 iterasi 345/461 | loss 0.1165 | 5.4 it/dtk | GPU 1.8 GB
+[11:09:49 +51m34d] [3/5] epoch 26/30 iterasi 460/461 | loss 0.1158 | 5.5 it/dtk | GPU 1.8 GB
+[11:10:06 +51m52d] [3/5] EPOCH 26/30 | loss 0.1158 | val Dice 0.633 (terbaik 0.639) | 1m24d latih + 0m17d validasi | sisa training ~6m41d
+[11:10:27 +52m12d] [3/5] epoch 27/30 iterasi 115/461 | loss 0.1142 | 5.5 it/dtk | GPU 1.8 GB
+[11:10:49 +52m35d] [3/5] epoch 27/30 iterasi 230/461 | loss 0.1107 | 5.3 it/dtk | GPU 1.8 GB
+[11:11:10 +52m56d] [3/5] epoch 27/30 iterasi 345/461 | loss 0.1124 | 5.4 it/dtk | GPU 1.8 GB
+[11:11:30 +53m16d] [3/5] epoch 27/30 iterasi 460/461 | loss 0.1138 | 5.5 it/dtk | GPU 1.8 GB
+[11:11:48 +53m33d] [3/5] EPOCH 27/30 | loss 0.1138 | val Dice 0.639 (terbaik 0.639, disimpan) | 1m24d latih + 0m17d validasi | sisa training ~5m01d
+[11:12:09 +53m54d] [3/5] epoch 28/30 iterasi 115/461 | loss 0.1087 | 5.5 it/dtk | GPU 1.8 GB
+[11:12:31 +54m17d] [3/5] epoch 28/30 iterasi 230/461 | loss 0.1145 | 5.3 it/dtk | GPU 1.8 GB
+[11:12:52 +54m38d] [3/5] epoch 28/30 iterasi 345/461 | loss 0.1141 | 5.4 it/dtk | GPU 1.8 GB
+[11:13:12 +54m58d] [3/5] epoch 28/30 iterasi 460/461 | loss 0.1130 | 5.4 it/dtk | GPU 1.8 GB
+[11:13:30 +55m16d] [3/5] EPOCH 28/30 | loss 0.1130 | val Dice 0.643 (terbaik 0.643, disimpan) | 1m24d latih + 0m17d validasi | sisa training ~3m20d
+[11:13:51 +55m36d] [3/5] epoch 29/30 iterasi 115/461 | loss 0.1144 | 5.6 it/dtk | GPU 1.8 GB
+[11:14:13 +55m59d] [3/5] epoch 29/30 iterasi 230/461 | loss 0.1139 | 5.3 it/dtk | GPU 1.8 GB
+[11:14:34 +56m20d] [3/5] epoch 29/30 iterasi 345/461 | loss 0.1154 | 5.4 it/dtk | GPU 1.8 GB
+[11:14:55 +56m40d] [3/5] epoch 29/30 iterasi 460/461 | loss 0.1129 | 5.4 it/dtk | GPU 1.8 GB
+[11:15:12 +56m58d] [3/5] EPOCH 29/30 | loss 0.1129 | val Dice 0.638 (terbaik 0.643) | 1m24d latih + 0m17d validasi | sisa training ~1m40d
+[11:15:33 +57m19d] [3/5] epoch 30/30 iterasi 115/461 | loss 0.1125 | 5.5 it/dtk | GPU 1.8 GB
+[11:15:56 +57m41d] [3/5] epoch 30/30 iterasi 230/461 | loss 0.1131 | 5.3 it/dtk | GPU 1.8 GB
+[11:16:17 +58m02d] [3/5] epoch 30/30 iterasi 345/461 | loss 0.1131 | 5.3 it/dtk | GPU 1.8 GB
+[11:16:37 +58m23d] [3/5] epoch 30/30 iterasi 460/461 | loss 0.1128 | 5.4 it/dtk | GPU 1.8 GB
+[11:16:55 +58m40d] [3/5] EPOCH 30/30 | loss 0.1128 | val Dice 0.638 (terbaik 0.643) | 1m24d latih + 0m17d validasi | sisa training ~0m00d
+[11:16:55 +58m40d] [4/5] Evaluasi model terbaik (val Dice 0.643) pada 36 subjek bank (data uji)...
+[11:16:55 +58m41d] [4/5] sub-3: Dice 0.928 | recall per lesi 0.80 | kunci 156.6 ml, prediksi 152.5 ml
+[11:16:55 +58m41d] [4/5] sub-94: Dice 0.801 | recall per lesi 1.00 | kunci 8.4 ml, prediksi 5.8 ml
+[11:16:56 +58m41d] [4/5] sub-137: Dice 0.559 | recall per lesi 1.00 | kunci 0.6 ml, prediksi 0.6 ml
+[11:16:56 +58m42d] [4/5] sub-203: Dice 0.667 | recall per lesi 0.50 | kunci 30.0 ml, prediksi 15.1 ml
+[11:16:56 +58m42d] [4/5] sub-267: Dice 0.864 | recall per lesi 1.00 | kunci 5.6 ml, prediksi 4.8 ml
+[11:16:57 +58m42d] [4/5] sub-303: Dice 0.860 | recall per lesi 1.00 | kunci 488.3 ml, prediksi 375.9 ml
+[11:16:57 +58m43d] [4/5] sub-577: Dice 0.801 | recall per lesi 1.00 | kunci 1.6 ml, prediksi 1.2 ml
+[11:16:57 +58m43d] [4/5] sub-580: Dice 0.428 | recall per lesi 0.50 | kunci 35.0 ml, prediksi 12.6 ml
+[11:16:58 +58m44d] [4/5] sub-652: Dice 0.919 | recall per lesi 1.00 | kunci 137.6 ml, prediksi 122.8 ml
+[11:16:58 +58m44d] [4/5] sub-654: Dice 0.889 | recall per lesi 1.00 | kunci 27.1 ml, prediksi 23.6 ml
+[11:16:59 +58m44d] [4/5] sub-698: Dice 0.850 | recall per lesi 1.00 | kunci 183.4 ml, prediksi 163.0 ml
+[11:16:59 +58m44d] [4/5] sub-724: Dice 0.842 | recall per lesi 0.71 | kunci 343.0 ml, prediksi 255.3 ml
+[11:16:59 +58m45d] [4/5] sub-754: Dice 0.945 | recall per lesi 0.50 | kunci 71.9 ml, prediksi 71.0 ml
+[11:17:00 +58m45d] [4/5] sub-763: Dice 0.906 | recall per lesi 1.00 | kunci 8.3 ml, prediksi 8.0 ml
+[11:17:00 +58m46d] [4/5] sub-830: Dice 0.740 | recall per lesi 1.00 | kunci 62.2 ml, prediksi 40.5 ml
+[11:17:00 +58m46d] [4/5] sub-898: Dice 0.325 | recall per lesi 0.50 | kunci 8.8 ml, prediksi 1.8 ml
+[11:17:01 +58m46d] [4/5] sub-901: Dice 0.632 | recall per lesi 0.33 | kunci 7.0 ml, prediksi 5.4 ml
+[11:17:01 +58m47d] [4/5] sub-924: Dice 0.637 | recall per lesi 0.75 | kunci 44.0 ml, prediksi 21.8 ml
+[11:17:02 +58m47d] [4/5] sub-934: Dice 0.000 | recall per lesi 0.00 | kunci 0.7 ml, prediksi 0.0 ml
+[11:17:02 +58m48d] [4/5] sub-998: Dice 0.782 | recall per lesi 0.78 | kunci 47.4 ml, prediksi 43.6 ml
+[11:17:03 +58m48d] [4/5] sub-1041: Dice 0.934 | recall per lesi 1.00 | kunci 119.1 ml, prediksi 123.8 ml
+[11:17:03 +58m48d] [4/5] sub-1043: Dice 0.176 | recall per lesi 1.00 | kunci 0.3 ml, prediksi 1.1 ml
+[11:17:03 +58m49d] [4/5] sub-1150: Dice 0.790 | recall per lesi 0.57 | kunci 87.6 ml, prediksi 86.3 ml
+[11:17:04 +58m50d] [4/5] sub-1171: Dice 0.824 | recall per lesi 0.91 | kunci 21.9 ml, prediksi 18.9 ml
+[11:17:05 +58m50d] [4/5] sub-1232: Dice 0.926 | recall per lesi 0.95 | kunci 96.7 ml, prediksi 96.1 ml
+[11:17:05 +58m50d] [4/5] sub-1269: Dice 0.000 | recall per lesi 0.00 | kunci 1.7 ml, prediksi 0.0 ml
+[11:17:05 +58m51d] [4/5] sub-1301: Dice 0.874 | recall per lesi 1.00 | kunci 24.0 ml, prediksi 24.0 ml
+[11:17:06 +58m51d] [4/5] sub-1320: Dice 0.921 | recall per lesi 1.00 | kunci 71.8 ml, prediksi 66.0 ml
+[11:17:06 +58m51d] [4/5] sub-1362: Dice 0.798 | recall per lesi 1.00 | kunci 10.1 ml, prediksi 11.4 ml
+[11:17:06 +58m52d] [4/5] sub-1385: Dice 0.909 | recall per lesi 1.00 | kunci 0.7 ml, prediksi 0.7 ml
+[11:17:07 +58m52d] [4/5] sub-1394: Dice 0.771 | recall per lesi 0.80 | kunci 1.7 ml, prediksi 1.4 ml
+[11:17:07 +58m52d] [4/5] sub-1413: Dice 0.918 | recall per lesi 1.00 | kunci 61.0 ml, prediksi 58.4 ml
+[11:17:07 +58m53d] [4/5] sub-1424: Dice 0.809 | recall per lesi 0.83 | kunci 3.6 ml, prediksi 3.0 ml
+[11:17:08 +58m53d] [4/5] sub-1517: Dice 0.916 | recall per lesi 0.50 | kunci 252.0 ml, prediksi 229.0 ml
+[11:17:08 +58m53d] [4/5] sub-1634: Dice 0.919 | recall per lesi 0.90 | kunci 128.7 ml, prediksi 133.1 ml
+[11:17:08 +58m54d] [4/5] sub-1671: Dice 0.715 | recall per lesi 1.00 | kunci 29.2 ml, prediksi 51.3 ml
+[11:17:08 +58m54d] [4/5] HASIL UJI: Dice rerata 0.738 (IK95% 0.645-0.813), median 0.816, recall per lesi 0.80
+[11:17:10 +58m55d] [5/5] SELESAI. Unduh /kaggle/working/sinaps_out.zip lalu ekstrak ke mvp/pipeline/kaggle_out/

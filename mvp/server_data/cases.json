@@ -95,7 +95,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 0.127
   },
-  "model": null,
+  "model": {
+   "volume_ml": 152.45,
+   "jumlah_fokus": 4,
+   "dice_terhadap_kunci": 0.928,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 6,
    "etiologi": "5: Cryptogenic Stroke"
@@ -137,7 +142,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": -0.923
   },
-  "model": null,
+  "model": {
+   "volume_ml": 5.83,
+   "jumlah_fokus": 2,
+   "dice_terhadap_kunci": 0.8,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 0,
    "etiologi": "5: Cryptogenic Stroke"
@@ -179,7 +189,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 0.242
   },
-  "model": null,
+  "model": {
+   "volume_ml": 0.6,
+   "jumlah_fokus": 2,
+   "dice_terhadap_kunci": 0.562,
+   "keyakinan_rendah": true
+  },
   "luaran": {
    "rankin_pulang": 2,
    "etiologi": "5: Cryptogenic Stroke"
@@ -236,7 +251,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": -0.478
   },
-  "model": null,
+  "model": {
+   "volume_ml": 15.07,
+   "jumlah_fokus": 2,
+   "dice_terhadap_kunci": 0.665,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 0,
    "etiologi": "5: Cryptogenic Stroke"
@@ -278,7 +298,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": -0.75
   },
-  "model": null,
+  "model": {
+   "volume_ml": 4.78,
+   "jumlah_fokus": 1,
+   "dice_terhadap_kunci": 0.863,
+   "keyakinan_rendah": true
+  },
   "luaran": {
    "rankin_pulang": 3,
    "etiologi": "5: Cryptogenic Stroke"
@@ -320,7 +345,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": -2.689
   },
-  "model": null,
+  "model": {
+   "volume_ml": 375.34,
+   "jumlah_fokus": 1,
+   "dice_terhadap_kunci": 0.859,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 6,
    "etiologi": "5: Cryptogenic Stroke"
@@ -362,7 +392,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": -0.212
   },
-  "model": null,
+  "model": {
+   "volume_ml": 1.22,
+   "jumlah_fokus": 1,
+   "dice_terhadap_kunci": 0.799,
+   "keyakinan_rendah": true
+  },
   "luaran": {
    "rankin_pulang": 1,
    "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
@@ -479,7 +514,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 1.041
   },
-  "model": null,
+  "model": {
+   "volume_ml": 12.57,
+   "jumlah_fokus": 11,
+   "dice_terhadap_kunci": 0.427,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 5,
    "etiologi": "2: Cardioembolism (e.g., atrial fibrillation/flutter, prosthetic heart valve, recent MI)"
@@ -551,7 +591,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": -0.554
   },
-  "model": null,
+  "model": {
+   "volume_ml": 122.73,
+   "jumlah_fokus": 1,
+   "dice_terhadap_kunci": 0.919,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 5,
    "etiologi": "2: Cardioembolism (e.g., atrial fibrillation/flutter, prosthetic heart valve, recent MI)"
@@ -593,7 +638,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": -1.432
   },
-  "model": null,
+  "model": {
+   "volume_ml": 23.51,
+   "jumlah_fokus": 1,
+   "dice_terhadap_kunci": 0.889,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 0,
    "etiologi": "4: Stroke of other determined etiology"
@@ -650,7 +700,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": -1.263
   },
-  "model": null,
+  "model": {
+   "volume_ml": 162.72,
+   "jumlah_fokus": 2,
+   "dice_terhadap_kunci": 0.849,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 6,
    "etiologi": "5: Cryptogenic Stroke"
@@ -782,7 +837,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 0.272
   },
-  "model": null,
+  "model": {
+   "volume_ml": 255.03,
+   "jumlah_fokus": 6,
+   "dice_terhadap_kunci": 0.841,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 6,
    "etiologi": "5: Cryptogenic Stroke"
@@ -839,7 +899,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": -0.857
   },
-  "model": null,
+  "model": {
+   "volume_ml": 70.94,
+   "jumlah_fokus": 1,
+   "dice_terhadap_kunci": 0.945,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 3,
    "etiologi": "2: Cardioembolism (e.g., atrial fibrillation/flutter, prosthetic heart valve, recent MI)"
@@ -881,7 +946,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": -0.92
   },
-  "model": null,
+  "model": {
+   "volume_ml": 7.9,
+   "jumlah_fokus": 1,
+   "dice_terhadap_kunci": 0.907,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 2,
    "etiologi": "5: Cryptogenic Stroke"
@@ -938,7 +1008,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": -0.794
   },
-  "model": null,
+  "model": {
+   "volume_ml": 40.51,
+   "jumlah_fokus": 2,
+   "dice_terhadap_kunci": 0.739,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 1,
    "etiologi": "4: Stroke of other determined etiology"
@@ -995,7 +1070,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 0.055
   },
-  "model": null,
+  "model": {
+   "volume_ml": 1.79,
+   "jumlah_fokus": 1,
+   "dice_terhadap_kunci": 0.325,
+   "keyakinan_rendah": true
+  },
   "luaran": {
    "rankin_pulang": 6,
    "etiologi": "5: Cryptogenic Stroke"
@@ -1067,7 +1147,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 0.739
   },
-  "model": null,
+  "model": {
+   "volume_ml": 5.4,
+   "jumlah_fokus": 4,
+   "dice_terhadap_kunci": 0.633,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 5,
    "etiologi": "3: Small-vessel disease (e.g., Subcortical or brain stem lacunar infarction <1.5 cm)"
@@ -1154,7 +1239,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 0.356
   },
-  "model": null,
+  "model": {
+   "volume_ml": 21.76,
+   "jumlah_fokus": 4,
+   "dice_terhadap_kunci": 0.637,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 1,
    "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
@@ -1196,7 +1286,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 0.134
   },
-  "model": null,
+  "model": {
+   "volume_ml": 0.0,
+   "jumlah_fokus": 0,
+   "dice_terhadap_kunci": 0.0,
+   "keyakinan_rendah": true
+  },
   "luaran": {
    "rankin_pulang": 3,
    "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
@@ -1988,7 +2083,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 3.996
   },
-  "model": null,
+  "model": {
+   "volume_ml": 43.57,
+   "jumlah_fokus": 42,
+   "dice_terhadap_kunci": 0.782,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 2,
    "etiologi": "5: Cryptogenic Stroke"
@@ -2090,7 +2190,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 0.246
   },
-  "model": null,
+  "model": {
+   "volume_ml": 123.43,
+   "jumlah_fokus": 7,
+   "dice_terhadap_kunci": 0.934,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 3,
    "etiologi": "5: Cryptogenic Stroke"
@@ -2132,7 +2237,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 0.581
   },
-  "model": null,
+  "model": {
+   "volume_ml": 1.06,
+   "jumlah_fokus": 2,
+   "dice_terhadap_kunci": 0.164,
+   "keyakinan_rendah": true
+  },
   "luaran": {
    "rankin_pulang": 1,
    "etiologi": "5: Cryptogenic Stroke"
@@ -2264,7 +2374,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 0.865
   },
-  "model": null,
+  "model": {
+   "volume_ml": 86.2,
+   "jumlah_fokus": 2,
+   "dice_terhadap_kunci": 0.79,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 4,
    "etiologi": "5: Cryptogenic Stroke"
@@ -2456,7 +2571,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 2.119
   },
-  "model": null,
+  "model": {
+   "volume_ml": 18.81,
+   "jumlah_fokus": 10,
+   "dice_terhadap_kunci": 0.823,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 5,
    "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
@@ -2798,7 +2918,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 2.407
   },
-  "model": null,
+  "model": {
+   "volume_ml": 95.83,
+   "jumlah_fokus": 18,
+   "dice_terhadap_kunci": 0.926,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 2,
    "etiologi": "5: Cryptogenic Stroke"
@@ -2840,7 +2965,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": -0.23
   },
-  "model": null,
+  "model": {
+   "volume_ml": 0.0,
+   "jumlah_fokus": 0,
+   "dice_terhadap_kunci": 0.0,
+   "keyakinan_rendah": true
+  },
   "luaran": {
    "rankin_pulang": 1,
    "etiologi": "4: Stroke of other determined etiology"
@@ -2897,7 +3027,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": -0.38
   },
-  "model": null,
+  "model": {
+   "volume_ml": 23.98,
+   "jumlah_fokus": 1,
+   "dice_terhadap_kunci": 0.873,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 4,
    "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
@@ -2969,7 +3104,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": -0.271
   },
-  "model": null,
+  "model": {
+   "volume_ml": 65.96,
+   "jumlah_fokus": 2,
+   "dice_terhadap_kunci": 0.921,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 4,
    "etiologi": "2: Cardioembolism (e.g., atrial fibrillation/flutter, prosthetic heart valve, recent MI)"
@@ -3146,7 +3286,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 2.316
   },
-  "model": null,
+  "model": {
+   "volume_ml": 11.35,
+   "jumlah_fokus": 9,
+   "dice_terhadap_kunci": 0.801,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 1,
    "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
@@ -3188,7 +3333,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 0.15
   },
-  "model": null,
+  "model": {
+   "volume_ml": 0.72,
+   "jumlah_fokus": 1,
+   "dice_terhadap_kunci": 0.909,
+   "keyakinan_rendah": true
+  },
   "luaran": {
    "rankin_pulang": 5,
    "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
@@ -3290,7 +3440,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 2.085
   },
-  "model": null,
+  "model": {
+   "volume_ml": 1.37,
+   "jumlah_fokus": 4,
+   "dice_terhadap_kunci": 0.763,
+   "keyakinan_rendah": true
+  },
   "luaran": {
    "rankin_pulang": 0,
    "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
@@ -3332,7 +3487,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": -1.785
   },
-  "model": null,
+  "model": {
+   "volume_ml": 58.27,
+   "jumlah_fokus": 1,
+   "dice_terhadap_kunci": 0.918,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 0,
    "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
@@ -3449,7 +3609,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 2.03
   },
-  "model": null,
+  "model": {
+   "volume_ml": 3.01,
+   "jumlah_fokus": 5,
+   "dice_terhadap_kunci": 0.809,
+   "keyakinan_rendah": true
+  },
   "luaran": {
    "rankin_pulang": 3,
    "etiologi": "1: Large-artery atherosclerosis (e.g., carotid or basilar artery stenosis)"
@@ -3506,7 +3671,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": -1.401
   },
-  "model": null,
+  "model": {
+   "volume_ml": 228.83,
+   "jumlah_fokus": 2,
+   "dice_terhadap_kunci": 0.916,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 4,
    "etiologi": "4: Stroke of other determined etiology"
@@ -3683,7 +3853,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 1.212
   },
-  "model": null,
+  "model": {
+   "volume_ml": 132.89,
+   "jumlah_fokus": 8,
+   "dice_terhadap_kunci": 0.919,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 6,
    "etiologi": "2: Cardioembolism (e.g., atrial fibrillation/flutter, prosthetic heart valve, recent MI)"
@@ -3890,7 +4065,12 @@
    "teritori_arteri": "tidak diketahui (registrasi atlas belum tersedia di MVP)",
    "indeks_kesulitan_D": 2.119
   },
-  "model": null,
+  "model": {
+   "volume_ml": 51.25,
+   "jumlah_fokus": 9,
+   "dice_terhadap_kunci": 0.715,
+   "keyakinan_rendah": false
+  },
   "luaran": {
    "rankin_pulang": 5,
    "etiologi": "4: Stroke of other determined etiology"
