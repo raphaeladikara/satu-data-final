@@ -5,6 +5,7 @@ import { AuthProvider, RequireRole } from './auth';
 import Landing from './pages/Landing';
 import { Daftar, Masuk } from './pages/Auth';
 import { Page } from './components/Shell';
+import './index.css';
 import './styles.css';
 
 // halaman di balik login dimuat terpisah supaya halaman depan tidak ikut memuat Cornerstone3D

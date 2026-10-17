@@ -11,16 +11,28 @@
   "dependencies": {
     "@cornerstonejs/core": "5.11.0",
     "@cornerstonejs/tools": "5.11.0",
+    "@tailwindcss/vite": "^4.1.14",
+    "clsx": "^2.1.1",
     "events": "3.3.0",
+    "framer-motion": "^12.23.24",
+    "lucide-react": "^0.545.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-router-dom": "7.6.2"
+    "react-router-dom": "7.6.2",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss": "^4.1.14",
+    "three": "^0.180.0"
   },
   "devDependencies": {
     "@types/react": "19.1.6",
     "@types/react-dom": "19.1.6",
+    "@types/three": "^0.180.0",
     "@vitejs/plugin-react": "4.5.2",
     "typescript": "5.8.3",
     "vite": "6.3.5"
+  },
+  "overrides": {
+    "motion-dom": "12.23.23",
+    "motion-utils": "12.23.6"
   }
 }

@@ -19,13 +19,13 @@
       "destination": "/api/index"
     },
     {
-      "source": "/((?!api/|cases/|assets/).*)",
+      "source": "/((?!api/|cases/|brain3d/|assets/).*)",
       "destination": "/index.html"
     }
   ],
   "headers": [
     {
-      "source": "/cases/(.*)",
+      "source": "/(cases|brain3d)/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

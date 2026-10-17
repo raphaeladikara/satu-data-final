@@ -1,0 +1,167 @@
+/* Urutan layer: gaya lama (legacy) di bawah base + utilitas Tailwind.
+   Preflight Tailwind sengaja tidak dipakai global supaya halaman lama tidak berubah;
+   halaman baru memakai kelas .tw yang membawa reset-nya sendiri. */
+@layer theme, legacy, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+@theme {
+  --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: 'Instrument Serif', ui-serif, Georgia, serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  /* palet SINAPS: gambar 1 (sage, teal, sky) + gambar 2 (chambray, terracotta, sandstone, muslin, clove) */
+  --color-muslin: #f1efe6;
+  --color-paper: #faf8f2;
+  --color-mint: #eaf3de;
+  --color-sand: #dccfb8;
+  --color-sand-2: #e8dfcd;
+  --color-clove: #53443d;
+  --color-ink: #10313a;
+  --color-teal: #195764;
+  --color-teal-600: #1f6b7a;
+  --color-teal-800: #0f3a43;
+  --color-teal-900: #0a262c;
+  --color-teal-950: #061a1f;
+  --color-sage: #80a874;
+  --color-leaf: #aad39c;
+  --color-sky: #93c7cf;
+  --color-chambray: #7a9cb3;
+  --color-terra: #ad7556;
+  --color-terra-soft: #e9c9b4;
+
+  /* token gaya shadcn, dipakai komponen ui/ */
+  --color-background: var(--color-muslin);
+  --color-foreground: var(--color-ink);
+  --color-card: var(--color-paper);
+  --color-card-foreground: var(--color-ink);
+  --color-primary: var(--color-teal);
+  --color-primary-foreground: #f4fbf6;
+  --color-muted: #e6e1d4;
+  --color-muted-foreground: #5f655f;
+  --color-border: #ddd5c4;
+  --color-ring: var(--color-teal);
+  --color-chart-1: var(--color-teal);
+  --color-chart-2: var(--color-sage);
+  --color-chart-3: var(--color-sky);
+  --color-chart-4: var(--color-terra);
+  --color-chart-5: var(--color-chambray);
+
+  --radius-4xl: 2rem;
+  --radius-5xl: 2.5rem;
+
+  --animate-border-beam: border-beam calc(var(--duration) * 1s) infinite linear;
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-pulse-ring: pulse-ring 1.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+
+  @keyframes border-beam {
+    100% {
+      offset-distance: 100%;
+    }
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  @keyframes pulse-ring {
+    0% {
+      box-shadow: 0 0 0 0 rgb(173 117 86 / 0.55);
+    }
+    100% {
+      box-shadow: 0 0 0 14px rgb(173 117 86 / 0);
+    }
+  }
+}
+
+/* reset terbatas untuk halaman baru (setara preflight, hanya di dalam .tw) */
+@layer base {
+  .tw {
+    font-family: var(--font-sans);
+    color: var(--color-foreground);
+    background: var(--color-background);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: 'ss01', 'cv11';
+    color-scheme: light;
+  }
+  .tw *,
+  .tw ::before,
+  .tw ::after {
+    box-sizing: border-box;
+    border: 0 solid;
+    margin: 0;
+    padding: 0;
+  }
+  .tw :where(h1, h2, h3, h4, h5, h6) {
+    font-size: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+  }
+  .tw :where(ol, ul, menu) {
+    list-style: none;
+  }
+  .tw :where(img, svg, video, canvas) {
+    display: block;
+    max-width: 100%;
+  }
+  .tw :where(a) {
+    color: inherit;
+    text-decoration: inherit;
+  }
+  .tw :where(button, input, select, textarea) {
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border-radius: 0;
+  }
+  .tw :where(button) {
+    cursor: pointer;
+  }
+  .tw :where(:focus-visible) {
+    outline: 2px solid var(--color-teal);
+    outline-offset: 3px;
+  }
+  .tw ::selection {
+    background: var(--color-leaf);
+    color: var(--color-teal-900);
+  }
+}
+
+@layer components {
+  /* blok "stabilo" di belakang kata kunci, gaya referensi Kira */
+  .mark-hl {
+    position: relative;
+    white-space: nowrap;
+    padding: 0 0.12em;
+    margin: 0 -0.04em;
+    border-radius: 0.14em;
+    background: var(--hl, var(--color-leaf));
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+  .grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tw *,
+  .tw ::before,
+  .tw ::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
