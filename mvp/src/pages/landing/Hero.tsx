@@ -26,7 +26,7 @@ export default function Hero({ cases }: { cases: number }) {
   const enter = (d: number) => (reduce ? {} : { initial: { y: 12 }, animate: { y: 0 }, transition: { duration: 0.8, delay: d, ease: EASE } });
   const lesionSlices = brain?.lesionPerSlice.filter((n) => n > 0).length ?? 0;
   const zoomPct = Math.round((ZOOM0 / zoom) * 100);
-  const clampZoom = (z: number) => setZoom(Math.min(1.8, Math.max(0.3, z)));
+  const zoomBy = (f: number) => setZoom((z) => Math.min(1.8, Math.max(0.3, z * f)));
 
   return (
     <section id="top" className="relative overflow-hidden">
@@ -102,10 +102,10 @@ export default function Hero({ cases }: { cases: number }) {
               <Toggle on={explode} onClick={() => setExplode(!explode)} icon={<Layers className="size-4" />} label="Pisah slice" />
               <Toggle on={split} onClick={() => setSplit(!split)} icon={<Columns2 className="size-4" />} label="Belah hemisfer" />
               <span aria-hidden="true" className="mx-1 h-5 w-px bg-line" />
-              <IconBtn label="Perkecil" onClick={() => clampZoom(zoom * 1.25)}>
+              <IconBtn label="Perkecil" onClick={() => zoomBy(1.25)}>
                 <Minus className="size-4" />
               </IconBtn>
-              <IconBtn label="Zoom ke dalam" onClick={() => clampZoom(zoom / 1.25)}>
+              <IconBtn label="Zoom ke dalam" onClick={() => zoomBy(0.8)}>
                 <Plus className="size-4" />
               </IconBtn>
               <IconBtn

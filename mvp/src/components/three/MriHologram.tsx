@@ -404,7 +404,7 @@ export default function MriHologram({
         const scanZ = L.scan && !still ? ((Math.sin(t * 0.7) + 1) / 2) * (Z - 1) : -10;
         for (let z = 0; z < Z; z++) {
           const y = z * gap - height / 2;
-          const sep = w * 0.38 * splitS;
+          const sep = w * 0.2 * splitS;
           meshes[z * 2].position.set(-w / 4 - sep, y, 0);
           meshes[z * 2 + 1].position.set(w / 4 + sep, y, 0);
           const u = mats[z].uniforms;
@@ -421,7 +421,7 @@ export default function MriHologram({
         const pa = pgeo.getAttribute('position') as THREE.BufferAttribute;
         for (let i = 0; i < ptSlice.length; i++) {
           pa.setY(i, ptSlice[i] * gap - height / 2 + Math.sin(t * 2 + i) * 0.004);
-          pa.setX(i, ppos[i * 3] + ptSide[i] * w * 0.38 * splitS);
+          pa.setX(i, ppos[i * 3] + ptSide[i] * w * 0.2 * splitS);
         }
         pa.needsUpdate = true;
         pmat.opacity = 0.5 * les;
