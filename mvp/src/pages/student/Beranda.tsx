@@ -9,6 +9,7 @@ import { Empty, Loading, Page } from '../../components/Shell';
 import { buttonClass } from '@/components/ui/button';
 import { currentStreak, dailyCounts, todayWib, totalMinutes, type Session } from '@/lib/activity';
 import { cn } from '@/lib/utils';
+import { StatTile } from '@/components/ui/bento';
 import { LESSONS, lessonById } from '../../content/lessons';
 import JoinClass from '../../components/JoinClass';
 import { Tour, useTour, type TourStep } from '../../components/Tour';
@@ -67,8 +68,8 @@ export default function Beranda() {
       <Tour steps={BERANDA_TOUR} open={tour.open} onClose={tour.close} />
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-teal">{today}</p>
-          <h1 className="mt-2.5 font-serif text-[clamp(2.4rem,4.4vw,3.8rem)] leading-[1.02] tracking-[-0.015em]">
+          <p className="font-display text-[12px] font-medium uppercase tracking-[0.2em] text-teal">{today}</p>
+          <h1 className="mt-2.5 font-serif text-[clamp(1.87rem,3.43vw,2.96rem)] leading-[1.12] tracking-[-0.01em]">
             Halo, <em className="text-teal">{first}.</em>
           </h1>
           <p className="mt-2 text-[14.5px] text-ink/60">
@@ -104,7 +105,7 @@ export default function Beranda() {
             <span className="flex w-fit items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[12px]">
               <Sparkles className="size-3.5 text-leaf" /> Langkah berikutnya · {next.kicker}
             </span>
-            <h2 className="mt-5 font-serif text-[2.4rem] leading-[1.05]">{next.title}</h2>
+            <h2 className="mt-5 font-serif text-[1.87rem] leading-[1.12]">{next.title}</h2>
             <p className="mt-3 max-w-md text-[14.5px] leading-relaxed text-mint/75">{next.body}</p>
             <div className="mt-auto flex flex-wrap gap-2 pt-7">
               <Link to={next.a[0]} className={buttonClass('light', 'lg')}>
@@ -118,13 +119,13 @@ export default function Beranda() {
         </motion.section>
 
         <div className="grid grid-cols-2 gap-4 lg:col-span-3">
-          <Kpi icon={ScanLine} tone="bg-leaf" label="kasus dikerjakan" value={String(me.ringkas.n_kasus)} />
-          <Kpi icon={Gauge} tone="bg-sky" label="rerata Dice" value={me.ringkas.mean_dice === null ? '—' : fmt.num(me.ringkas.mean_dice)} />
-          <Kpi icon={Target} tone="bg-terra-soft" label="KC dikuasai" value={String(me.ringkas.kc_dikuasai)} of="/4" />
-          <Kpi icon={GraduationCap} tone="bg-sand-2" label="modul selesai" value={String(doneLessons)} of={`/${LESSONS.length}`} />
+          <StatTile layout="stack" icon={ScanLine} accent="leaf" label="kasus dikerjakan" value={String(me.ringkas.n_kasus)} />
+          <StatTile layout="stack" icon={Gauge} accent="sky" label="rerata Dice" value={me.ringkas.mean_dice === null ? '—' : fmt.num(me.ringkas.mean_dice)} />
+          <StatTile layout="stack" icon={Target} accent="terra" label="KC dikuasai" value={String(me.ringkas.kc_dikuasai)} of="/4" />
+          <StatTile layout="stack" icon={GraduationCap} accent="sand" label="modul selesai" value={String(doneLessons)} of={`/${LESSONS.length}`} />
         </div>
 
-        <section data-tour="mastery" className="rounded-[2rem] border border-ink/8 bg-paper p-6 lg:col-span-4">
+        <section data-tour="mastery" className="rounded-[2rem] card-surface p-6 lg:col-span-4">
           <div className="flex items-baseline justify-between">
             <h2 className="text-[17px] font-semibold tracking-tight">Penguasaan kompetensi</h2>
             <span className="text-[11.5px] text-ink/45">BKT · dikuasai ≥ 95%</span>
@@ -152,7 +153,7 @@ export default function Beranda() {
           <p className="mt-5 text-[12px] leading-relaxed text-ink/50">Prasyarat: K1 → K2 → K3/K6. KC yang prasyaratnya belum dikuasai belum dipilih otomatis.</p>
         </section>
 
-        <section data-tour="calendar" className="overflow-hidden rounded-[2rem] border border-ink/8 bg-paper p-2 lg:col-span-8">
+        <section data-tour="calendar" className="overflow-hidden rounded-[2rem] card-surface p-2 lg:col-span-8">
           <Suspense fallback={<div className="h-[360px]" />}>
             <ContributionSkyline
               className="!border-0 !bg-transparent"
@@ -173,7 +174,7 @@ export default function Beranda() {
           </Suspense>
         </section>
 
-        <section data-tour="tasks" className="flex flex-col rounded-[2rem] border border-ink/8 bg-paper p-6 lg:col-span-4">
+        <section data-tour="tasks" className="flex flex-col rounded-[2rem] card-surface p-6 lg:col-span-4">
           <div className="flex items-baseline justify-between">
             <h2 className="flex items-center gap-2 text-[17px] font-semibold tracking-tight">
               <ClipboardList className="size-4 text-teal" /> Tugas aktif
@@ -219,7 +220,7 @@ export default function Beranda() {
           </div>
         </section>
 
-        <section className="rounded-[2rem] border border-ink/8 bg-paper p-6 lg:col-span-12">
+        <section className="rounded-[2rem] card-surface p-6 lg:col-span-12">
           <div className="flex items-baseline justify-between">
             <h2 className="flex items-center gap-2 text-[17px] font-semibold tracking-tight">
               <BookOpen className="size-4 text-teal" /> Percobaan terakhir
@@ -241,7 +242,7 @@ export default function Beranda() {
                         <span className={cn('rounded-full px-2 py-0.5 text-[10.5px] font-medium', r.tier === 'mudah' ? 'bg-leaf/40 text-teal-900' : r.tier === 'sedang' ? 'bg-[#f6ead0] text-[#8a5d10]' : 'bg-terra-soft text-[#8f4a2c]')}>{r.tier}</span>
                       </div>
                       <div className="mt-3 flex items-end gap-2">
-                        <b className="font-serif text-[2.2rem] leading-none text-teal">{r.dice === null ? '—' : fmt.num(r.dice)}</b>
+                        <b className="font-serif text-[1.72rem] leading-none text-teal">{r.dice === null ? '—' : fmt.num(r.dice)}</b>
                         <span className="pb-1 text-[11px] text-ink/45">Dice</span>
                       </div>
                       <div className="mt-3 flex flex-wrap gap-1">
@@ -274,22 +275,6 @@ function Chip({ icon: Icon, children, tone = 'muted' }: { icon: typeof Flame; ch
   );
 }
 
-function Kpi({ icon: Icon, tone, label, value, of }: { icon: typeof Flame; tone: string; label: string; value: string; of?: string }) {
-  return (
-    <div className={cn('flex flex-col justify-between rounded-[1.6rem] p-4', tone)}>
-      <span className="grid size-9 place-items-center rounded-full bg-white/55 text-teal-900">
-        <Icon className="size-4" />
-      </span>
-      <div className="mt-6">
-        <b className="font-serif text-[2.4rem] leading-none text-teal-900">
-          {value}
-          {of && <span className="text-[1.2rem] text-teal-900/50">{of}</span>}
-        </b>
-        <p className="mt-1 text-[12px] text-teal-900/70">{label}</p>
-      </div>
-    </div>
-  );
-}
 
 export function AttemptTable({ rows, base = '/riwayat' }: { rows: Me['attempts']; base?: string }) {
   return (

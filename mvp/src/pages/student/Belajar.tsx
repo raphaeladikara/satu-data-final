@@ -86,8 +86,8 @@ export default function Belajar() {
     <AppShell onHelp={tour.start} wide>
       <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
         <div>
-          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-teal">Modul belajar</p>
-          <h1 className="mt-3 max-w-3xl font-serif text-[clamp(2.4rem,4.4vw,3.8rem)] leading-[1.02] tracking-[-0.015em]">
+          <p className="font-display text-[12px] font-medium uppercase tracking-[0.2em] text-teal">Modul belajar</p>
+          <h1 className="mt-3 max-w-3xl font-serif text-[clamp(1.87rem,3.43vw,2.96rem)] leading-[1.12] tracking-[-0.01em]">
             Bangun dasarnya dulu, <em className="text-teal">baru baca kasusnya.</em>
           </h1>
           <p className="mt-3 max-w-2xl text-[15.5px] text-ink/60">Materi singkat per kompetensi, contoh kasus 3D interaktif, dan kuis cepat. Lulus kuis (≥ 2 dari 3 benar) untuk menandai modul selesai.</p>
@@ -96,7 +96,7 @@ export default function Belajar() {
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_380px]">
-        <div data-tour="orbit" className="relative overflow-hidden rounded-[2rem] border border-ink/8 bg-paper">
+        <div data-tour="orbit" className="relative overflow-hidden rounded-[2rem] card-surface">
           {thumbs && p ? (
             <OrbitSpotlightGallery
               items={items}
@@ -130,7 +130,7 @@ export default function Belajar() {
               </span>
             )}
           </div>
-          <h2 className="mt-4 font-serif text-[1.9rem] leading-[1.08]">{focus.judul}</h2>
+          <h2 className="mt-4 font-serif text-[1.48rem] leading-[1.08]">{focus.judul}</h2>
           <p className="mt-2 text-[14px] leading-relaxed text-mint/70">{focus.ringkas}</p>
           <p className="mt-5 text-[11px] uppercase tracking-wider text-leaf">Setelah modul ini kamu bisa</p>
           <ul className="mt-2 space-y-2">
@@ -150,7 +150,7 @@ export default function Belajar() {
         </motion.aside>
       </div>
 
-      <section data-tour="path" className="mt-4 rounded-[2rem] border border-ink/8 bg-paper p-6">
+      <section data-tour="path" className="mt-4 rounded-[2rem] card-surface p-6">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="text-[18px] font-medium tracking-tight">Jalur belajar</h2>
           <span className="text-[12.5px] text-ink/50">Materi adalah draf tim berdasarkan korpus SINAPS, menunggu tinjauan dosen mitra.</span>
@@ -191,13 +191,13 @@ function ProgressCard({ done, total, minutes }: { done: number; total: number; m
   const r = 30;
   const c = 2 * Math.PI * r;
   return (
-    <div className="flex items-center gap-4 rounded-[1.6rem] border border-ink/8 bg-paper px-5 py-4">
+    <div className="flex items-center gap-4 rounded-[1.6rem] card-surface px-5 py-4">
       <div className="relative size-[76px]">
         <svg viewBox="0 0 76 76" className="size-full -rotate-90">
           <circle cx="38" cy="38" r={r} fill="none" strokeWidth="8" className="stroke-ink/8" />
           <motion.circle cx="38" cy="38" r={r} fill="none" strokeWidth="8" strokeLinecap="round" className="stroke-sage" initial={{ strokeDasharray: `0 ${c}` }} animate={{ strokeDasharray: `${(done / total) * c} ${c}` }} transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }} />
         </svg>
-        <span className="absolute inset-0 grid place-items-center font-serif text-[1.6rem] leading-none">
+        <span className="absolute inset-0 grid place-items-center font-serif text-[1.25rem] leading-none">
           {done}
           <span className="sr-only"> dari {total}</span>
         </span>

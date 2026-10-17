@@ -2,7 +2,7 @@ import { lazy, Suspense, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { api, JENJANG } from '../api';
 import { homeFor, useAuth } from '../auth';
-import { BrandMark } from '@/components/BrandMark';
+import { Wordmark } from '@/components/BrandMark';
 
 const MriHologram = lazy(() => import('@/components/three/MriHologram'));
 
@@ -12,11 +12,11 @@ function AuthFrame({ title, sub, children, foot }: { title: string; sub: string;
     <div className="tw grid min-h-screen lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
       <div className="relative flex flex-col px-5 py-6 sm:px-10">
         <div aria-hidden="true" className="pointer-events-none absolute -left-40 -top-40 size-[520px] rounded-full bg-leaf/30 blur-[120px]" />
-        <Link to="/" className="relative flex w-fit items-center gap-2.5 text-[17px] font-semibold tracking-tight">
-          <BrandMark /> SINAPS
+        <Link to="/" className="relative w-fit" aria-label="SINAPS, ke halaman utama">
+          <Wordmark />
         </Link>
         <div className="relative mx-auto flex w-full max-w-[420px] flex-1 flex-col justify-center py-10">
-          <h1 className="font-serif text-[clamp(2.6rem,4vw,3.4rem)] leading-[1.02] tracking-[-0.015em]">{title}</h1>
+          <h1 className="font-serif text-[clamp(2.03rem,3.12vw,2.65rem)] leading-[1.12] tracking-[-0.01em]">{title}</h1>
           <p className="mt-2 text-[15px] text-ink/60">{sub}</p>
           <div className="legacy auth-form mt-7">{children}</div>
           <p className="mt-6 text-[14px] text-ink/65 [&_a]:font-medium [&_a]:text-teal [&_a]:underline-offset-4 hover:[&_a]:underline">{foot}</p>
@@ -35,7 +35,7 @@ function AuthFrame({ title, sub, children, foot }: { title: string; sub: string;
           <span>kasus contoh</span>
         </div>
         <div className="pointer-events-none absolute inset-x-8 bottom-8">
-          <p className="max-w-md font-serif text-[2rem] leading-[1.1]">
+          <p className="max-w-md font-serif text-[1.56rem] leading-[1.1]">
             Baca kasus nyata. Tandai lesinya. <em className="text-leaf">Tahu letak salahmu, saat itu juga.</em>
           </p>
           <div className="mt-6 flex gap-6 text-[12.5px] text-mint/70">

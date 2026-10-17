@@ -9,8 +9,13 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-serif: 'Instrument Serif', ui-serif, Georgia, serif;
+  /* Arvo (slab serif) untuk judul dan teks, Oswald kapital untuk label, eyebrow, dan angka kecil */
+  --font-sans: 'Arvo', ui-serif, Georgia, serif;
+  --font-serif: 'Arvo', ui-serif, Georgia, serif;
+  --font-display: 'Oswald', 'Arial Narrow', sans-serif;
+  /* slab serif lebar tidak cocok dirapatkan; tracking-tight dilunakkan */
+  --tracking-tight: -0.008em;
+  --tracking-tighter: -0.015em;
   --font-mono: 'Geist Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
 
   /* palet SINAPS: gambar 1 (sage, teal, sky) + gambar 2 (chambray, terracotta, sandstone, muslin, clove) */
@@ -95,7 +100,6 @@
     background: var(--color-background);
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
-    font-feature-settings: 'ss01', 'cv11';
     color-scheme: light;
   }
   /* elemen di dalam .legacy (komponen lama yang disisipkan) tidak ikut direset */
@@ -160,6 +164,23 @@
     background: var(--hl, var(--color-leaf));
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
+  }
+  /* kartu terang bersama: kertas hangat, garis tipis, sorot atas, bayangan lembut */
+  .card-surface {
+    background: linear-gradient(180deg, #fcfbf7 0%, #f8f5ed 100%);
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.9) inset,
+      0 0 0 1px rgb(16 49 58 / 0.075),
+      0 26px 50px -38px rgb(16 49 58 / 0.5);
+  }
+  /* kartu gelap bersama: gaya bento teal (sama dengan components/ui/bento.tsx) */
+  .card-dark {
+    color: var(--color-mint);
+    background: radial-gradient(120% 80% at 50% 0%, #1a5562 0%, #0f3a43 48%, #0a262c 100%);
+    box-shadow:
+      0 -20px 80px -20px rgb(170 211 156 / 0.16) inset,
+      0 0 0 1px rgb(255 255 255 / 0.08),
+      0 30px 60px -34px rgb(6 26 31 / 0.7);
   }
   .grain {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");

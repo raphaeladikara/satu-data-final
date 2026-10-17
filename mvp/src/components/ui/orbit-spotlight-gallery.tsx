@@ -249,7 +249,7 @@ export function OrbitSpotlightGallery({
       <div aria-hidden className="pointer-events-none absolute rounded-[50%] border border-border/70 transition-[opacity,transform] motion-reduce:transition-none" style={{ left: portrait ? "19%" : "14.5%", top: portrait ? "15%" : "18%", width: portrait ? "62%" : "71%", height: portrait ? "64%" : "58%", opacity: active === null ? 1 : 0, transform: active === null ? "scale(1)" : "scale(.2)", ...motionStyle }} />
       <div data-orbit-title aria-hidden={active !== null} className="pointer-events-none absolute left-1/2 top-[47%] w-[50%] -translate-x-1/2 -translate-y-1/2 text-center transition-[opacity,filter,transform] motion-reduce:transition-none" style={{ opacity: active === null ? 1 : 0, filter: active === null ? "blur(0px)" : "blur(8px)", ...motionStyle }}>
         <p className="mb-3 font-mono text-[10px] uppercase tracking-[.24em] text-muted-foreground">{kicker}</p>
-        <h2 id={titleId} className="text-[clamp(1.65rem,5.7cqw,3.25rem)] leading-[.98] font-serif tracking-[-.02em]" style={{ fontSize: Math.min(52, size.width * .066) }}>{title}</h2>
+        <h2 id={titleId} className="text-[clamp(1.65rem,5.7cqw,3.25rem)] leading-[1.12] font-serif tracking-[-0.01em]" style={{ fontSize: Math.min(40, size.width * .05) }}>{title}</h2>
         <p className="mt-4 text-[11px] text-muted-foreground">{total ? "Klik salah satu untuk melihat pratinjau" : "Belum ada isi"}</p>
       </div>
 

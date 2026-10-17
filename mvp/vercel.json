@@ -19,13 +19,13 @@
       "destination": "/api/index"
     },
     {
-      "source": "/((?!api/|cases/|brain3d/|assets/).*)",
+      "source": "/((?!api/|cases/|brain3d/|hero/|assets/|favicon.svg).*)",
       "destination": "/index.html"
     }
   ],
   "headers": [
     {
-      "source": "/(cases|brain3d)/(.*)",
+      "source": "/(cases|brain3d|hero)/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

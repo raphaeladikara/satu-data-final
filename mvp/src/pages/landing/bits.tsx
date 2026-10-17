@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { motion, useInView, useReducedMotion } from 'framer-motion';
+import { motion, useInView, useReducedMotion, useScroll, useTransform, type MotionValue } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 export const EASE = [0.22, 1, 0.36, 1] as const;
@@ -55,7 +55,7 @@ export function Eyebrow({ children, tone = 'teal', className }: { children: Reac
   return (
     <p
       className={cn(
-        'inline-flex items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-[0.18em]',
+        'inline-flex items-center gap-2.5 font-display text-[12.5px] font-medium uppercase tracking-[0.22em]',
         tone === 'teal' ? 'text-teal' : 'text-leaf',
         className,
       )}
@@ -105,5 +105,48 @@ export function Highlight({ children, color = 'var(--color-leaf)', delay = 0.2 }
       />
       <span className="relative">{children}</span>
     </span>
+  );
+}
+
+/** Judul yang kata-katanya menyala satu per satu mengikuti gulir (scroll-linked). */
+export function ScrollWords({ text, className, dim = 'opacity-[0.16]' }: { text: string; className?: string; dim?: string }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.85', 'start 0.3'] });
+  const words = text.split(' ');
+  if (reduce) return <p className={className}>{text}</p>;
+  return (
+    <p ref={ref} className={cn('flex flex-wrap', className)}>
+      {words.map((w, i) => (
+        <Word key={i} progress={scrollYProgress} range={[i / words.length, (i + 1) / words.length]} dim={dim}>
+          {w}
+        </Word>
+      ))}
+    </p>
+  );
+}
+
+function Word({ children, progress, range, dim }: { children: string; progress: MotionValue<number>; range: [number, number]; dim: string }) {
+  const opacity = useTransform(progress, range, [0, 1]);
+  return (
+    <span className="relative mr-[0.26em]">
+      <span className={dim}>{children}</span>
+      <motion.span style={{ opacity }} className="absolute inset-0">
+        {children}
+      </motion.span>
+    </span>
+  );
+}
+
+/** Geser vertikal halus mengikuti gulir (parallax). */
+export function Parallax({ children, offset = 60, className }: { children: ReactNode; offset?: number; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
+  const y = useTransform(scrollYProgress, [0, 1], [offset, -offset]);
+  return (
+    <motion.div ref={ref} style={reduce ? undefined : { y }} className={className}>
+      {children}
+    </motion.div>
   );
 }

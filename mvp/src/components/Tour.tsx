@@ -225,7 +225,7 @@ export function Tour({ steps, open, onClose, label = 'Panduan' }: { steps: TourS
               <X className="size-4" />
             </button>
           </div>
-          <h3 className="mt-3 font-serif text-[1.55rem] leading-tight tracking-[-0.01em]">{step.title}</h3>
+          <h3 className="mt-3 font-serif text-[1.21rem] leading-tight tracking-[-0.01em]">{step.title}</h3>
           <div className="mt-1.5 text-[14px] leading-relaxed text-ink/70">{step.body}</div>
           {step.waitForClick && (
             <p className="mt-3 flex items-center gap-2 rounded-2xl bg-terra/10 px-3 py-2 text-[12.5px] font-medium text-terra">

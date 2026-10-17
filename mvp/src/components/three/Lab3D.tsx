@@ -74,7 +74,7 @@ export default function Lab3D({ caseId, initialSeries = 'DWI' }: { caseId: strin
           <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-mono text-[10px] text-white/50">R</span>
           <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] text-white/50">L</span>
         </div>
-        <div data-tour="lab-slice" className="rounded-[1.4rem] border border-ink/8 bg-paper p-4">
+        <div data-tour="lab-slice" className="rounded-[1.4rem] card-surface p-4">
           <div className="flex items-center justify-between text-[12px]">
             <span className="flex items-center gap-1.5 font-medium">
               <ScanSearch className="size-4 text-teal" /> Pilih slice

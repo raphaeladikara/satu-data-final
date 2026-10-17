@@ -59,7 +59,7 @@ export function Modul() {
   if (!lesson)
     return (
       <AppShell>
-        <h1 className="font-serif text-4xl">Modul tidak ditemukan</h1>
+        <h1 className="font-serif text-3xl">Modul tidak ditemukan</h1>
         <Link to="/belajar" className="mt-4 inline-block text-teal underline">
           Kembali ke daftar modul
         </Link>
@@ -95,7 +95,7 @@ export function Modul() {
             )}
             {!lesson.dinilai && lesson.kc && <span className="rounded-full bg-sand-2 px-3 py-1 text-[12px] text-ink/60">belum dinilai di MVP</span>}
           </div>
-          <h1 className="mt-4 max-w-4xl font-serif text-[clamp(2.3rem,4.4vw,3.9rem)] leading-[1.03] tracking-[-0.015em]">{lesson.judul}</h1>
+          <h1 className="mt-4 max-w-4xl font-serif text-[clamp(1.79rem,3.43vw,3.04rem)] leading-[1.12] tracking-[-0.01em]">{lesson.judul}</h1>
           <p className="mt-3 max-w-2xl text-[16px] text-ink/60">{lesson.ringkas}</p>
         </div>
         <div className="flex gap-2">
@@ -107,7 +107,7 @@ export function Modul() {
             ] as const
           ).map(([Icon, l, on]) =>
             on ? (
-              <span key={l} className="flex items-center gap-2 rounded-2xl border border-ink/8 bg-paper px-3.5 py-2.5 text-[13px] text-ink/70">
+              <span key={l} className="flex items-center gap-2 rounded-2xl card-surface px-3.5 py-2.5 text-[13px] text-ink/70">
                 <Icon className="size-4 text-teal" /> {l}
               </span>
             ) : null,
@@ -117,8 +117,8 @@ export function Modul() {
 
       <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[230px_minmax(0,1fr)]">
         <aside className="hidden lg:block">
-          <nav data-tour="toc" className="sticky top-28 rounded-[1.4rem] border border-ink/8 bg-paper p-3" aria-label="Daftar isi">
-            <p className="px-2 pb-2 pt-1 font-mono text-[10.5px] uppercase tracking-[0.16em] text-ink/45">Daftar isi</p>
+          <nav data-tour="toc" className="sticky top-28 rounded-[1.4rem] card-surface p-3" aria-label="Daftar isi">
+            <p className="px-2 pb-2 pt-1 font-display text-[12px] font-medium uppercase tracking-[0.2em] text-ink/45">Daftar isi</p>
             <ol className="space-y-0.5">
               {toc.map(([h, t], i) => (
                 <li key={h}>
@@ -150,7 +150,7 @@ export function Modul() {
           {lesson.bagian.map((b, i) => (
             <section key={b.judul} id={slug(i)} className="scroll-mt-28 pt-12">
               <p className="font-mono text-[11px] text-teal">BAGIAN {String(i + 1).padStart(2, '0')}</p>
-              <h2 className="mt-1.5 font-serif text-[2rem] leading-tight tracking-[-0.01em]">{b.judul}</h2>
+              <h2 className="mt-1.5 font-serif text-[1.56rem] leading-tight tracking-[-0.01em]">{b.judul}</h2>
               <div className="mt-4 space-y-4 text-[16.5px] leading-[1.75] text-ink/80">
                 {b.isi.map((x, k) => (
                   <p key={k}>{x}</p>
@@ -182,7 +182,7 @@ export function Modul() {
           <section className="mt-12 flex flex-col gap-5 overflow-hidden rounded-[1.8rem] bg-[linear-gradient(120deg,#195764,#2d746f_55%,#80a874)] p-7 text-mint sm:flex-row sm:items-center">
             <div className="flex-1">
               <p className="font-mono text-[11px] uppercase tracking-wider text-leaf">Langkah berikutnya</p>
-              <b className="mt-2 block font-serif text-[1.8rem] font-normal leading-tight">{lesson.kc && lesson.dinilai ? `Latih ${lesson.kc} dengan kasus nyata` : 'Siap mencoba latihan adaptif?'}</b>
+              <b className="mt-2 block font-serif text-[1.4rem] font-normal leading-tight">{lesson.kc && lesson.dinilai ? `Latih ${lesson.kc} dengan kasus nyata` : 'Siap mencoba latihan adaptif?'}</b>
               <p className="mt-1.5 text-[14px] text-mint/75">{lesson.kc && lesson.dinilai ? 'Sistem memilih kasus dengan tingkat kesulitan sesuai penguasaanmu saat ini.' : 'Latihan adaptif memilih kompetensi terlemahmu secara otomatis.'}</p>
             </div>
             <Link to={lesson.kc && lesson.dinilai ? `/latihan?kc=${lesson.kc}` : '/latihan'} className={buttonClass('light', 'lg')}>
@@ -192,7 +192,7 @@ export function Modul() {
 
           <nav className="mt-6 grid gap-3 sm:grid-cols-2">
             {prev ? (
-              <Link to={`/belajar/${prev.id}`} className="group rounded-[1.4rem] border border-ink/8 bg-paper p-5 transition-colors hover:border-ink/20">
+              <Link to={`/belajar/${prev.id}`} className="group rounded-[1.4rem] card-surface p-5 transition-colors hover:border-ink/20">
                 <span className="flex items-center gap-1.5 text-[12px] text-ink/50">
                   <ArrowLeft className="size-3.5 transition-transform group-hover:-translate-x-0.5" /> Sebelumnya
                 </span>
@@ -202,7 +202,7 @@ export function Modul() {
               <span />
             )}
             {next && (
-              <Link to={`/belajar/${next.id}`} className="group rounded-[1.4rem] border border-ink/8 bg-paper p-5 text-right transition-colors hover:border-ink/20">
+              <Link to={`/belajar/${next.id}`} className="group rounded-[1.4rem] card-surface p-5 text-right transition-colors hover:border-ink/20">
                 <span className="flex items-center justify-end gap-1.5 text-[12px] text-ink/50">
                   Berikutnya <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
                 </span>
@@ -252,7 +252,7 @@ function LabSection({ caseId, note, seri }: { caseId: string; note: string; seri
   const s3 = (['DWI', 'ADC', 'FLAIR'].includes(seri ?? '') ? seri : 'DWI') as Series3D;
 
   return (
-    <section id="lab" data-tour="lab" className="mt-14 scroll-mt-28 rounded-[2rem] border border-ink/8 bg-paper p-3 sm:p-4">
+    <section id="lab" data-tour="lab" className="mt-14 scroll-mt-28 rounded-[2rem] card-surface p-3 sm:p-4">
       <div className="flex flex-wrap items-center gap-3 px-2 pb-4 pt-2">
         <span className="grid size-10 place-items-center rounded-2xl bg-teal text-mint">
           <FlaskConical className="size-5" />
@@ -337,7 +337,7 @@ function QuizBlock({ lessonId, items, onSaved }: { lessonId: string; items: Quiz
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="font-mono text-[11px] text-teal">KUIS CEPAT</p>
-          <h2 className="mt-1.5 font-serif text-[2rem] leading-tight">Uji pemahamanmu</h2>
+          <h2 className="mt-1.5 font-serif text-[1.56rem] leading-tight">Uji pemahamanmu</h2>
         </div>
         <span className="rounded-full border border-ink/10 px-3 py-1 text-[12.5px] text-ink/60">
           {items.length} soal · lulus bila ≥ {need} benar
@@ -345,7 +345,7 @@ function QuizBlock({ lessonId, items, onSaved }: { lessonId: string; items: Quiz
       </div>
       <ol className="mt-6 space-y-4">
         {items.map((q, i) => (
-          <li key={i} className="rounded-[1.6rem] border border-ink/8 bg-paper p-5 sm:p-6">
+          <li key={i} className="rounded-[1.6rem] card-surface p-5 sm:p-6">
             <p className="flex gap-3 text-[16px] font-medium leading-snug">
               <span className="grid size-7 shrink-0 place-items-center rounded-full bg-ink/6 font-mono text-[12px]">{i + 1}</span>
               {q.tanya}
@@ -385,7 +385,7 @@ function QuizBlock({ lessonId, items, onSaved }: { lessonId: string; items: Quiz
           </li>
         ))}
       </ol>
-      <div className="mt-5 flex flex-wrap items-center gap-4 rounded-[1.6rem] border border-ink/8 bg-paper p-5">
+      <div className="mt-5 flex flex-wrap items-center gap-4 rounded-[1.6rem] card-surface p-5">
         {!checked ? (
           <>
             <div className="mr-auto">

@@ -7,6 +7,7 @@ import { buttonClass } from '@/components/ui/button';
 import { CirculariumRing } from '@/components/ui/circularium-ring';
 import { dailyCounts, HARI, todayWib, weekHourGrid, type Session } from '@/lib/activity';
 import { cn } from '@/lib/utils';
+import { StatTile } from '@/components/ui/bento';
 
 const ContributionSkyline = lazy(() => import('@/components/ui/contribution-skyline'));
 import { Link, useParams } from 'react-router-dom';
@@ -135,13 +136,13 @@ export default function Ringkasan() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
         <div data-tour="kpi" className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-12 lg:grid-cols-4">
-          <BigKpi icon={Users} tone="bg-leaf" value={String(data.active_7d)} of={`/${data.students.length}`} label="mahasiswa aktif 7 hari terakhir" />
-          <BigKpi icon={ScanLine} tone="bg-sky" value={String(data.n_attempts)} label="kasus dikerjakan" />
-          <BigKpi icon={Gauge} tone="bg-sand-2" value={data.mean_dice === null ? '—' : fmt.num(data.mean_dice)} label="rerata Dice delineasi" />
-          <BigKpi icon={ShieldAlert} tone="bg-terra-soft" value={String(data.flagged_tutor)} of={`/${data.n_tutor}`} label="respons tutor ditandai pemeriksa fakta" />
+          <StatTile layout="row" icon={Users} accent="leaf" value={String(data.active_7d)} of={`/${data.students.length}`} label="mahasiswa aktif 7 hari terakhir" />
+          <StatTile layout="row" icon={ScanLine} accent="sky" value={String(data.n_attempts)} label="kasus dikerjakan" />
+          <StatTile layout="row" icon={Gauge} accent="sand" value={data.mean_dice === null ? '—' : fmt.num(data.mean_dice)} label="rerata Dice delineasi" />
+          <StatTile layout="row" icon={ShieldAlert} accent="terra" value={String(data.flagged_tutor)} of={`/${data.n_tutor}`} label="respons tutor ditandai pemeriksa fakta" />
         </div>
 
-        <section data-tour="skyline" className="overflow-hidden rounded-[2rem] border border-ink/8 bg-paper p-2 lg:col-span-12">
+        <section data-tour="skyline" className="overflow-hidden rounded-[2rem] card-surface p-2 lg:col-span-12">
           <Suspense fallback={<div className="h-[420px]" />}>
             <ContributionSkyline
               className="!border-0 !bg-transparent"
@@ -176,7 +177,7 @@ export default function Ringkasan() {
           />
         </section>
 
-        <section data-tour="kc" className="rounded-[2rem] border border-ink/8 bg-paper p-6 lg:col-span-4">
+        <section data-tour="kc" className="rounded-[2rem] card-surface p-6 lg:col-span-4">
           <h2 className="text-[17px] font-semibold tracking-tight">Penguasaan rata-rata kelas</h2>
           <p className="text-[12px] text-ink/50">Peluang menguasai KC menurut BKT; garis = 95%</p>
           <ul className="mt-5 space-y-4">
@@ -251,13 +252,13 @@ export default function Ringkasan() {
           </Link>
         </section>
 
-        <section data-tour="errors" className="rounded-[2rem] border border-ink/8 bg-paper p-6 lg:col-span-4 lg:row-span-1">
+        <section data-tour="errors" className="rounded-[2rem] card-surface p-6 lg:col-span-4 lg:row-span-1">
           <h2 className="text-[17px] font-semibold tracking-tight">Jenis kesalahan delineasi</h2>
           <p className="text-[12px] text-ink/50">Dari semua kasus yang dikirim</p>
           <ErrorDonut data={errs} />
         </section>
 
-        <section data-tour="heat" className="min-w-0 rounded-[2rem] border border-ink/8 bg-paper p-6 lg:col-span-8">
+        <section data-tour="heat" className="min-w-0 rounded-[2rem] card-surface p-6 lg:col-span-8">
           <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
             <h2 className="text-[17px] font-semibold tracking-tight">Peta penguasaan KC per mahasiswa</h2>
             <span className="flex items-center gap-2 text-[11.5px] text-ink/50">
@@ -273,7 +274,7 @@ export default function Ringkasan() {
           </div>
         </section>
 
-        <section className="rounded-[2rem] border border-ink/8 bg-paper p-6 lg:col-span-12">
+        <section className="rounded-[2rem] card-surface p-6 lg:col-span-12">
           <h2 className="mb-4 text-[17px] font-semibold tracking-tight">Percobaan terbaru</h2>
           {data.recent.length === 0 ? (
             <Empty title="Belum ada percobaan">Hasil penilaian otomatis mahasiswa akan muncul di sini.</Empty>
@@ -306,22 +307,6 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 const fmtKasus = (v: number) => `${v} kasus dimulai`;
 const DONUT = ['#195764', '#80a874', '#ad7556', '#7a9cb3', '#dccfb8', '#53443d'];
 
-function BigKpi({ icon: Icon, tone, value, of, label }: { icon: typeof Users; tone: string; value: string; of?: string; label: string }) {
-  return (
-    <div className={cn('flex items-center gap-4 rounded-[1.6rem] p-5', tone)}>
-      <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-white/55 text-teal-900">
-        <Icon className="size-5" />
-      </span>
-      <div className="min-w-0">
-        <b className="font-serif text-[2.4rem] leading-none text-teal-900">
-          {value}
-          {of && <span className="text-[1.2rem] text-teal-900/50">{of}</span>}
-        </b>
-        <p className="mt-1 text-[12.5px] leading-snug text-teal-900/70">{label}</p>
-      </div>
-    </div>
-  );
-}
 
 /** Donat jenis kesalahan dengan legenda; arahkan kursor untuk menyorot satu jenis. */
 function ErrorDonut({ data }: { data: [string, number][] }) {
@@ -364,7 +349,7 @@ function ErrorDonut({ data }: { data: [string, number][] }) {
         </svg>
         <div className="pointer-events-none absolute inset-0 grid place-items-center text-center">
           <div>
-            <b className="block font-serif text-[2rem] leading-none">{Math.round((data[top][1] / total) * 100)}%</b>
+            <b className="block font-serif text-[1.56rem] leading-none">{Math.round((data[top][1] / total) * 100)}%</b>
             <span className="mx-auto mt-1 block max-w-[6.5rem] text-[10.5px] leading-tight text-ink/55">{data[top][0]}</span>
           </div>
         </div>

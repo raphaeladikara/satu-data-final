@@ -38,7 +38,7 @@ export function AppHeader({ onHelp, slot, compact }: { onHelp?: () => void; slot
       <div className={cn('mx-auto flex items-center gap-3 border border-ink/8 bg-paper/85 pl-3 pr-2 shadow-[0_10px_30px_-20px_rgba(16,49,58,.35)] backdrop-blur-xl', compact ? 'h-14 rounded-2xl' : 'h-16 max-w-[1400px] rounded-[1.4rem]')}>
         <Link to={home} className="flex shrink-0 items-center gap-2.5 text-[16px] font-semibold tracking-tight" aria-label="SINAPS, ke beranda">
           <BrandMark className={compact ? 'size-8' : 'size-9'} />
-          <span className={cn(compact ? 'hidden xl:inline' : 'hidden sm:inline')}>SINAPS</span>
+          <span className={cn('font-display text-[18px] font-semibold uppercase tracking-[0.16em]', compact ? 'hidden xl:inline' : 'hidden sm:inline')}>Sinaps</span>
         </Link>
         {slot && <div className="legacy flex min-w-0 items-center">{slot}</div>}
         <nav className={cn('hidden items-center gap-1 lg:flex', slot ? 'ml-auto' : 'mx-auto')} aria-label="Navigasi utama" data-tour="nav">
@@ -105,8 +105,8 @@ export function PageHead({ eyebrow, title, sub, actions }: { eyebrow?: ReactNode
   return (
     <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0">
-        {eyebrow && <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-teal">{eyebrow}</p>}
-        <h1 className={cn('font-serif text-[clamp(2.1rem,3.8vw,3.3rem)] leading-[1.04] tracking-[-0.015em]', eyebrow && 'mt-2.5')}>{title}</h1>
+        {eyebrow && <p className="font-display text-[12.5px] font-medium uppercase tracking-[0.2em] text-teal">{eyebrow}</p>}
+        <h1 className={cn('font-serif text-[clamp(1.64rem,2.96vw,2.57rem)] leading-[1.12] tracking-[-0.01em]', eyebrow && 'mt-2.5')}>{title}</h1>
         {sub && <div className="mt-2 max-w-3xl text-[15px] text-ink/60">{sub}</div>}
       </div>
       {actions && <div className="legacy flex flex-wrap items-center gap-2">{actions}</div>}
@@ -138,7 +138,7 @@ function UserMenu({ compact }: { compact?: boolean }) {
       </button>
       <AnimatePresence>
         {open && (
-          <motion.div initial={{ opacity: 0, y: -6, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -6, scale: 0.97 }} transition={{ duration: 0.16 }} role="menu" className="absolute right-0 top-[calc(100%+8px)] z-50 w-60 origin-top-right rounded-2xl border border-ink/8 bg-paper p-1.5 shadow-[0_20px_50px_-20px_rgba(16,49,58,.45)]">
+          <motion.div initial={{ opacity: 0, y: -6, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -6, scale: 0.97 }} transition={{ duration: 0.16 }} role="menu" className="absolute right-0 top-[calc(100%+8px)] z-50 w-60 origin-top-right rounded-2xl card-surface p-1.5 shadow-[0_20px_50px_-20px_rgba(16,49,58,.45)]">
             <div className="px-3 py-2.5">
               <b className="block text-[14px] font-semibold">{user.nama}</b>
               <span className="text-[12px] text-ink/50">{user.role === 'dosen' ? `Dosen · ${user.username}` : `Pseudonim ${user.id}`}</span>
