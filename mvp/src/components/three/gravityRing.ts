@@ -33,7 +33,7 @@ export function createGravityRing(radius: number, opts: { count?: number; reduce
     cr = Math.min(1, Math.max(0, cr + (Math.random() - 0.5) * 0.1));
     cg = Math.min(1, Math.max(0, cg + (Math.random() - 0.5) * 0.1));
     cb = Math.min(1, Math.max(0, cb + (Math.random() - 0.5) * 0.1));
-    const sp = (Math.random() > 0.95 ? 2.4 : 1) * 1.9;
+    const sp = (Math.random() > 0.95 ? 2.4 : 1) * 1.35;
     col[i * 3] = cr * k * sp;
     col[i * 3 + 1] = cg * k * sp;
     col[i * 3 + 2] = cb * k * sp;
@@ -50,7 +50,7 @@ export function createGravityRing(radius: number, opts: { count?: number; reduce
     uTime: { value: 0 },
     uScale: { value: s },
   };
-  const mat = new THREE.PointsMaterial({ size: 0.016 * Math.max(0.6, s), vertexColors: true, transparent: true, opacity: 0.85, sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false });
+  const mat = new THREE.PointsMaterial({ size: 0.05 * Math.max(0.6, s), vertexColors: true, transparent: true, opacity: 0.85, sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false });
   mat.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, uniforms);
     shader.vertexShader =
