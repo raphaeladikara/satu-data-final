@@ -55,7 +55,7 @@ export default function Hero({ cases }: { cases: number }) {
         </div>
 
         <div
-          className="relative z-0 h-[440px] w-full md:absolute md:inset-y-0 md:right-0 md:h-full md:w-[66%]"
+          className="relative z-0 -mt-8 h-[400px] w-full md:absolute md:mt-0 md:inset-y-0 md:right-0 md:h-full md:w-[66%]"
           onPointerDown={(e) => (down.current = [e.clientX, e.clientY])}
           onPointerUp={(e) => {
             const d = down.current;
