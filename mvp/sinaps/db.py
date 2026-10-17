@@ -80,9 +80,15 @@ def engine():
     kw = {}
     if url.startswith("postgresql"):
         # pooler Supabase/Neon mode transaksi: tanpa prepared statement, tanpa pool di sisi fungsi
-        kw = {"poolclass": NullPool, "connect_args": {"prepare_threshold": None}}
+        kw = {"poolclass": NullPool, "connect_args": {"prepare_threshold": None, "connect_timeout": 10}}
     eng = create_engine(url, **kw)
     meta.create_all(eng)
+    if url.startswith("postgresql"):
+        # Supabase membuka schema public lewat REST API (anon key). RLS tanpa policy menutup akses itu;
+        # API ini konek sebagai pemilik tabel sehingga tidak terkena RLS.
+        with eng.begin() as c:
+            for t in meta.sorted_tables:
+                c.exec_driver_sql(f"ALTER TABLE {t.name} ENABLE ROW LEVEL SECURITY")
     return eng
 
 
