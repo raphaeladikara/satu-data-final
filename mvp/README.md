@@ -16,11 +16,30 @@ lalu penguasaan KC diperbarui dengan BKT.
 | 4. Penilaian | `sinaps/grading.py`: Dice, recall per lesi, galat volume, HD95 → 5 jenis kesalahan |
 | 5. Adaptasi (BKT) | `sinaps/bkt.py`: persamaan (3)–(4), prasyarat KC, pemilihan tingkat kesulitan dari tersil indeks D |
 | 6. Tutor LLM | `sinaps/tutor.py` + `sinaps/rag.py`: mode Sokratik / penjelasan / rujukan, fakta terkunci sebelum submit, pemeriksa fakta, log audit |
-| Dasbor dosen | `src/pages/Dashboard.tsx`: peta penguasaan KC per pseudonim, jenis kesalahan tersering, audit log tutor |
+| Dasbor dosen | `src/pages/dosen/`: ringkasan kelas, peta penguasaan KC per mahasiswa, lintasan BKT, jenis kesalahan tersering, tugas, verifikasi kasus, audit log tutor, ekspor CSV |
 | Penyimpanan berpseudonim | `sinaps/db.py`: Postgres (`DATABASE_URL`) atau SQLite lokal; NIM hanya disimpan sebagai hash |
+| Akun & kelas | `sinaps/auth.py`: NIM/username + kata sandi (PBKDF2), token HMAC; dosen membuat kelas, mahasiswa bergabung dengan kode kelas |
+| Modul belajar | `src/content/lessons.ts`, `src/pages/student/Belajar.tsx`: 6 modul per KC dengan contoh kasus interaktif dan kuis |
 
 KC yang dinilai di MVP: K1, K2, K3, K6 (sesuai Tabel 4). K4 (butuh registrasi atlas) dan K5 (butuh label
 radiolog) tampil di peta penguasaan sebagai "belum di MVP".
+
+## Fitur aplikasi
+
+**Mahasiswa** (daftar dengan nama, NIM, kata sandi, jenjang, dan kode kelas dari dosen)
+- Beranda: langkah berikutnya yang disarankan (modul atau latihan untuk KC terlemah), penguasaan BKT, tugas aktif, percobaan terakhir.
+- Belajar: 6 modul (orientasi, K1, K2, K3, K6, pengantar K4/K5) berisi materi, contoh kasus interaktif dengan kunci jawaban, dan kuis.
+  Kasus contoh (`sub-754`, `sub-1320`, `sub-652`) dikeluarkan dari latihan bernilai.
+- Latihan: siklus adaptif seperti di Bab III, plus latihan terarah per KC (`/latihan?kc=K3`), lanjut otomatis setelah memuat ulang, dan lewati kasus.
+- Tugas, bank kasus (tanda sudah dikerjakan), riwayat dan tinjau ulang (anotasi sendiri di atas kunci + model, percakapan tutor), profil dan ganti kata sandi.
+
+**Dosen** (daftar dengan kode pendaftaran dosen `DOSEN_KEY`)
+- Kelas: buat kelas, salin kode/tautan daftar, ganti kode, hapus.
+- Ringkasan: mahasiswa aktif, rerata Dice, penguasaan rata-rata per KC, kesalahan tersering, aktivitas 14 hari, mahasiswa yang perlu perhatian, peta penguasaan.
+- Detail mahasiswa: lintasan penguasaan, riwayat kasus (bisa ditinjau di atas citra), log tutor, modul, tugas, atur ulang kata sandi.
+- Tugas berisi modul + kasus dengan tenggat dan matriks progres; verifikasi kasus (setujui/tandai/tolak, kasus ditolak keluar dari latihan); audit tutor; ekspor CSV.
+
+Setiap dosen hanya melihat mahasiswa di kelasnya sendiri. Log belajar memakai pseudonim hash NIM; nama tampilan hanya ada di tabel akun.
 
 ## Data
 
@@ -51,6 +70,16 @@ uv venv .venv && uv pip install --python .venv -r requirements.txt uvicorn
 npm run dev                                                  # terminal 2 → http://localhost:5173
 ```
 
+Data demo untuk presentasi (1 dosen, 1 kelas, 10 mahasiswa fiktif dengan percobaan tersimulasi):
+
+```bash
+.venv/Scripts/python scripts/seed_demo.py           # akun: dosen demo.dosen, mahasiswa DEMO0001-DEMO0010, sandi sinaps-demo
+.venv/Scripts/python scripts/seed_demo.py --hapus   # hapus data demo
+```
+
+Skrip memakai `DATABASE_URL` bila di-set, jadi bisa juga mengisi basis data produksi. Anotasi demo dibuat dari mask ahli
+yang sengaja diganggu; jangan dilaporkan sebagai hasil uji coba.
+
 Tanpa `OPENAI_API_KEY`, tutor memakai templat deterministik yang diberi label "offline" di setiap
 respons. Tanpa `DATABASE_URL`, log disimpan di SQLite `mvp/.local/sinaps.db`.
 
@@ -62,8 +91,9 @@ respons. Tanpa `DATABASE_URL`, log disimpan di SQLite `mvp/.local/sinaps.db`.
    - `OPENAI_MODEL` — opsional, bawaan `gpt-5.6-luna`.
    - `DATABASE_URL` — string koneksi Postgres. Untuk Supabase pakai *transaction pooler* (port 6543).
      Tanpa ini, Vercel memakai SQLite di `/tmp` yang terhapus saat fungsi dingin.
-   - `DOSEN_KEY` — kode untuk membuka dasbor dosen (tanpa ini dasbor terbuka).
+   - `DOSEN_KEY` — kode pendaftaran akun dosen. Tanpa ini kodenya `SINAPS2026` (hanya untuk lokal).
    - `SINAPS_PEPPER` — garam hash pseudonim NIM.
+   - `SINAPS_SECRET` — kunci tanda tangan token sesi (string acak panjang).
 3. Deploy. Tabel dibuat otomatis saat permintaan pertama.
 
 ## Membangun ulang data dan model

@@ -54,9 +54,15 @@ def tier_for(L):
     return "mudah" if L < 0.4 else ("sedang" if L < 0.7 else "sulit")
 
 
-def choose_case(cases, mastery, seen):
-    """cases: list dict dengan 'id' dan 'tier'. seen: id kasus yang sudah dikerjakan."""
+def choose_case(cases, mastery, seen, kc=None):
+    """cases: list dict dengan 'id' dan 'tier'. seen: id kasus yang sudah dikerjakan.
+
+    kc: KC yang dipilih sendiri oleh mahasiswa (latihan terarah dari modul belajar); tanpa itu sistem
+    memilih KC terlemah yang prasyaratnya terpenuhi.
+    """
     k, blocked = choose_target(mastery)
+    if kc in KC and KC[kc]["aktif"]:
+        k = kc
     want = tier_for(mastery.get(k, 0))
     order = {"mudah": ["mudah", "sedang", "sulit"], "sedang": ["sedang", "mudah", "sulit"],
              "sulit": ["sulit", "sedang", "mudah"]}[want]

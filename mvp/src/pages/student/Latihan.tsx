@@ -2,17 +2,17 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Enums as CoreEnums, eventTarget } from '@cornerstonejs/core';
 import { Enums as ToolEnums } from '@cornerstonejs/tools';
-import { api, session, type Attempt, type KCInfo, type SubmitResult, type TutorReply } from '../api';
-import { SinapsViewer, initCornerstone, rleDecode, rleEncode, type Mode } from '../viewer/cs';
-import MasteryBars from '../components/MasteryBars';
+import { api, type Attempt, type KCInfo, type SubmitResult, type TutorReply } from '../../api';
+import { SinapsViewer, initCornerstone, rleDecode, rleEncode, type Mode } from '../../viewer/cs';
+import MasteryBars from '../../components/MasteryBars';
+import { TopBar } from '../../components/Shell';
 
 const id = (x: number, d: number) => x.toFixed(d).replace('.', ',');
 const SEQ_NAMES = ['DWI', 'ADC', 'FLAIR'];
 const HEMIS = ['kiri', 'kanan', 'bilateral'];
 type Msg = { role: 'user' | 'assistant'; content: string; meta?: TutorReply; image?: boolean };
 
-export default function Practice() {
-  const sid = session.get();
+export default function Latihan() {
   const nav = useNavigate();
   const [params] = useSearchParams();
   const elRef = useRef<HTMLDivElement>(null);
@@ -51,10 +51,6 @@ export default function Practice() {
   const [asking, setAsking] = useState(false);
 
   useEffect(() => {
-    if (!sid) nav('/');
-  }, [sid, nav]);
-
-  useEffect(() => {
     api.kc().then((r) => {
       setKcInfo(r.kc);
       setAdcBins(r.adc_bins);
@@ -77,26 +73,34 @@ export default function Practice() {
     setModeState('navigasi');
   };
 
-  const loadAttempt = useCallback(
-    async (caseId?: string | null) => {
-      if (!sid) return;
-      setError('');
-      setLoading('Memilih kasus…');
-      try {
-        const a = caseId ? await api.open(sid, caseId) : await api.next(sid);
-        resetAnswers();
-        setAtt(a);
-      } catch (e) {
-        setError(String((e as Error).message));
-        setLoading('');
+  const targetKc = params.get('kc');
+  const loadAttempt = useCallback(async (opts: { caseId?: string | null; kc?: string | null; baru?: boolean }) => {
+    setError('');
+    setLoading('Memilih kasus…');
+    try {
+      const a = opts.caseId ? await api.open(opts.caseId) : await api.next({ kc: opts.kc ?? undefined, baru: opts.baru });
+      resetAnswers();
+      // K1 yang sudah dikunci sebelum halaman dimuat ulang
+      if (a.k1 && a.seq_order) {
+        setK1(a.k1);
+        setSeqOrder(a.seq_order);
+        setK1Ok(Object.entries(a.seq_order).every(([l, n]) => a.k1![l] === n));
       }
-    },
-    [sid],
-  );
+      setAtt(a);
+    } catch (e) {
+      setError(String((e as Error).message));
+      setLoading('');
+    }
+  }, []);
 
   useEffect(() => {
-    loadAttempt(params.get('kasus'));
+    loadAttempt({ caseId: params.get('kasus'), kc: params.get('kc') });
   }, [loadAttempt, params]);
+
+  const nextCase = () => {
+    if (params.get('kasus')) nav(targetKc ? `/latihan?kc=${targetKc}` : '/latihan');
+    else loadAttempt({ kc: targetKc, baru: true });
+  };
 
   // muat volume ke Cornerstone setiap kasus berganti
   useEffect(() => {
@@ -235,21 +239,20 @@ export default function Practice() {
   const activeName = seqOrder && att ? seqOrder[att.series[series].label] : null;
 
   const doReveal = async () => {
-    if (!att || !sid) return;
-    const r = await api.reveal(sid, att.attempt_id, k1);
+    if (!att) return;
+    const r = await api.reveal(att.attempt_id, k1);
     setSeqOrder(r.seq_order);
     setK1Ok(r.benar);
   };
 
   const doSubmit = async () => {
     const v = viewer.current;
-    if (!att || !sid || !v) return;
+    if (!att || !v) return;
     setSubmitting(true);
     setError('');
     try {
       const mask = v.getMask('jawaban');
       const res = await api.submit({
-        sid,
         attempt_id: att.attempt_id,
         k1: Object.keys(k1).length ? k1 : null,
         k2_point: point,
@@ -288,14 +291,14 @@ export default function Practice() {
 
   const sendTutor = async (text?: string) => {
     const message = (text ?? input).trim();
-    if (!message || !att || !sid) return;
+    if (!message || !att) return;
     const image = attach && viewer.current ? viewer.current.capture() : null;
     const history = msgs.map((m) => ({ role: m.role, content: m.content }));
     setMsgs((m) => [...m, { role: 'user', content: message, image: !!image }]);
     setInput('');
     setAsking(true);
     try {
-      const r = await api.tutor({ sid, attempt_id: att.attempt_id, mode: tMode, message, image, history });
+      const r = await api.tutor({ attempt_id: att.attempt_id, mode: tMode, message, image, history });
       setMsgs((m) => [...m, { role: 'assistant', content: r.reply, meta: r }]);
     } catch (e) {
       setMsgs((m) => [...m, { role: 'assistant', content: `Tutor gagal dihubungi: ${(e as Error).message}` }]);
@@ -319,10 +322,7 @@ export default function Practice() {
 
   return (
     <div className="app">
-      <header className="topbar">
-        <Link to="/" className="brand">
-          SINAPS
-        </Link>
+      <TopBar>
         {att && (
           <div className="case-info">
             <span className="case-id">SOOP {att.case.id}</span>
@@ -335,12 +335,7 @@ export default function Practice() {
             </span>
           </div>
         )}
-        <nav className="topnav">
-          <Link to="/kasus">Bank kasus</Link>
-          <Link to="/dosen">Dasbor dosen</Link>
-          <span className="sid">{sid}</span>
-        </nav>
-      </header>
+      </TopBar>
 
       <main className="workspace">
         <aside className="toolbar" aria-label="Alat viewer">
@@ -471,6 +466,9 @@ export default function Practice() {
               <button className="btn primary block" disabled={!canSubmit} onClick={doSubmit}>
                 {submitting ? 'Menilai…' : 'Kirim jawaban'}
               </button>
+              <button className="btn small block ghost" disabled={!!loading || submitting} onClick={nextCase} title="Tinggalkan kasus ini tanpa dinilai">
+                Lewati kasus ini
+              </button>
             </div>
           )}
 
@@ -538,9 +536,17 @@ export default function Practice() {
                   Rankin saat pulang: {result.luaran.rankin_pulang ?? 'tidak tercatat'}. Etiologi: {result.luaran.etiologi ?? 'tidak tercatat'}.
                 </p>
               </details>
-              <button className="btn primary block" onClick={() => loadAttempt(null)}>
-                Kasus berikutnya (adaptif)
+              <button className="btn primary block" onClick={nextCase}>
+                {targetKc ? `Kasus ${targetKc} berikutnya` : 'Kasus berikutnya (adaptif)'}
               </button>
+              <div className="row-btns">
+                <Link to={`/riwayat/${att!.attempt_id}`} className="btn small">
+                  Tinjau di riwayat
+                </Link>
+                <Link to="/beranda" className="btn small">
+                  Ke beranda
+                </Link>
+              </div>
             </div>
           )}
 
