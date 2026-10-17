@@ -22,6 +22,12 @@ export interface OrbitSpotlightGalleryProps extends DivProps {
   /** Opt in to orbit motion. Automatic selections belong to the host/demo. */
   autoplay?: boolean;
   title?: string;
+  /** teks kecil di atas judul orbit */
+  kicker?: string;
+  /** label hitungan di pojok kiri atas */
+  countLabel?: string;
+  /** gulir roda tetikus untuk berpindah item (mengunci gulir halaman saat kursor di atas galeri) */
+  wheel?: boolean;
   ref?: DivProps["ref"];
 }
 
@@ -38,12 +44,12 @@ function Photograph({ item }: { item: OrbitSpotlightItem }) {
   const [failed, setFailed] = React.useState("");
   return failed === item.src ? (
     <span data-image-fallback className="flex h-full w-full items-center justify-center bg-muted text-muted-foreground" role="img" aria-label={`${item.alt ?? item.title} — image unavailable`}><ImageOff className="size-5" aria-hidden /></span>
-  ) : <img src={item.src} alt={item.alt ?? item.title} draggable={false} onError={() => setFailed(item.src)} className="h-full w-full object-cover" />;
+  ) : <img src={item.src} alt={item.alt ?? item.title} draggable={false} onError={() => setFailed(item.src)} className="h-full w-full bg-black object-contain" />;
 }
 
 export function OrbitSpotlightGallery({
   items, selected, defaultSelected = null, onSelectedChange, orbitSeconds = 40,
-  autoplay = false, title = "Selected work", className, style, ref, onKeyDown, onClick, ...rest
+  autoplay = false, title = "Selected work", kicker = "Pilih untuk mendekat", countLabel = "MODUL", wheel = true, className, style, ref, onKeyDown, onClick, ...rest
 }: OrbitSpotlightGalleryProps) {
   const total = items.length;
   const [localSelected, setLocalSelected] = React.useState(defaultSelected);
@@ -204,9 +210,9 @@ export function OrbitSpotlightGallery({
 
   React.useEffect(() => {
     const element = root.current;
-    if (!element) return;
+    if (!element || !wheel) return;
     let accumulated = 0, last = -Infinity;
-    const wheel = (event: WheelEvent) => {
+    const onWheel = (event: WheelEvent) => {
       if (!latest.current.total || event.ctrlKey || event.metaKey) return;
       const value = Math.abs(event.deltaY) >= Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
       if (!value) return;
@@ -217,14 +223,14 @@ export function OrbitSpotlightGallery({
       if (Math.abs(accumulated) < 30) return;
       step(Math.sign(accumulated)); accumulated = 0; last = now;
     };
-    element.addEventListener("wheel", wheel, { passive: false });
-    return () => element.removeEventListener("wheel", wheel);
-  }, [step]);
+    element.addEventListener("wheel", onWheel, { passive: false });
+    return () => element.removeEventListener("wheel", onWheel);
+  }, [step, wheel]);
 
   const motionStyle = { transitionDuration: reduced ? "0ms" : `${FLIGHT_MS}ms`, transitionTimingFunction: EASE };
   return (
     <div {...rest} ref={root} data-slot="orbit-spotlight-gallery" data-state={active === null ? "orbit" : "spotlight"} data-selected={active ?? ""} data-autoplay={autoplay} data-playing={playing && active === null} data-portrait={portrait} data-reduced={reduced}
-      role={rest.role ?? "region"} aria-label={rest["aria-label"] ?? "Orbit spotlight image gallery"} aria-describedby={hintId} tabIndex={rest.tabIndex ?? 0}
+      role={rest.role ?? "region"} aria-label={rest["aria-label"] ?? "Galeri orbit"} aria-describedby={hintId} tabIndex={rest.tabIndex ?? 0}
       className={`relative isolate w-full overflow-hidden bg-background text-foreground ${focusRing} ${className ?? ""}`} style={{ height: "min(560px, 80svh)", ...style }}
       onFocusCapture={event => { focused.current = (event.target as HTMLElement).hasAttribute("data-orbit-trigger"); }} onBlurCapture={event => { focused.current = event.relatedTarget instanceof HTMLElement && event.relatedTarget.hasAttribute("data-orbit-trigger"); }}
       onKeyDown={event => {
@@ -235,22 +241,22 @@ export function OrbitSpotlightGallery({
       }}
       onClick={event => { onClick?.(event); if (!event.defaultPrevented && event.target === event.currentTarget && active !== null) request(null, true); }}>
       <div className="pointer-events-none absolute inset-x-5 top-4 z-40 flex items-center justify-between">
-        <span className="font-mono text-[10px] tracking-[.2em] text-muted-foreground">ORBIT <span className="mx-2 text-border">/</span> {String(total).padStart(2, "0")} WORKS</span>
-        {active !== null ? <button type="button" onClick={() => request(null, true)} className={`pointer-events-auto flex h-9 items-center gap-2 rounded-full px-3 text-xs hover:bg-muted ${focusRing}`}><ArrowLeft className="size-3.5" aria-hidden />Back to orbit</button>
-          : !reduced && total > 0 && <button type="button" data-motion-toggle aria-label={playing ? "Pause orbit" : "Play orbit"} aria-pressed={playing} onClick={() => setMotionOverride(!playing)} className={`pointer-events-auto flex size-9 items-center justify-center rounded-full hover:bg-muted ${focusRing}`}>{playing ? <Pause className="size-3.5" aria-hidden /> : <Play className="size-3.5" aria-hidden />}</button>}
+        <span className="font-mono text-[10px] tracking-[.2em] text-muted-foreground">ORBIT <span className="mx-2 text-border">/</span> {String(total).padStart(2, "0")} {countLabel}</span>
+        {active !== null ? <button type="button" onClick={() => request(null, true)} className={`pointer-events-auto flex h-9 items-center gap-2 rounded-full px-3 text-xs hover:bg-muted ${focusRing}`}><ArrowLeft className="size-3.5" aria-hidden />Kembali ke orbit</button>
+          : !reduced && total > 0 && <button type="button" data-motion-toggle aria-label={playing ? "Jeda orbit" : "Putar orbit"} aria-pressed={playing} onClick={() => setMotionOverride(!playing)} className={`pointer-events-auto flex size-9 items-center justify-center rounded-full hover:bg-muted ${focusRing}`}>{playing ? <Pause className="size-3.5" aria-hidden /> : <Play className="size-3.5" aria-hidden />}</button>}
       </div>
 
       <div aria-hidden className="pointer-events-none absolute rounded-[50%] border border-border/70 transition-[opacity,transform] motion-reduce:transition-none" style={{ left: portrait ? "19%" : "14.5%", top: portrait ? "15%" : "18%", width: portrait ? "62%" : "71%", height: portrait ? "64%" : "58%", opacity: active === null ? 1 : 0, transform: active === null ? "scale(1)" : "scale(.2)", ...motionStyle }} />
       <div data-orbit-title aria-hidden={active !== null} className="pointer-events-none absolute left-1/2 top-[47%] w-[50%] -translate-x-1/2 -translate-y-1/2 text-center transition-[opacity,filter,transform] motion-reduce:transition-none" style={{ opacity: active === null ? 1 : 0, filter: active === null ? "blur(0px)" : "blur(8px)", ...motionStyle }}>
-        <p className="mb-3 font-mono text-[10px] uppercase tracking-[.24em] text-muted-foreground">A collection in motion</p>
-        <h2 id={titleId} className="text-[clamp(1.65rem,5.7cqw,3.25rem)] leading-[.98] font-medium tracking-[-.055em]" style={{ fontSize: Math.min(52, size.width * .066) }}>{title}</h2>
-        <p className="mt-4 text-[11px] text-muted-foreground">{total ? "Choose a work to bring it closer" : "Add images to start your collection"}</p>
+        <p className="mb-3 font-mono text-[10px] uppercase tracking-[.24em] text-muted-foreground">{kicker}</p>
+        <h2 id={titleId} className="text-[clamp(1.65rem,5.7cqw,3.25rem)] leading-[.98] font-serif tracking-[-.02em]" style={{ fontSize: Math.min(52, size.width * .066) }}>{title}</h2>
+        <p className="mt-4 text-[11px] text-muted-foreground">{total ? "Klik salah satu untuk melihat pratinjau" : "Belum ada isi"}</p>
       </div>
 
       {items.map((item, index) => <div key={`${index}:${item.src}`} ref={node => { nodes.current[index] = node; }} data-orbit-item={index} data-spotlight={active === index} aria-hidden={active !== null && active !== index}
         className="absolute left-0 top-0 origin-top-left overflow-hidden bg-foreground shadow-lg shadow-foreground/10" style={{ width: 90, height: 68, borderRadius: 6, transform: `translate(${(index + 1) * 10}px, 60px)` }}>
         <div data-photograph className="h-full w-full"><Photograph item={item} /></div>
-        <button ref={node => { buttons.current[index] = node; }} type="button" data-orbit-trigger={index} aria-label={`View ${item.title}`} tabIndex={active === null ? 0 : -1} disabled={active !== null}
+        <button ref={node => { buttons.current[index] = node; }} type="button" data-orbit-trigger={index} aria-label={`Lihat ${item.title}`} tabIndex={active === null ? 0 : -1} disabled={active !== null}
           onMouseEnter={() => { hover.current = index; repaint.current?.(); }} onMouseLeave={() => { hover.current = null; repaint.current?.(); }}
           onClick={() => request(index, true)} className={`absolute inset-0 rounded-[inherit] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring ${active !== null ? "pointer-events-none" : "cursor-pointer"}`} />
       </div>)}
@@ -261,7 +267,7 @@ export function OrbitSpotlightGallery({
         {chosen.description && <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{chosen.description}</p>}
       </div>}
 
-      {active !== null && <div data-dot-ring role="group" aria-label="Choose a work" className="absolute left-1/2 z-40 h-[100px] w-[188px] -translate-x-1/2 -translate-y-1/2 touch-none" style={{ top: "86%" }}
+      {active !== null && <div data-dot-ring role="group" aria-label="Pilih item" className="absolute left-1/2 z-40 h-[100px] w-[188px] -translate-x-1/2 -translate-y-1/2 touch-none" style={{ top: "86%" }}
         onPointerDown={event => {
           if (event.button !== 0) return;
           const rect = event.currentTarget.getBoundingClientRect();
@@ -282,7 +288,7 @@ export function OrbitSpotlightGallery({
         <span aria-hidden className="pointer-events-none absolute left-6 top-5 h-[60px] w-[140px] rounded-[50%] border border-border" />
         {items.map((item, index) => {
           const a = (index - active) / Math.max(1, total) * TAU - Math.PI / 2;
-          return <button key={index} ref={node => { dots.current[index] = node; }} type="button" data-dot={index} aria-label={`Show ${item.title}`} aria-pressed={index === active} title={item.title}
+          return <button key={index} ref={node => { dots.current[index] = node; }} type="button" data-dot={index} aria-label={`Tampilkan ${item.title}`} aria-pressed={index === active} title={item.title}
             onClick={() => { if (!suppressClick.current) request(index, true); suppressClick.current = false; }}
             className={`absolute left-0 top-0 flex size-8 items-center justify-center rounded-full transition-transform motion-reduce:transition-none ${focusRing}`}
             style={{ transform: `translate(${78 + Math.cos(a) * 70}px, ${34 + Math.sin(a) * 30}px)`, ...motionStyle }}>
@@ -292,13 +298,13 @@ export function OrbitSpotlightGallery({
       </div>}
 
       <div className="pointer-events-none absolute inset-x-5 bottom-4 z-40 flex items-center justify-between gap-2">
-        <p id={hintId} className="text-[10px] text-muted-foreground">{active === null ? "Click a work · scroll to explore" : "Drag the dots · Esc to return"}</p>
+        <p id={hintId} className="text-[10px] text-muted-foreground">{active === null ? (wheel ? "Klik satu item · gulir untuk menjelajah" : "Klik satu item · panah kiri/kanan untuk berpindah") : "Seret titik · Esc untuk kembali"}</p>
         <div className="pointer-events-auto flex items-center gap-1">
-          <button type="button" aria-label="Previous work" disabled={total < 2 && active !== null || !total} onClick={() => step(-1, true)} className={`flex size-9 items-center justify-center rounded-full hover:bg-muted disabled:opacity-30 ${focusRing}`}><ArrowLeft className="size-4" aria-hidden /></button>
-          <button type="button" aria-label="Next work" disabled={total < 2 && active !== null || !total} onClick={() => step(1, true)} className={`flex size-9 items-center justify-center rounded-full hover:bg-muted disabled:opacity-30 ${focusRing}`}><ArrowRight className="size-4" aria-hidden /></button>
+          <button type="button" aria-label="Sebelumnya" disabled={total < 2 && active !== null || !total} onClick={() => step(-1, true)} className={`flex size-9 items-center justify-center rounded-full hover:bg-muted disabled:opacity-30 ${focusRing}`}><ArrowLeft className="size-4" aria-hidden /></button>
+          <button type="button" aria-label="Berikutnya" disabled={total < 2 && active !== null || !total} onClick={() => step(1, true)} className={`flex size-9 items-center justify-center rounded-full hover:bg-muted disabled:opacity-30 ${focusRing}`}><ArrowRight className="size-4" aria-hidden /></button>
         </div>
       </div>
-      <span role="status" aria-live="polite" aria-atomic="true" className="sr-only">{chosen ? `${active! + 1} of ${total}: ${chosen.title}${chosen.meta ? `. ${chosen.meta}` : ""}` : `${total} works in orbit`}</span>
+      <span role="status" aria-live="polite" aria-atomic="true" className="sr-only">{chosen ? `${active! + 1} of ${total}: ${chosen.title}${chosen.meta ? `. ${chosen.meta}` : ""}` : `${total} item di orbit`}</span>
     </div>
   );
 }

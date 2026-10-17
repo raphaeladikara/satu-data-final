@@ -6,10 +6,21 @@ import { api, type Attempt, type KCInfo, type SubmitResult, type TutorReply } fr
 import { SinapsViewer, initCornerstone, rleDecode, rleEncode, type Mode } from '../../viewer/cs';
 import MasteryBars from '../../components/MasteryBars';
 import { TopBar } from '../../components/Shell';
+import { Tour, useTour, type TourStep } from '../../components/Tour';
 
 const id = (x: number, d: number) => x.toFixed(d).replace('.', ',');
 const SEQ_NAMES = ['DWI', 'ADC', 'FLAIR'];
 const HEMIS = ['kiri', 'kanan', 'bilateral'];
+const LATIHAN_TOUR: TourStep[] = [
+  { title: 'Ruang baca kasus', body: 'Di sini kamu membaca satu kasus MRI, menjawab soal per kompetensi, lalu menandai lesinya. Ikuti panduan singkat ini.' },
+  { target: 'case', title: 'Kasus dan sasaranmu', body: 'Vignette pasien, tingkat kesulitan, dan KC yang sedang disasar. Arahkan kursor ke sasaran untuk melihat alasan sistem memilih kasus ini.' },
+  { target: 'tools', title: 'Alat viewer', body: 'W/L (N) untuk kecerahan dan kontras, Kuas (B), Hapus (E), dan Titik (T). Tombol paling bawah memindah seri 1, 2, 3.', padding: 4 },
+  { target: 'viewer', title: 'Citra MRI', body: 'Gulir roda tetikus untuk berpindah slice. Huruf R di kiri layar adalah sisi kanan pasien.', padding: 0 },
+  { target: 'steps', title: 'Kerjakan berurutan', body: 'Soal disusun per KC. Jawab sekuens dulu, lalu tunjuk lesi, nilai ADC-nya, dan delineasi seluruh lesi.' },
+  { target: 'submit', title: 'Kirim untuk dinilai', body: 'Jawabanmu dibandingkan dengan mask ahli. Setelah itu tutor siap menjelaskan kesalahanmu.' },
+  { target: 'help', title: 'Selesai', body: 'Tekan Panduan di bilah atas kapan saja untuk memutar ulang.' },
+];
+
 type Msg = { role: 'user' | 'assistant'; content: string; meta?: TutorReply; image?: boolean };
 
 export default function Latihan() {
@@ -23,6 +34,7 @@ export default function Latihan() {
   const [adcBins, setAdcBins] = useState<string[]>([]);
   const [loading, setLoading] = useState('');
   const [error, setError] = useState('');
+  const tour = useTour('latihan', { when: !!att && !loading, delay: 1400 });
   const [series, setSeries] = useState(0);
   const [mode, setModeState] = useState<Mode>('navigasi');
   const [brush, setBrush] = useState(4);
@@ -324,7 +336,7 @@ export default function Latihan() {
     <div className="app">
       <TopBar>
         {att && (
-          <div className="case-info">
+          <div className="case-info" data-tour="case">
             <span className="case-id">SOOP {att.case.id}</span>
             <span>
               {v?.jenis_kelamin}, {v?.usia ?? '?'} th · NIHSS {v?.nihss ?? '?'}
@@ -335,10 +347,14 @@ export default function Latihan() {
             </span>
           </div>
         )}
+        <button className="btn small" data-tour="help" onClick={tour.start}>
+          Panduan
+        </button>
       </TopBar>
 
       <main className="workspace">
-        <aside className="toolbar" aria-label="Alat viewer">
+        <Tour steps={LATIHAN_TOUR} open={tour.open} onClose={tour.close} />
+        <aside className="toolbar" aria-label="Alat viewer" data-tour="tools">
           <ToolBtn on={mode === 'navigasi'} onClick={() => setMode('navigasi')} k="N" label="W/L" title="Navigasi: seret kiri = window/level, kanan = zoom, tengah = geser, roda = slice" />
           <ToolBtn on={mode === 'kuas'} onClick={() => setMode('kuas')} k="B" label="Kuas" disabled={!!result} title="Kuas anotasi lesi" />
           <ToolBtn on={mode === 'hapus'} onClick={() => setMode('hapus')} k="E" label="Hapus" disabled={!!result} title="Penghapus" />
@@ -369,7 +385,7 @@ export default function Latihan() {
           ))}
         </aside>
 
-        <section className="viewer-wrap">
+        <section className="viewer-wrap" data-tour="viewer">
           <div
             className={`viewport mode-${mode}`}
             ref={elRef}
@@ -395,7 +411,7 @@ export default function Latihan() {
 
         <aside className="panel">
           {!result && att && (
-            <div className="card steps">
+            <div className="card steps" data-tour="steps">
               <h2>Kerjakan kasus</h2>
               <p className="muted small">{att.reason}</p>
 
@@ -463,7 +479,7 @@ export default function Latihan() {
                 </div>
               </Step>
 
-              <button className="btn primary block" disabled={!canSubmit} onClick={doSubmit}>
+              <button className="btn primary block" disabled={!canSubmit} onClick={doSubmit} data-tour="submit">
                 {submitting ? 'Menilai…' : 'Kirim jawaban'}
               </button>
               <button className="btn small block ghost" disabled={!!loading || submitting} onClick={nextCase} title="Tinggalkan kasus ini tanpa dinilai">

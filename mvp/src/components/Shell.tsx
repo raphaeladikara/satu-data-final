@@ -28,7 +28,7 @@ export function TopBar({ children }: { children?: ReactNode }) {
         <Logo /> SINAPS
       </Link>
       {children}
-      <nav className="topnav" aria-label="Navigasi utama">
+      <nav className="topnav" aria-label="Navigasi utama" data-tour="nav">
         {nav.map((n) => (
           <NavLink key={n.to} to={n.to} end={'end' in n ? Boolean(n.end) : false} className={({ isActive }) => (isActive ? 'on' : '')}>
             {n.label}

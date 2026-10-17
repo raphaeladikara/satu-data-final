@@ -3,7 +3,7 @@
 Hanya untuk tiga kasus contoh modul (sub-754, sub-1320, sub-652). Kasus ini sudah dikeluarkan dari
 latihan bernilai dan kuncinya memang ditampilkan di modul, jadi mask ahlinya boleh publik.
 
-Keluaran: public/brain3d/<sub>.bin (gzip) = DWI | FLAIR | mask, masing-masing uint8 X*Y*Z (x tercepat),
+Keluaran: public/brain3d/<sub>.bin (gzip) = DWI | FLAIR | mask | ADC relatif x100, masing-masing uint8 X*Y*Z (x tercepat),
 diperkecil 2x di bidang aksial, dan public/brain3d/index.json berisi dimensi dan spacing.
 """
 import gzip
@@ -44,7 +44,8 @@ def main():
         dwi = down2(load_vol(sub, "DWI", dims), "mean")
         flair = down2(load_vol(sub, "FLAIR", dims), "mean")
         mask = down2(np.load(SRV / f"{sub}.npz")["gt"].astype(np.uint8) * 255, "max")
-        raw = b"".join(np.asfortranarray(v).tobytes(order="F") for v in (dwi, flair, mask))
+        adc = down2(load_vol(sub, "ADC", dims), "mean")
+        raw = b"".join(np.asfortranarray(v).tobytes(order="F") for v in (dwi, flair, mask, adc))
         (OUT / f"{sub}.bin").write_bytes(gzip.compress(raw, compresslevel=9, mtime=0))
         sp = meta[sub]["spacing"]
         index[sub] = {"dimensions": list(dwi.shape), "spacing": [sp[0] * 2, sp[1] * 2, sp[2]]}

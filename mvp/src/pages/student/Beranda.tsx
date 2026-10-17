@@ -6,6 +6,17 @@ import MasteryBars from '../../components/MasteryBars';
 import { Empty, Loading, Page } from '../../components/Shell';
 import { LESSONS, lessonById } from '../../content/lessons';
 import JoinClass from '../../components/JoinClass';
+import { Tour, useTour, type TourStep } from '../../components/Tour';
+
+const BERANDA_TOUR: TourStep[] = [
+  { title: 'Selamat datang di SINAPS', body: 'Beranda merangkum apa yang perlu kamu kerjakan berikutnya. Panduan ini hanya lima langkah.' },
+  { target: 'next', title: 'Langkah berikutnya', body: 'Sistem menyarankan modul atau latihan untuk kompetensi terlemahmu. Mulai dari sini setiap kali membuka SINAPS.' },
+  { target: 'mastery', title: 'Peta penguasaan', body: 'Peluang kamu sudah menguasai tiap KC, diperbarui setiap kasus yang kamu kirim. 95% berarti dikuasai.' },
+  { target: 'tasks', title: 'Tugas dari dosen', body: 'Tugas berisi modul dan kasus dengan tenggat. Yang mendekati tenggat muncul paling atas.' },
+  { target: 'nav', title: 'Menu utama', body: 'Belajar untuk modul, Latihan untuk kasus adaptif, Bank kasus untuk memilih sendiri, Riwayat untuk meninjau ulang.', padding: 6 },
+  { target: 'help', title: 'Selesai', body: 'Tombol Panduan ada di setiap halaman utama. Selamat belajar!' },
+];
+
 
 export default function Beranda() {
   const { user } = useAuth();
@@ -13,6 +24,7 @@ export default function Beranda() {
   const [me, setMe] = useState<Me | null>(null);
   const [err, setErr] = useState('');
   const load = () => api.me().then(setMe).catch((e) => setErr(e.message));
+  const tour = useTour('beranda', { when: !!me });
   useEffect(() => {
     load();
   }, []);
@@ -32,6 +44,11 @@ export default function Beranda() {
   return (
     <Page
       title={`Halo, ${first}`}
+      actions={
+        <button className="btn small" data-tour="help" onClick={tour.start}>
+          Panduan
+        </button>
+      }
       sub={
         <>
           {JENJANG[me.user.jenjang ?? ''] ?? 'Mahasiswa'} · {me.user.kelas ? `${me.user.kelas.nama} (dosen: ${me.user.kelas.dosen ?? '—'})` : 'belum bergabung ke kelas'} ·{' '}
@@ -49,7 +66,8 @@ export default function Beranda() {
         </section>
       )}
 
-      <section className="next-step card">
+      <Tour steps={BERANDA_TOUR} open={tour.open} onClose={tour.close} />
+      <section className="next-step card" data-tour="next">
         <p className="eyebrow">Langkah berikutnya</p>
         {isNew && !orientDone ? (
           <>
@@ -125,7 +143,7 @@ export default function Beranda() {
       </div>
 
       <div className="grid2">
-        <section className="card">
+        <section className="card" data-tour="mastery">
           <div className="card-head">
             <h2>Penguasaan kompetensi</h2>
             <span className="muted small">Bayesian Knowledge Tracing</span>
@@ -136,7 +154,7 @@ export default function Beranda() {
           </p>
         </section>
 
-        <section className="card">
+        <section className="card" data-tour="tasks">
           <div className="card-head">
             <h2>Tugas aktif</h2>
             <Link to="/tugas" className="small">

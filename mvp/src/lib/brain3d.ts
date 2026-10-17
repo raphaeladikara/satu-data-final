@@ -6,6 +6,8 @@ export type Brain3D = {
   dwi: Uint8Array;
   flair: Uint8Array;
   mask: Uint8Array;
+  /** ADC relatif x 100 (100 = median otak) */
+  adc: Uint8Array;
   /** slice dengan lesi terbanyak, untuk fokus awal */
   peakSlice: number;
   /** jumlah voxel lesi per slice */
@@ -28,13 +30,13 @@ export function loadBrain3D(id: string): Promise<Brain3D> {
   const hit = cache.get(id);
   if (hit) return hit;
   const p = (async () => {
-    indexP ??= fetch('/brain3d/index.json').then((r) => {
+    indexP ??= fetch('/brain3d/index.json?v=2').then((r) => {
       if (!r.ok) throw new Error('Indeks volume 3D tidak ditemukan');
       return r.json();
     });
     const meta = (await indexP)[id];
     if (!meta) throw new Error(`Volume 3D ${id} tidak tersedia`);
-    const res = await fetch(`/brain3d/${id}.bin`);
+    const res = await fetch(`/brain3d/${id}.bin?v=2`);
     if (!res.ok) throw new Error(`Gagal memuat volume 3D ${id}`);
     const raw = await gunzipIfNeeded(new Uint8Array(await res.arrayBuffer()));
     const [X, Y, Z] = meta.dimensions;
@@ -46,7 +48,7 @@ export function loadBrain3D(id: string): Promise<Brain3D> {
       return c;
     });
     const peakSlice = lesionPerSlice.indexOf(Math.max(...lesionPerSlice));
-    return { id, dims: meta.dimensions, spacing: meta.spacing, dwi: raw.subarray(0, n), flair: raw.subarray(n, 2 * n), mask, peakSlice, lesionPerSlice };
+    return { id, dims: meta.dimensions, spacing: meta.spacing, dwi: raw.subarray(0, n), flair: raw.subarray(n, 2 * n), mask, adc: raw.subarray(3 * n, 4 * n), peakSlice, lesionPerSlice };
   })();
   cache.set(id, p);
   p.catch(() => cache.delete(id));

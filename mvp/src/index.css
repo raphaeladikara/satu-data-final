@@ -95,7 +95,8 @@
     font-feature-settings: 'ss01', 'cv11';
     color-scheme: light;
   }
-  .tw *,
+  /* elemen di dalam .legacy (komponen lama yang disisipkan) tidak ikut direset */
+  .tw *:not(.legacy, .legacy *),
   .tw ::before,
   .tw ::after {
     box-sizing: border-box;
@@ -103,29 +104,29 @@
     margin: 0;
     padding: 0;
   }
-  .tw :where(h1, h2, h3, h4, h5, h6) {
+  .tw :where(h1, h2, h3, h4, h5, h6):not(.legacy, .legacy *) {
     font-size: inherit;
     font-weight: inherit;
     letter-spacing: inherit;
   }
-  .tw :where(ol, ul, menu) {
+  .tw :where(ol, ul, menu):not(.legacy, .legacy *) {
     list-style: none;
   }
-  .tw :where(img, svg, video, canvas) {
+  .tw :where(img, svg, video, canvas):not(.legacy, .legacy *) {
     display: block;
     max-width: 100%;
   }
-  .tw :where(a) {
+  .tw :where(a):not(.legacy, .legacy *) {
     color: inherit;
     text-decoration: inherit;
   }
-  .tw :where(button, input, select, textarea) {
+  .tw :where(button, input, select, textarea):not(.legacy, .legacy *) {
     font: inherit;
     color: inherit;
     background: transparent;
     border-radius: 0;
   }
-  .tw :where(button) {
+  .tw :where(button):not(.legacy, .legacy *) {
     cursor: pointer;
   }
   .tw :where(:focus-visible) {

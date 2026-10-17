@@ -8,9 +8,10 @@ import { cn } from '@/lib/utils';
  * Setiap slice aksial adalah satu bidang bertekstur; lesi dari mask ahli menyala terracotta.
  * Bisa diputar dengan seret, slice bisa dipisahkan (explode), dan satu slice bisa difokuskan.
  */
+export type Series3D = 'DWI' | 'FLAIR' | 'ADC';
 export type MriHologramProps = {
   caseId?: string;
-  series?: 'DWI' | 'FLAIR';
+  series?: Series3D;
   /** 0 = tumpukan rapat, 1 = slice terpisah lebar */
   explode?: number;
   lesion?: boolean;
@@ -35,7 +36,7 @@ void main() {
 const FRAG = /* glsl */ `
 precision highp float;
 uniform sampler2D uTex;
-uniform float uSeries;
+uniform vec3 uSeries;
 uniform float uLesion;
 uniform float uOpacity;
 uniform float uGlow;
@@ -48,13 +49,13 @@ uniform vec3 uLesionCol;
 varying vec2 vUv;
 void main() {
   vec4 t = texture2D(uTex, vUv);
-  float v = mix(t.r, t.g, uSeries);
+  float v = dot(vec3(t.r, t.g, t.a), uSeries);
   // tepi jaringan dari gradien intensitas, supaya kontur otak tiap slice terbaca
   vec4 tx1 = texture2D(uTex, vUv + vec2(uTexel.x, 0.0));
   vec4 tx0 = texture2D(uTex, vUv - vec2(uTexel.x, 0.0));
   vec4 ty1 = texture2D(uTex, vUv + vec2(0.0, uTexel.y));
   vec4 ty0 = texture2D(uTex, vUv - vec2(0.0, uTexel.y));
-  vec2 grad = vec2(mix(tx1.r, tx1.g, uSeries) - mix(tx0.r, tx0.g, uSeries), mix(ty1.r, ty1.g, uSeries) - mix(ty0.r, ty0.g, uSeries));
+  vec2 grad = vec2(dot(tx1.rga, uSeries) - dot(tx0.rga, uSeries), dot(ty1.rga, uSeries) - dot(ty0.rga, uSeries));
   float edge = smoothstep(0.06, 0.22, length(grad));
   float a = smoothstep(0.05, 0.42, v);
   vec3 c = v < 0.45 ? mix(uLow, uMid, v / 0.45) : mix(uMid, uHigh, (v - 0.45) / 0.55);
@@ -149,7 +150,7 @@ export default function MriHologram({
           px[i * 4] = b.dwi[off + i];
           px[i * 4 + 1] = b.flair[off + i];
           px[i * 4 + 2] = b.mask[off + i];
-          px[i * 4 + 3] = 255;
+          px[i * 4 + 3] = b.adc[off + i];
         }
         const tex = new THREE.DataTexture(px, X, Y, THREE.RGBAFormat);
         tex.magFilter = THREE.LinearFilter;
@@ -165,7 +166,7 @@ export default function MriHologram({
           blending: THREE.AdditiveBlending,
           uniforms: {
             uTex: { value: tex },
-            uSeries: { value: 0 },
+            uSeries: { value: new THREE.Vector3(1, 0, 0) },
             uLesion: { value: 1 },
             uOpacity: { value: 0.3 },
             uGlow: { value: 0 },
@@ -306,7 +307,8 @@ export default function MriHologram({
       let last = performance.now();
       let t = 0;
       let ex = live.current.explode;
-      let ser = live.current.series === 'FLAIR' ? 1 : 0;
+      const W3 = (s: string) => new THREE.Vector3(s === 'DWI' ? 1 : 0, s === 'FLAIR' ? 1 : 0, s === 'ADC' ? 1 : 0);
+      const ser = W3(live.current.series);
       let les = live.current.lesion ? 1 : 0;
       let foc = -1;
       let focusAmt = 0;
@@ -323,7 +325,7 @@ export default function MriHologram({
         t += dt;
         const k = still ? 1 : 1 - Math.exp(-dt * 6);
         ex += (L.explode - ex) * k;
-        ser += ((L.series === 'FLAIR' ? 1 : 0) - ser) * k;
+        ser.lerp(W3(L.series), k);
         les += ((L.lesion ? 1 : 0) - les) * k;
         zoomS += (L.zoom - zoomS) * k;
         if (L.focusSlice != null) foc = L.focusSlice;
@@ -335,7 +337,9 @@ export default function MriHologram({
           if (L.autoRotate && !still && now - idleAt > 1600) yaw += dt * 0.22;
         }
         pivot.rotation.set(0, yaw, 0);
-        camera.position.set(0, Math.sin(pitch) * 5.4 * zoomS * (1 + ex * 0.5), Math.cos(pitch) * 5.4 * zoomS * (1 + ex * 0.5));
+        // layar potret butuh kamera lebih jauh supaya lebar otak tetap muat
+        const dist = 5.4 * zoomS * (1 + ex * 0.5) * Math.max(1, 0.85 / camera.aspect);
+        camera.position.set(0, Math.sin(pitch) * dist, Math.cos(pitch) * dist);
         camera.lookAt(0, 0.05, 0);
 
         const gap = dz * (1.25 + ex * 1.7);
