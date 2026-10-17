@@ -1,0 +1,7 @@
+# data MRI SOOP (besar, unduh ulang dari OpenNeuro ds004889)
+data/
+**/.venv/
+**/.env
+__pycache__/
+*.pyc
+~$*
