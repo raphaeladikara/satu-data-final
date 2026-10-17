@@ -70,10 +70,10 @@ uv venv .venv && uv pip install --python .venv -r requirements.txt uvicorn
 npm run dev                                                  # terminal 2 → http://localhost:5173
 ```
 
-Data demo untuk presentasi (1 dosen, 1 kelas, 10 mahasiswa fiktif dengan percobaan tersimulasi):
+Data demo (2 dosen, 3 kelas, 20 mahasiswa fiktif dengan percobaan tersimulasi, tugas, dan verifikasi kasus):
 
 ```bash
-.venv/Scripts/python scripts/seed_demo.py           # akun: dosen demo.dosen, mahasiswa DEMO0001-DEMO0010, sandi sinaps-demo
+.venv/Scripts/python scripts/seed_demo.py           # akun: dosen demo.dosen & demo.dosen2, mahasiswa DEMO0001-DEMO0020, sandi sinaps-demo
 .venv/Scripts/python scripts/seed_demo.py --hapus   # hapus data demo
 ```
 
