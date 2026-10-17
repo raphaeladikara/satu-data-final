@@ -172,6 +172,8 @@ export type Overview = {
   n_attempts: number;
   mean_dice: number | null;
   activity: { t: number; n: number }[];
+  /** [mulai, kirim] dalam detik epoch */
+  sessions?: [number, number][];
   active_7d: number;
   flagged_tutor: number;
   n_tutor: number;

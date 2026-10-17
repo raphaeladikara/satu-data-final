@@ -75,7 +75,9 @@ export const project = (c: Cam, x: number, y: number, z: number): [number, numbe
   (x * c.sn + y * c.cs) * c.se - z * c.ce,
 ]
 
-export const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const
+const fmtMenit = (v: number) => `${v} menit`
+
+export const DAYS = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"] as const
 export const pad2 = (n: number) => String(n).padStart(2, "0")
 
 export const sector = (r0: number, r1: number, a0: number, a1: number, gap = 0.035): number[] => {
@@ -242,6 +244,12 @@ export interface CirculariumRingProps {
   showFilter?: boolean
   /** Whether to display the summary analytics badges (Weekly Focus, Peak Hour, Best Day). Defaults to true. */
   showMetrics?: boolean
+  /** Nilai sel yang dianggap penuh (tinggi dan warna maksimum). Default 60 (menit). */
+  maxValue?: number
+  /** Teks baris kedua tooltip untuk satu sel. */
+  formatValue?: (value: number) => string
+  /** Subjudul di bawah judul. */
+  subtitle?: React.ReactNode
   /** Optional container class name for styling overrides. */
   className?: string
 }
@@ -301,8 +309,8 @@ const SparkleIcon = () => (
 export function CirculariumRing({
   data,
   seed = 3,
-  title = "Circadian focus ring",
-  hint = "Rings are weekdays (Monday innermost) · sectors are hours, midnight at the top",
+  title = "Cincin jam belajar",
+  hint = "Cincin = hari (Senin paling dalam) · sektor = jam, tengah malam di atas",
   palette = "ocean",
   view: controlledView,
   defaultView = "3d",
@@ -310,9 +318,12 @@ export function CirculariumRing({
   orbit = true,
   showToggle = true,
   showLegend = true,
-  legendLabels = ["Idle", "Deep focus"],
+  legendLabels = ["Sepi", "Padat"],
   showFilter = true,
   showMetrics = true,
+  maxValue = 60,
+  formatValue = fmtMenit,
+  subtitle = "24 jam × 7 hari",
   className = "",
 }: CirculariumRingProps) {
   const [internalView, setInternalView] = React.useState<ViewMode>(defaultView)
@@ -407,8 +418,9 @@ export function CirculariumRing({
         const r0 = 3.2 + d * 1.05
 
         // If filtered out, lower elevation and level
-        const elevation = matchesFilter ? 0.25 + (m / 60) * 6 : 0.08
-        const level = matchesFilter ? (m / 60) * 4 : 0.15
+        const f = Math.min(1, m / Math.max(1e-6, maxValue))
+        const elevation = matchesFilter ? 0.25 + f * 6 : 0.08
+        const level = matchesFilter ? f * 4 : 0.15
 
         boxes.push({
           pts: sector(r0, r0 + 0.95, a0, a0 + Math.PI / 12),
@@ -417,7 +429,7 @@ export function CirculariumRing({
           lv: level,
           order: h / 24,
           tip: `${DAYS[d]} ${pad2(h)}:00
-${m} min focused`,
+${formatValue(m)}`,
           dayIndex: d,
           hour: h,
           minutes: m,
@@ -430,8 +442,8 @@ ${m} min focused`,
       return { x: Math.cos(a) * 12.4, y: Math.sin(a) * 12.4, text: `${pad2(h)}:00` }
     })
 
-    return { boxes, labels, cols: 24, label: "Circadian focus ring" }
-  }, [computedData, filter])
+    return { boxes, labels, cols: 24, label: "Cincin jam belajar" }
+  }, [computedData, filter, maxValue, formatValue])
 
   // Keep latest mutable configuration ref
   const cfg = React.useRef({
@@ -553,8 +565,7 @@ ${m} min focused`,
       const isDocDark =
         doc.classList.contains("dark") ||
         document.body?.classList.contains("dark") ||
-        doc.getAttribute("data-theme") === "dark" ||
-        darkMq.matches
+        doc.getAttribute("data-theme") === "dark"
 
       fg = toRGB(cs.color, isDocDark ? [240, 240, 240] : [23, 23, 23]) ?? (isDocDark ? [240, 240, 240] : [23, 23, 23])
       bg = toRGB(cs.backgroundColor, isDocDark ? [20, 20, 20] : [255, 255, 255]) ?? (isDocDark ? [20, 20, 20] : [255, 255, 255])
@@ -1139,7 +1150,7 @@ ${m} min focused`,
 
   const is3d = view === "3d"
   const ease = "cubic-bezier(0.65, 0, 0.35, 1)"
-  const levelNames = ["Idle", "Light focus", "Moderate focus", "Deep focus", "Peak focus"]
+  const levelNames = ["Sepi", "Ringan", "Sedang", "Padat", "Sangat padat"]
 
   return (
     <section
@@ -1163,7 +1174,7 @@ ${m} min focused`,
             <h3 className="m-0 text-base font-semibold tracking-tight sm:text-lg">{title}</h3>
           </div>
           <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            24-hour radial telemetry · 7 weekday rings
+            {subtitle}
           </p>
         </div>
 
@@ -1172,14 +1183,14 @@ ${m} min focused`,
           {showFilter && (
             <div
               role="group"
-              aria-label="Filter Days"
+              aria-label="Saring hari"
               className="inline-flex rounded-lg border border-neutral-200 bg-neutral-100/60 p-0.5 text-xs dark:border-neutral-800 dark:bg-neutral-900/60"
             >
               {(
                 [
-                  { id: "all", label: "All" },
-                  { id: "weekdays", label: "Mon–Fri" },
-                  { id: "weekend", label: "Sat–Sun" },
+                  { id: "all", label: "Semua" },
+                  { id: "weekdays", label: "Sen–Jum" },
+                  { id: "weekend", label: "Sab–Min" },
                 ] as const
               ).map((tab) => (
                 <button
@@ -1202,7 +1213,7 @@ ${m} min focused`,
           {showToggle && (
             <div
               role="group"
-              aria-label="Chart perspective view"
+              aria-label="Tampilan grafik"
               className="relative inline-flex rounded-lg border border-neutral-200 bg-neutral-100/60 p-0.5 dark:border-neutral-800 dark:bg-neutral-900/60"
             >
               <span
@@ -1218,8 +1229,8 @@ ${m} min focused`,
                   key={v}
                   type="button"
                   aria-pressed={view === v}
-                  aria-label={v === "2d" ? "Flat radial heatmap" : "3D isometric ring"}
-                  title={v === "2d" ? "Flat radial heatmap" : "3D isometric ring"}
+                  aria-label={v === "2d" ? "Peta panas datar" : "Cincin 3D"}
+                  title={v === "2d" ? "Peta panas datar" : "Cincin 3D"}
                   onClick={() => setView(v)}
                   className={`relative z-10 grid h-7 w-8 cursor-pointer place-items-center rounded-md border-0 bg-transparent p-0 transition-colors duration-200 ${
                     view === v
@@ -1251,7 +1262,7 @@ ${m} min focused`,
               ref={canvasRef}
               tabIndex={0}
               role="img"
-              aria-label={`${spec.label}. Shown as a ${is3d ? "3D isometric scene" : "flat map"}. Use arrow keys to explore individual hourly blocks.`}
+              aria-label={`${spec.label}, ditampilkan sebagai ${is3d ? "cincin 3D" : "peta datar"}. Gunakan tombol panah untuk menjelajah tiap jam.`}
               className="absolute top-0 left-0 block outline-none"
               style={{
                 maxWidth: "none",
@@ -1300,7 +1311,7 @@ ${m} min focused`,
                 <button
                   key={i}
                   type="button"
-                  aria-label={`Highlight ${levelNames[i].toLowerCase()}`}
+                  aria-label={`Sorot ${levelNames[i].toLowerCase()}`}
                   aria-pressed={legendLevel === i}
                   title={levelNames[i]}
                   onMouseEnter={() => setLegendLevel(i)}

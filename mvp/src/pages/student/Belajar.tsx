@@ -95,7 +95,7 @@ export default function Belajar() {
         <ProgressCard done={done} total={LESSONS.length} minutes={minutesLeft} />
       </div>
 
-      <div className="mt-8 grid gap-4 lg:grid-cols-[1fr_380px]">
+      <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_380px]">
         <div data-tour="orbit" className="relative overflow-hidden rounded-[2rem] border border-ink/8 bg-paper">
           {thumbs && p ? (
             <OrbitSpotlightGallery

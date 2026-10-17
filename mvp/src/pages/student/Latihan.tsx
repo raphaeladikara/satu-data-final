@@ -334,7 +334,7 @@ export default function Latihan() {
 
   return (
     <div className="app">
-      <TopBar>
+      <TopBar onHelp={tour.start}>
         {att && (
           <div className="case-info" data-tour="case">
             <span className="case-id">SOOP {att.case.id}</span>
@@ -347,14 +347,11 @@ export default function Latihan() {
             </span>
           </div>
         )}
-        <button className="btn small" data-tour="help" onClick={tour.start}>
-          Panduan
-        </button>
       </TopBar>
 
       <main className="workspace">
         <Tour steps={LATIHAN_TOUR} open={tour.open} onClose={tour.close} />
-        <aside className="toolbar" aria-label="Alat viewer" data-tour="tools">
+        <aside className="toolbar legacy-dark" aria-label="Alat viewer" data-tour="tools">
           <ToolBtn on={mode === 'navigasi'} onClick={() => setMode('navigasi')} k="N" label="W/L" title="Navigasi: seret kiri = window/level, kanan = zoom, tengah = geser, roda = slice" />
           <ToolBtn on={mode === 'kuas'} onClick={() => setMode('kuas')} k="B" label="Kuas" disabled={!!result} title="Kuas anotasi lesi" />
           <ToolBtn on={mode === 'hapus'} onClick={() => setMode('hapus')} k="E" label="Hapus" disabled={!!result} title="Penghapus" />
@@ -385,7 +382,7 @@ export default function Latihan() {
           ))}
         </aside>
 
-        <section className="viewer-wrap" data-tour="viewer">
+        <section className="viewer-wrap legacy-dark" data-tour="viewer">
           <div
             className={`viewport mode-${mode}`}
             ref={elRef}

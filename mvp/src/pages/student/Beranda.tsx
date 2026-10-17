@@ -1,22 +1,31 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ArrowRight, ArrowUpRight, BookOpen, CalendarClock, CheckCircle2, ClipboardList, Flame, Gauge, GraduationCap, ScanLine, Sparkles, Target } from 'lucide-react';
 import { api, fmt, JENJANG, type Me } from '../../api';
 import { useAuth } from '../../auth';
-import MasteryBars from '../../components/MasteryBars';
+import { AppShell } from '@/components/AppShell';
 import { Empty, Loading, Page } from '../../components/Shell';
+import { buttonClass } from '@/components/ui/button';
+import { currentStreak, dailyCounts, todayWib, totalMinutes, type Session } from '@/lib/activity';
+import { cn } from '@/lib/utils';
 import { LESSONS, lessonById } from '../../content/lessons';
 import JoinClass from '../../components/JoinClass';
 import { Tour, useTour, type TourStep } from '../../components/Tour';
 
+const ContributionSkyline = lazy(() => import('@/components/ui/contribution-skyline'));
+const SKY = { light: ['#d6e9cd', '#aad39c', '#80a874', '#195764'], dark: ['#1e4d3b', '#3f7d57', '#80a874', '#aad39c'] };
+const EASE = [0.22, 1, 0.36, 1] as const;
+
 const BERANDA_TOUR: TourStep[] = [
-  { title: 'Selamat datang di SINAPS', body: 'Beranda merangkum apa yang perlu kamu kerjakan berikutnya. Panduan ini hanya lima langkah.' },
+  { title: 'Selamat datang di SINAPS', body: 'Beranda merangkum apa yang perlu kamu kerjakan berikutnya. Panduan ini hanya enam langkah.' },
   { target: 'next', title: 'Langkah berikutnya', body: 'Sistem menyarankan modul atau latihan untuk kompetensi terlemahmu. Mulai dari sini setiap kali membuka SINAPS.' },
   { target: 'mastery', title: 'Peta penguasaan', body: 'Peluang kamu sudah menguasai tiap KC, diperbarui setiap kasus yang kamu kirim. 95% berarti dikuasai.' },
+  { target: 'calendar', title: 'Kalender latihan', body: 'Satu kotak per hari. Makin tinggi dan gelap, makin banyak kasus yang kamu kerjakan. Seret untuk memutar tampilan 3D.' },
   { target: 'tasks', title: 'Tugas dari dosen', body: 'Tugas berisi modul dan kasus dengan tenggat. Yang mendekati tenggat muncul paling atas.' },
   { target: 'nav', title: 'Menu utama', body: 'Belajar untuk modul, Latihan untuk kasus adaptif, Bank kasus untuk memilih sendiri, Riwayat untuk meninjau ulang.', padding: 6 },
   { target: 'help', title: 'Selesai', body: 'Tombol Panduan ada di setiap halaman utama. Selamat belajar!' },
 ];
-
 
 export default function Beranda() {
   const { user } = useAuth();
@@ -28,6 +37,8 @@ export default function Beranda() {
   useEffect(() => {
     load();
   }, []);
+  const sessions = useMemo<Session[]>(() => (me?.attempts ?? []).map((a) => [a.started_at || a.submitted_at, a.submitted_at]), [me]);
+  const days = useMemo(() => dailyCounts(sessions), [sessions]);
 
   if (err) return <Page title="Beranda"><p className="error">{err}</p></Page>;
   if (!me) return <Page title="Beranda"><Loading /></Page>;
@@ -38,168 +49,245 @@ export default function Beranda() {
   const rec = me.rekomendasi;
   const recLesson = rec.lesson ? lessonById(rec.lesson) : null;
   const recLessonDone = rec.lesson ? me.lessons[rec.lesson]?.completed : true;
-  const open = me.assignments.filter((t) => !t.tuntas);
+  const open = me.assignments.filter((t) => !t.tuntas).sort((a, b) => (a.due_at ?? 9e12) - (b.due_at ?? 9e12));
   const doneLessons = LESSONS.filter((l) => me.lessons[l.id]?.completed).length;
+  const streak = currentStreak(sessions);
+  const minutes = Math.round(totalMinutes(sessions));
+  const today = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
+
+  const next =
+    isNew && !orientDone
+      ? { kicker: 'Mulai di sini', title: 'Modul orientasi', body: 'Enam menit untuk mengenal tiga sekuens MRI, konvensi orientasi radiologis, dan cara memakai viewer.', a: ['/belajar/orientasi', 'Buka modul orientasi'], b: ['/latihan', 'Langsung latihan'] }
+      : recLesson && !recLessonDone
+        ? { kicker: `KC terlemah · ${fmt.pct(rec.p)}`, title: `Pelajari ${rec.kc} · ${rec.nama}`, body: 'Baca modulnya dulu, lalu latih dengan kasus yang dipilih sesuai penguasaanmu.', a: [`/belajar/${recLesson.id}`, `Buka modul ${rec.kc}`], b: ['/latihan', 'Latihan adaptif'] }
+        : { kicker: `Sasaran · ${rec.kc} ${fmt.pct(rec.p)}`, title: 'Lanjutkan latihan adaptif', body: `Sistem akan memilih kasus untuk ${rec.kc} ${rec.nama} dengan tingkat kesulitan yang pas.`, a: ['/latihan', 'Kerjakan kasus berikutnya'], b: [`/latihan?kc=${rec.kc}`, `Latih ${rec.kc} saja`] };
 
   return (
-    <Page
-      title={`Halo, ${first}`}
-      actions={
-        <button className="btn small" data-tour="help" onClick={tour.start}>
-          Panduan
-        </button>
-      }
-      sub={
-        <>
-          {JENJANG[me.user.jenjang ?? ''] ?? 'Mahasiswa'} · {me.user.kelas ? `${me.user.kelas.nama} (dosen: ${me.user.kelas.dosen ?? '—'})` : 'belum bergabung ke kelas'} ·{' '}
-          <span className="mono">{me.user.id}</span>
-        </>
-      }
-    >
-      {!me.user.kelas && (
-        <section className="card notice">
-          <div>
-            <b>Gabung ke kelas dosenmu</b>
-            <p className="muted small">Masukkan kode kelas supaya dosen bisa memantau progres dan memberi tugas.</p>
-          </div>
-          <JoinClass onJoined={load} />
-        </section>
-      )}
-
+    <AppShell onHelp={tour.start} wide>
       <Tour steps={BERANDA_TOUR} open={tour.open} onClose={tour.close} />
-      <section className="next-step card" data-tour="next">
-        <p className="eyebrow">Langkah berikutnya</p>
-        {isNew && !orientDone ? (
-          <>
-            <h2>Mulai dari modul orientasi</h2>
-            <p className="muted">Enam menit untuk mengenal tiga sekuens MRI, konvensi orientasi radiologis, dan cara memakai viewer.</p>
-            <div className="row-btns">
-              <Link className="btn primary" to="/belajar/orientasi">
-                Buka modul orientasi
-              </Link>
-              <Link className="btn" to="/latihan">
-                Langsung latihan
-              </Link>
-            </div>
-          </>
-        ) : recLesson && !recLessonDone ? (
-          <>
-            <h2>
-              Pelajari {rec.kc} · {rec.nama}
-            </h2>
-            <p className="muted">
-              Ini kompetensi terlemahmu (peluang penguasaan {fmt.pct(rec.p)}). Baca modulnya dulu, lalu latih dengan kasus yang dipilih untukmu.
-            </p>
-            <div className="row-btns">
-              <Link className="btn primary" to={`/belajar/${recLesson.id}`}>
-                Buka modul {rec.kc}
-              </Link>
-              <Link className="btn" to="/latihan">
-                Latihan adaptif
-              </Link>
-            </div>
-          </>
-        ) : (
-          <>
-            <h2>Lanjutkan latihan adaptif</h2>
-            <p className="muted">
-              Sistem akan memilih kasus untuk {rec.kc} {rec.nama} (penguasaan {fmt.pct(rec.p)}).
-            </p>
-            <div className="row-btns">
-              <Link className="btn primary" to="/latihan">
-                Kerjakan kasus berikutnya
-              </Link>
-              <Link className="btn" to={`/latihan?kc=${rec.kc}`}>
-                Latih {rec.kc} saja
-              </Link>
-            </div>
-          </>
-        )}
-      </section>
-
-      <div className="kpis">
-        <div className="kpi">
-          <b>{me.ringkas.n_kasus}</b>
-          <span>kasus dikerjakan</span>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-teal">{today}</p>
+          <h1 className="mt-2.5 font-serif text-[clamp(2.4rem,4.4vw,3.8rem)] leading-[1.02] tracking-[-0.015em]">
+            Halo, <em className="text-teal">{first}.</em>
+          </h1>
+          <p className="mt-2 text-[14.5px] text-ink/60">
+            {JENJANG[me.user.jenjang ?? ''] ?? 'Mahasiswa'} · {me.user.kelas ? `${me.user.kelas.nama} (dosen: ${me.user.kelas.dosen ?? '—'})` : 'belum bergabung ke kelas'} · <span className="font-mono text-[12.5px]">{me.user.id}</span>
+          </p>
         </div>
-        <div className="kpi">
-          <b>{me.ringkas.mean_dice === null ? '—' : fmt.num(me.ringkas.mean_dice)}</b>
-          <span>rerata Dice delineasi</span>
-        </div>
-        <div className="kpi">
-          <b>
-            {me.ringkas.kc_dikuasai}
-            <small>/4</small>
-          </b>
-          <span>KC dikuasai (≥ 95%)</span>
-        </div>
-        <div className="kpi">
-          <b>
-            {doneLessons}
-            <small>/{LESSONS.length}</small>
-          </b>
-          <span>modul selesai</span>
+        <div className="flex gap-2">
+          <Chip icon={Flame} tone={streak ? 'terra' : 'muted'}>
+            {streak ? `${streak} hari berturut-turut` : 'Mulai rentetan hari ini'}
+          </Chip>
+          <Chip icon={CalendarClock}>{minutes} menit latihan</Chip>
         </div>
       </div>
 
-      <div className="grid2">
-        <section className="card" data-tour="mastery">
-          <div className="card-head">
-            <h2>Penguasaan kompetensi</h2>
-            <span className="muted small">Bayesian Knowledge Tracing</span>
+      {!me.user.kelas && (
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-[1.6rem] border border-leaf bg-mint p-5">
+          <div>
+            <b className="text-[15px] font-semibold">Gabung ke kelas dosenmu</b>
+            <p className="text-[13.5px] text-ink/60">Masukkan kode kelas supaya dosen bisa memantau progres dan memberi tugas.</p>
           </div>
-          <MasteryBars kc={me.kc} before={me.mastery} />
-          <p className="small muted">
-            Batang menunjukkan peluang kamu sudah menguasai KC tersebut. Prasyarat: K1 → K2 → K3/K6. KC yang prasyaratnya belum dikuasai belum dipilih otomatis.
-          </p>
+          <div className="legacy">
+            <JoinClass onJoined={load} />
+          </div>
+        </div>
+      )}
+
+      <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-12">
+        <motion.section initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: EASE }} data-tour="next" className="relative overflow-hidden rounded-[2rem] bg-teal-900 p-7 text-mint lg:col-span-5">
+          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-16 size-64 rounded-full bg-teal-600/60 blur-3xl" />
+          <div aria-hidden="true" className="pointer-events-none absolute -bottom-20 right-10 size-56 rounded-full border border-sky/15" />
+          <div aria-hidden="true" className="pointer-events-none absolute -bottom-32 right-0 size-80 rounded-full border border-sky/10" />
+          <div className="relative flex h-full flex-col">
+            <span className="flex w-fit items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[12px]">
+              <Sparkles className="size-3.5 text-leaf" /> Langkah berikutnya · {next.kicker}
+            </span>
+            <h2 className="mt-5 font-serif text-[2.4rem] leading-[1.05]">{next.title}</h2>
+            <p className="mt-3 max-w-md text-[14.5px] leading-relaxed text-mint/75">{next.body}</p>
+            <div className="mt-auto flex flex-wrap gap-2 pt-7">
+              <Link to={next.a[0]} className={buttonClass('light', 'lg')}>
+                {next.a[1]} <ArrowRight className="size-4" />
+              </Link>
+              <Link to={next.b[0]} className={buttonClass('primary', 'lg', 'border border-white/15 bg-white/5 shadow-none hover:bg-white/10')}>
+                {next.b[1]}
+              </Link>
+            </div>
+          </div>
+        </motion.section>
+
+        <div className="grid grid-cols-2 gap-4 lg:col-span-3">
+          <Kpi icon={ScanLine} tone="bg-leaf" label="kasus dikerjakan" value={String(me.ringkas.n_kasus)} />
+          <Kpi icon={Gauge} tone="bg-sky" label="rerata Dice" value={me.ringkas.mean_dice === null ? '—' : fmt.num(me.ringkas.mean_dice)} />
+          <Kpi icon={Target} tone="bg-terra-soft" label="KC dikuasai" value={String(me.ringkas.kc_dikuasai)} of="/4" />
+          <Kpi icon={GraduationCap} tone="bg-sand-2" label="modul selesai" value={String(doneLessons)} of={`/${LESSONS.length}`} />
+        </div>
+
+        <section data-tour="mastery" className="rounded-[2rem] border border-ink/8 bg-paper p-6 lg:col-span-4">
+          <div className="flex items-baseline justify-between">
+            <h2 className="text-[17px] font-semibold tracking-tight">Penguasaan kompetensi</h2>
+            <span className="text-[11.5px] text-ink/45">BKT · dikuasai ≥ 95%</span>
+          </div>
+          <ul className="mt-5 space-y-4">
+            {Object.entries(me.kc).map(([k, info], i) => {
+              const v = me.mastery[k] ?? 0;
+              return (
+                <li key={k} title={`Bukti: ${info.bukti}`}>
+                  <div className="flex items-center gap-2.5 text-[13px]">
+                    <span className={cn('w-8 rounded-md py-0.5 text-center font-mono text-[10.5px] font-semibold', !info.aktif ? 'bg-ink/6 text-ink/40' : v >= 0.95 ? 'bg-sage text-white' : k === rec.kc ? 'bg-terra text-white' : 'bg-teal/10 text-teal')}>{k}</span>
+                    <span className={cn('flex-1 truncate', info.aktif ? 'text-ink/80' : 'text-ink/40')}>{info.nama}</span>
+                    <b className="font-medium tabular-nums">{info.aktif ? fmt.pct(v) : <span className="text-[11px] font-normal text-ink/40">belum di MVP</span>}</b>
+                  </div>
+                  {info.aktif && (
+                    <div className="relative mt-1.5 h-2 overflow-hidden rounded-full bg-ink/6">
+                      <span className="absolute inset-y-0 left-[95%] w-px bg-sage" />
+                      <motion.span initial={{ width: 0 }} animate={{ width: `${v * 100}%` }} transition={{ duration: 1, delay: 0.1 + i * 0.07, ease: EASE }} className={cn('block h-full rounded-full', v >= 0.95 ? 'bg-sage' : k === rec.kc ? 'bg-terra' : 'bg-gradient-to-r from-teal to-teal-600')} />
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+          <p className="mt-5 text-[12px] leading-relaxed text-ink/50">Prasyarat: K1 → K2 → K3/K6. KC yang prasyaratnya belum dikuasai belum dipilih otomatis.</p>
         </section>
 
-        <section className="card" data-tour="tasks">
-          <div className="card-head">
-            <h2>Tugas aktif</h2>
-            <Link to="/tugas" className="small">
+        <section data-tour="calendar" className="overflow-hidden rounded-[2rem] border border-ink/8 bg-paper p-2 lg:col-span-8">
+          <Suspense fallback={<div className="h-[360px]" />}>
+            <ContributionSkyline
+              className="!border-0 !bg-transparent"
+              data={days}
+              defaultView={sessions.length >= 40 ? '3d' : '2d'}
+              endDate={todayWib()}
+              palette={SKY}
+              locale="id-ID"
+              unit="kasus"
+              unitPlural="kasus"
+              weekStart={1}
+              title={
+                <span>
+                  <b className="font-semibold">Kalender latihanmu</b> <span className="text-ink/50">· setahun terakhir</span>
+                </span>
+              }
+            />
+          </Suspense>
+        </section>
+
+        <section data-tour="tasks" className="flex flex-col rounded-[2rem] border border-ink/8 bg-paper p-6 lg:col-span-4">
+          <div className="flex items-baseline justify-between">
+            <h2 className="flex items-center gap-2 text-[17px] font-semibold tracking-tight">
+              <ClipboardList className="size-4 text-teal" /> Tugas aktif
+            </h2>
+            <Link to="/tugas" className="text-[12.5px] text-teal hover:underline">
               Semua tugas
             </Link>
           </div>
-          {!me.user.kelas ? (
-            <Empty title="Belum ada kelas">Tugas muncul setelah kamu bergabung ke kelas.</Empty>
-          ) : open.length === 0 ? (
-            <Empty title="Tidak ada tugas yang tertunda">Semua tugas sudah tuntas.</Empty>
-          ) : (
-            <ul className="task-list">
-              {open.slice(0, 4).map((t) => (
-                <li key={t.id}>
-                  <Link to="/tugas">
-                    <b>{t.judul}</b>
-                    <span className="muted small">
-                      {t.selesai}/{t.total} selesai{t.due_at ? ` · tenggat ${fmt.dateTime(t.due_at)}` : ''}
-                      {t.due_at && t.due_at < Date.now() / 1000 && <em className="late"> · lewat tenggat</em>}
-                    </span>
-                    <span className="progress">
-                      <i style={{ width: `${(t.selesai / Math.max(1, t.total)) * 100}%` }} />
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
+          <div className="mt-4 flex-1">
+            {!me.user.kelas ? (
+              <Empty title="Belum ada kelas">Tugas muncul setelah kamu bergabung ke kelas.</Empty>
+            ) : open.length === 0 ? (
+              <div className="flex h-full flex-col items-center justify-center gap-2 py-6 text-center">
+                <CheckCircle2 className="size-9 text-sage" />
+                <b className="text-[15px] font-medium">Semua tugas tuntas</b>
+                <p className="text-[13px] text-ink/55">Tidak ada yang tertunda. Lanjutkan latihan adaptif.</p>
+              </div>
+            ) : (
+              <ul className="space-y-2.5">
+                {open.slice(0, 4).map((t) => {
+                  const late = t.due_at && t.due_at < Date.now() / 1000;
+                  const pct = t.selesai / Math.max(1, t.total);
+                  return (
+                    <li key={t.id}>
+                      <Link to="/tugas" className="block rounded-2xl border border-ink/8 bg-muslin/60 p-4 transition-colors hover:border-ink/20">
+                        <div className="flex items-start justify-between gap-2">
+                          <b className="text-[14px] font-medium leading-snug">{t.judul}</b>
+                          <ArrowUpRight className="size-4 shrink-0 text-ink/35" />
+                        </div>
+                        <p className={cn('mt-1 text-[12px]', late ? 'font-medium text-terra' : 'text-ink/55')}>
+                          {t.selesai}/{t.total} selesai{t.due_at ? ` · tenggat ${fmt.dateTime(t.due_at)}` : ''}
+                          {late ? ' · lewat tenggat' : ''}
+                        </p>
+                        <span className="mt-2.5 block h-1.5 overflow-hidden rounded-full bg-ink/8">
+                          <span className={cn('block h-full rounded-full', late ? 'bg-terra' : 'bg-teal')} style={{ width: `${pct * 100}%` }} />
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </section>
+
+        <section className="rounded-[2rem] border border-ink/8 bg-paper p-6 lg:col-span-12">
+          <div className="flex items-baseline justify-between">
+            <h2 className="flex items-center gap-2 text-[17px] font-semibold tracking-tight">
+              <BookOpen className="size-4 text-teal" /> Percobaan terakhir
+            </h2>
+            <Link to="/riwayat" className="text-[12.5px] text-teal hover:underline">
+              Riwayat lengkap
+            </Link>
+          </div>
+          <div className="mt-4">
+            {me.attempts.length === 0 ? (
+              <Empty title="Belum ada kasus yang dikirim">Hasil penilaian otomatis akan muncul di sini.</Empty>
+            ) : (
+              <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+                {me.attempts.slice(0, 5).map((r) => (
+                  <li key={r.id}>
+                    <Link to={`/riwayat/${r.id}`} className="group flex h-full flex-col rounded-2xl border border-ink/8 bg-muslin/50 p-4 transition-all hover:-translate-y-0.5 hover:border-ink/20 hover:bg-paper">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-[12px] text-ink/60">{r.case_id}</span>
+                        <span className={cn('rounded-full px-2 py-0.5 text-[10.5px] font-medium', r.tier === 'mudah' ? 'bg-leaf/40 text-teal-900' : r.tier === 'sedang' ? 'bg-[#f6ead0] text-[#8a5d10]' : 'bg-terra-soft text-[#8f4a2c]')}>{r.tier}</span>
+                      </div>
+                      <div className="mt-3 flex items-end gap-2">
+                        <b className="font-serif text-[2.2rem] leading-none text-teal">{r.dice === null ? '—' : fmt.num(r.dice)}</b>
+                        <span className="pb-1 text-[11px] text-ink/45">Dice</span>
+                      </div>
+                      <div className="mt-3 flex flex-wrap gap-1">
+                        {Object.entries(r.kc).map(([k, ok]) => (
+                          <span key={k} className={cn('rounded-md px-1.5 py-0.5 font-mono text-[10px] font-semibold', ok ? 'bg-leaf/45 text-teal-900' : 'bg-terra-soft text-[#8f4a2c]')}>
+                            {k}
+                          </span>
+                        ))}
+                      </div>
+                      <p className="mt-3 line-clamp-2 text-[12px] text-ink/55">{r.jenis ?? 'Tanpa delineasi'}</p>
+                      <p className="mt-auto pt-3 text-[11px] text-ink/40">{fmt.dateTime(r.submitted_at)}</p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </section>
       </div>
+    </AppShell>
+  );
+}
 
-      <section className="card">
-        <div className="card-head">
-          <h2>Percobaan terakhir</h2>
-          <Link to="/riwayat" className="small">
-            Riwayat lengkap
-          </Link>
-        </div>
-        {me.attempts.length === 0 ? (
-          <Empty title="Belum ada kasus yang dikirim">Hasil penilaian otomatis akan muncul di sini.</Empty>
-        ) : (
-          <AttemptTable rows={me.attempts.slice(0, 5)} />
-        )}
-      </section>
-    </Page>
+function Chip({ icon: Icon, children, tone = 'muted' }: { icon: typeof Flame; children: React.ReactNode; tone?: 'terra' | 'muted' }) {
+  return (
+    <span className={cn('flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-[13px] font-medium', tone === 'terra' ? 'border-terra/30 bg-terra-soft/60 text-[#8f4a2c]' : 'border-ink/10 bg-paper text-ink/65')}>
+      <Icon className="size-4" />
+      {children}
+    </span>
+  );
+}
+
+function Kpi({ icon: Icon, tone, label, value, of }: { icon: typeof Flame; tone: string; label: string; value: string; of?: string }) {
+  return (
+    <div className={cn('flex flex-col justify-between rounded-[1.6rem] p-4', tone)}>
+      <span className="grid size-9 place-items-center rounded-full bg-white/55 text-teal-900">
+        <Icon className="size-4" />
+      </span>
+      <div className="mt-6">
+        <b className="font-serif text-[2.4rem] leading-none text-teal-900">
+          {value}
+          {of && <span className="text-[1.2rem] text-teal-900/50">{of}</span>}
+        </b>
+        <p className="mt-1 text-[12px] text-teal-900/70">{label}</p>
+      </div>
+    </div>
   );
 }
 

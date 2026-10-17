@@ -5,6 +5,9 @@
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/utilities.css' layer(utilities);
 
+/* SINAPS selalu terang; varian dark: hanya aktif bila ada kelas .dark */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-serif: 'Instrument Serif', ui-serif, Georgia, serif;
@@ -97,6 +100,7 @@
   }
   /* elemen di dalam .legacy (komponen lama yang disisipkan) tidak ikut direset */
   .tw *:not(.legacy, .legacy *),
+  .legacy .tw *,
   .tw ::before,
   .tw ::after {
     box-sizing: border-box;
@@ -104,29 +108,35 @@
     margin: 0;
     padding: 0;
   }
-  .tw :where(h1, h2, h3, h4, h5, h6):not(.legacy, .legacy *) {
+  .tw :where(h1, h2, h3, h4, h5, h6):not(.legacy, .legacy *),
+  .legacy .tw :where(h1, h2, h3, h4, h5, h6) {
     font-size: inherit;
     font-weight: inherit;
     letter-spacing: inherit;
   }
-  .tw :where(ol, ul, menu):not(.legacy, .legacy *) {
+  .tw :where(ol, ul, menu):not(.legacy, .legacy *),
+  .legacy .tw :where(ol, ul, menu) {
     list-style: none;
   }
-  .tw :where(img, svg, video, canvas):not(.legacy, .legacy *) {
+  .tw :where(img, svg, video, canvas):not(.legacy, .legacy *),
+  .legacy .tw :where(img, svg, video, canvas) {
     display: block;
     max-width: 100%;
   }
-  .tw :where(a):not(.legacy, .legacy *) {
+  .tw :where(a):not(.legacy, .legacy *),
+  .legacy .tw :where(a) {
     color: inherit;
     text-decoration: inherit;
   }
-  .tw :where(button, input, select, textarea):not(.legacy, .legacy *) {
+  .tw :where(button, input, select, textarea):not(.legacy, .legacy *),
+  .legacy .tw :where(button, input, select, textarea) {
     font: inherit;
     color: inherit;
     background: transparent;
     border-radius: 0;
   }
-  .tw :where(button):not(.legacy, .legacy *) {
+  .tw :where(button):not(.legacy, .legacy *),
+  .legacy .tw :where(button) {
     cursor: pointer;
   }
   .tw :where(:focus-visible) {

@@ -1,24 +1,40 @@
 /* Gaya lama halaman di balik login. Dibungkus layer supaya utilitas Tailwind selalu menang. */
 @layer legacy {
+/* tema terang (palet teal-sage-terracotta); warna overlay mask tetap sama dengan viewer */
 :root {
+  --bg: #f1efe6;
+  --panel: #faf8f2;
+  --panel-2: #efebe0;
+  --line: #e2dccd;
+  --text: #10313a;
+  --muted: #5f655f;
+  --accent: #195764;
+  --accent-2: #0f3a43;
+  --orange: #ff8c28;
+  --green: #28dc78;
+  --blue: #4696ff;
+  --bad: #a2462a;
+  --ok: #3f7a45;
+  --radius: 18px;
+  color-scheme: light;
+  font-family: 'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+/* ruang baca citra tetap gelap (konvensi radiologi) */
+.legacy-dark {
   --bg: #0b1220;
   --panel: #121b2b;
   --panel-2: #172338;
   --line: #24324a;
   --text: #e6ecf5;
   --muted: #8b9ab2;
-  --accent: #2bb3a3;
-  --accent-2: #1d8e81;
-  --orange: #ff8c28;
-  --green: #28dc78;
-  --blue: #4696ff;
+  --accent: #5fb3bf;
+  --accent-2: #1f6b7a;
   --bad: #f06a5a;
   --ok: #3ccf8e;
-  --radius: 10px;
   color-scheme: dark;
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  font-size: 14px;
-  line-height: 1.45;
+  color: var(--text);
 }
 
 * {
@@ -2157,5 +2173,177 @@ tr.sel td {
   .kpi b {
     font-size: 1.4rem;
   }
+}
+
+/* ===== tema terang: koreksi warna tetap dan polesan komponen lama ===== */
+.warn {
+  color: #9a6a12;
+}
+.hint {
+  color: var(--muted);
+}
+.btn {
+  border-radius: 999px;
+  padding: 0.55rem 1.1rem;
+  background: var(--panel);
+  font-weight: 500;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    transform 0.15s;
+}
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.btn.primary,
+a.btn.primary {
+  color: #f4fbf6;
+  box-shadow: 0 10px 22px -12px rgba(25, 87, 100, 0.7);
+}
+.btn.primary:hover:not(:disabled) {
+  background: #1f6b7a;
+  border-color: #1f6b7a;
+}
+.btn.danger {
+  color: #a2462a;
+}
+.late {
+  color: #a2462a;
+}
+.tier-mudah,
+.pill.ok {
+  background: #e3f0da;
+  color: #3c6b3a;
+}
+.tier-sedang {
+  background: #f6ead0;
+  color: #8a5d10;
+}
+.tier-sulit,
+.pill.bad,
+.chip {
+  background: #f4dccd;
+  color: #8f4a2c;
+}
+.step.done .num {
+  color: #f4fbf6;
+}
+.mastery .bar i {
+  background: var(--accent);
+}
+.msg.user {
+  background: var(--accent);
+  color: #f4fbf6;
+}
+.msg .att {
+  color: #d8eef0;
+}
+.logs li.flag {
+  border-color: #c9952e;
+}
+.avatar {
+  background: linear-gradient(135deg, #195764, #80a874);
+}
+.notice {
+  border-color: #cfe0c8;
+  background: linear-gradient(90deg, #eaf3de, var(--panel));
+}
+.next-step {
+  border-color: #cfe0c8;
+  background: radial-gradient(600px 220px at 0% 0%, rgba(170, 211, 156, 0.4), transparent 70%), var(--panel);
+}
+.lesson-card.done a,
+.task.done,
+.kc {
+  border-color: #bcd6b2;
+}
+.lesson-sec li {
+  color: var(--text);
+}
+.tip {
+  border-left-color: #ad7556;
+  background: rgba(173, 117, 86, 0.08);
+}
+.menu {
+  box-shadow: 0 16px 40px -12px rgba(16, 49, 58, 0.35);
+}
+tr.sel td {
+  background: rgba(25, 87, 100, 0.06);
+}
+.opt.sel {
+  background: rgba(25, 87, 100, 0.08);
+}
+.opt.right {
+  background: rgba(128, 168, 116, 0.18);
+}
+.opt.wrong {
+  background: rgba(173, 117, 86, 0.14);
+}
+.heat td.hc {
+  color: #10313a;
+}
+.card {
+  border-radius: 22px;
+  padding: 18px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 14px 34px -28px rgba(16, 49, 58, 0.5);
+}
+.card h2 {
+  font-size: 1.02rem;
+  letter-spacing: -0.01em;
+}
+input,
+select,
+textarea {
+  background: var(--panel);
+  border-radius: 12px;
+}
+table.list th,
+table.heat th {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.kpi {
+  border-radius: 22px;
+}
+.kpi b {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-weight: 400;
+  font-size: 2.1rem;
+  color: var(--accent);
+}
+/* panel latihan terang di samping viewer gelap */
+.workspace .panel {
+  background: var(--bg);
+}
+.app {
+  background: var(--bg);
+}
+
+/* halaman masuk/daftar */
+.auth-form .form {
+  gap: 14px;
+}
+.auth-form .form label {
+  font-weight: 500;
+  font-size: 13.5px;
+}
+.auth-form .form label > input,
+.auth-form .form label > select,
+.auth-form .pw input {
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 14px;
+  font-size: 15px;
+}
+.auth-form .btn.primary.block {
+  height: 48px;
+  font-size: 15px;
+  margin-top: 4px;
+}
+.auth-form .role-tabs {
+  margin-bottom: 18px;
 }
 }

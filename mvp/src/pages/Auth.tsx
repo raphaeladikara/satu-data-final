@@ -1,22 +1,56 @@
-import { useState, type FormEvent, type ReactNode } from 'react';
+import { lazy, Suspense, useState, type FormEvent, type ReactNode } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { api, JENJANG } from '../api';
 import { homeFor, useAuth } from '../auth';
-import { Logo } from '../components/Shell';
+import { BrandMark } from '@/components/BrandMark';
 
+const MriHologram = lazy(() => import('@/components/three/MriHologram'));
+
+/** Bingkai halaman masuk/daftar: formulir di kiri, hologram MRI asli di kanan. */
 function AuthFrame({ title, sub, children, foot }: { title: string; sub: string; children: ReactNode; foot: ReactNode }) {
   return (
-    <div className="auth">
-      <Link to="/" className="brand auth-brand">
-        <Logo /> SINAPS
-      </Link>
-      <div className="auth-card">
-        <h1>{title}</h1>
-        <p className="muted">{sub}</p>
-        {children}
+    <div className="tw grid min-h-screen lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
+      <div className="relative flex flex-col px-5 py-6 sm:px-10">
+        <div aria-hidden="true" className="pointer-events-none absolute -left-40 -top-40 size-[520px] rounded-full bg-leaf/30 blur-[120px]" />
+        <Link to="/" className="relative flex w-fit items-center gap-2.5 text-[17px] font-semibold tracking-tight">
+          <BrandMark /> SINAPS
+        </Link>
+        <div className="relative mx-auto flex w-full max-w-[420px] flex-1 flex-col justify-center py-10">
+          <h1 className="font-serif text-[clamp(2.6rem,4vw,3.4rem)] leading-[1.02] tracking-[-0.015em]">{title}</h1>
+          <p className="mt-2 text-[15px] text-ink/60">{sub}</p>
+          <div className="legacy auth-form mt-7">{children}</div>
+          <p className="mt-6 text-[14px] text-ink/65 [&_a]:font-medium [&_a]:text-teal [&_a]:underline-offset-4 hover:[&_a]:underline">{foot}</p>
+        </div>
+        <p className="relative text-[12px] text-ink/45">Alat bantu belajar, bukan untuk mendiagnosis pasien.</p>
       </div>
-      <p className="auth-foot">{foot}</p>
-      <p className="disclaimer">Alat bantu belajar, bukan untuk mendiagnosis pasien.</p>
+      <aside className="relative m-3 hidden overflow-hidden rounded-[2.25rem] bg-[radial-gradient(120%_90%_at_50%_0%,#1f6b7a_0%,#0f3a43_45%,#061a1f_100%)] text-mint lg:block">
+        <div className="grain pointer-events-none absolute inset-0 opacity-50 mix-blend-overlay" />
+        <Suspense fallback={null}>
+          <MriHologram className="absolute inset-0" explode={0.25} />
+        </Suspense>
+        <div className="pointer-events-none absolute inset-x-8 top-8 flex items-center justify-between font-mono text-[11px] text-sky/80">
+          <span className="flex items-center gap-2">
+            <span className="size-1.5 animate-pulse rounded-full bg-leaf" /> SOOP sub-754 · DWI
+          </span>
+          <span>kasus contoh</span>
+        </div>
+        <div className="pointer-events-none absolute inset-x-8 bottom-8">
+          <p className="max-w-md font-serif text-[2rem] leading-[1.1]">
+            Baca kasus nyata. Tandai lesinya. <em className="text-leaf">Tahu letak salahmu, saat itu juga.</em>
+          </p>
+          <div className="mt-6 flex gap-6 text-[12.5px] text-mint/70">
+            <span>
+              <b className="block font-serif text-3xl font-normal text-mint">36</b>kasus MRI SOOP
+            </span>
+            <span>
+              <b className="block font-serif text-3xl font-normal text-mint">6</b>modul belajar
+            </span>
+            <span>
+              <b className="block font-serif text-3xl font-normal text-mint">0,74</b>Dice pembaca kedua
+            </span>
+          </div>
+        </div>
+      </aside>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { fmt } from '../api';
 
-const KC_COLORS: Record<string, string> = { K1: '#4696ff', K2: '#2bb3a3', K3: '#e0a84a', K6: '#d46ad8' };
+export const KC_COLORS: Record<string, string> = { K1: '#7a9cb3', K2: '#195764', K3: '#ad7556', K6: '#80a874' };
 
 /** Lintasan penguasaan BKT per KC: satu titik per kasus yang dikirim. */
 export function Trajectory({ points, kcs, names }: { points: { t: number; mastery: Record<string, number> }[]; kcs: string[]; names: Record<string, string> }) {
@@ -84,7 +84,8 @@ export function HBars({ data, empty = 'Belum ada data.' }: { data: [string, numb
 
 export function heat(p: number | undefined) {
   if (p === undefined) return 'transparent';
-  return `hsl(${Math.round(p * 120)} 55% 32%)`;
+  // terracotta pucat (rendah) ke sage (tinggi)
+  return `hsl(${Math.round(22 + p * 80)} ${Math.round(48 - p * 10)}% ${Math.round(88 - p * 18)}%)`;
 }
 
 export function Ring({ value, label }: { value: number; label: string }) {

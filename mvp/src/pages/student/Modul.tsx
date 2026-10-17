@@ -115,7 +115,7 @@ export function Modul() {
         </div>
       </header>
 
-      <div className="mt-10 grid gap-10 lg:grid-cols-[230px_minmax(0,1fr)]">
+      <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[230px_minmax(0,1fr)]">
         <aside className="hidden lg:block">
           <nav data-tour="toc" className="sticky top-28 rounded-[1.4rem] border border-ink/8 bg-paper p-3" aria-label="Daftar isi">
             <p className="px-2 pb-2 pt-1 font-mono text-[10.5px] uppercase tracking-[0.16em] text-ink/45">Daftar isi</p>

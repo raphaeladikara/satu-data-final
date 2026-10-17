@@ -624,6 +624,8 @@ def dosen_overview(kelas_id: int | None = None, d=Depends(dosen)):
         "kc": {k: v["nama"] for k, v in bkt.KC.items()}, "kc_avg": kc_avg,
         "error_counts": errs, "n_attempts": len(done), "mean_dice": sum(dices) / len(dices) if dices else None,
         "activity": days,
+        # [mulai, kirim] tiap kasus yang dikirim, untuk peta jam belajar dan kalender aktivitas di dasbor
+        "sessions": [[round(x["started_at"] or x["submitted_at"]), round(x["submitted_at"])] for x in done],
         "active_7d": sum(1 for r in rows if now - r["last_active"] <= 7 * 86400 and r["n_kasus"]),
         "flagged_tutor": sum(1 for t in logs if (t["facts"] or {}).get("issues")),
         "n_tutor": len(logs),
