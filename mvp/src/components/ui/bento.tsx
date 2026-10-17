@@ -50,8 +50,8 @@ export function BentoCard({
         {fade.includes('bottom') && <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-teal-950/80 to-45%" />}
       </div>
       <div className="relative isolate z-20 -mt-20 flex flex-1 flex-col bg-teal-950/30 p-7 backdrop-blur-xl [mask-image:linear-gradient(to_bottom,transparent,black_28px)] sm:p-8">
-        {eyebrow && <p className="pt-3 font-display text-[12px] font-medium uppercase tracking-[0.22em] text-leaf">{eyebrow}</p>}
-        <h3 className="mt-1.5 text-[21px] font-bold leading-snug">{title}</h3>
+        {/* label di atas judul sengaja tidak dirender: judul sudah cukup */}
+        <h3 className="pt-3 text-[21px] font-semibold leading-snug tracking-[-0.01em]">{title}</h3>
         {description && <p className="mt-2 max-w-[36rem] text-[14px] leading-relaxed text-mint/65">{description}</p>}
         {children}
       </div>

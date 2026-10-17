@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { loadBrain3D, type Brain3D } from '@/lib/brain3d';
+import { createGravityRing } from './gravityRing';
 import { cn } from '@/lib/utils';
 
 /**
@@ -22,6 +23,10 @@ export type MriHologramProps = {
   scan?: boolean;
   /** jarak kamera relatif (1 = default) */
   zoom?: number;
+  /** cincin partikel gravitasi di sekeliling otak (hero landing) */
+  ring?: boolean;
+  /** ubah nilainya untuk memutar ulang animasi cincin */
+  ringKey?: number;
   className?: string;
   onReady?: (b: Brain3D) => void;
 };
@@ -83,14 +88,16 @@ export default function MriHologram({
   autoRotate = true,
   scan = true,
   zoom = 1,
+  ring = false,
+  ringKey = 0,
   className,
   onReady,
 }: MriHologramProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'error' | 'nogl'>('loading');
   // props dibaca loop render lewat ref supaya scene tidak dibangun ulang tiap perubahan
-  const live = useRef({ series, explode, lesion, focusSlice, autoRotate, scan, zoom });
-  live.current = { series, explode, lesion, focusSlice, autoRotate, scan, zoom };
+  const live = useRef({ series, explode, lesion, focusSlice, autoRotate, scan, zoom, ring, ringKey });
+  live.current = { series, explode, lesion, focusSlice, autoRotate, scan, zoom, ring, ringKey };
   const readyCb = useRef(onReady);
   readyCb.current = onReady;
 
@@ -227,6 +234,16 @@ export default function MriHologram({
       }
       pivot.add(base);
 
+      const reducedNow = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const gravity = live.current.ring ? createGravityRing(Math.max(w, h) * 0.56, { reduced: reducedNow, count: window.innerWidth < 768 ? 26000 : 52000 }) : null;
+      if (gravity) {
+        gravity.group.rotation.set(0.1, 0, 0.16);
+        pivot.add(gravity.group);
+        base.visible = false;
+      }
+      let ringKeySeen = live.current.ringKey;
+      let ringStarted = false;
+
       // debu cahaya di sekitar untuk kedalaman
       const dust = new THREE.BufferGeometry();
       const dn = 140;
@@ -241,7 +258,7 @@ export default function MriHologram({
       dust.setAttribute('position', new THREE.BufferAttribute(dpos, 3));
       const dustMat = new THREE.PointsMaterial({ color: new THREE.Color('#aad39c'), size: 0.02, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false, map: dotTexture() });
       const dustPts = new THREE.Points(dust, dustMat);
-      scene.add(dustPts);
+      if (!gravity) scene.add(dustPts);
 
       // interaksi: seret memutar, dengan inersia
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -375,6 +392,17 @@ export default function MriHologram({
         base.position.y = -height / 2 - 0.28;
         rings.forEach((r, i) => (r.rotation.y = t * (0.05 + i * 0.03) * (i % 2 ? -1 : 1)));
         dustPts.rotation.y = t * 0.03;
+        if (gravity) {
+          if (!ringStarted && t > 0.6) {
+            ringStarted = true;
+            gravity.play();
+          }
+          if (L.ringKey !== ringKeySeen) {
+            ringKeySeen = L.ringKey;
+            gravity.play();
+          }
+          gravity.tick(dt, t);
+        }
 
         renderer.render(scene, camera);
         raf = requestAnimationFrame(tick);
@@ -396,6 +424,7 @@ export default function MriHologram({
         frameGeo.dispose();
         dust.dispose();
         dustMat.dispose();
+        gravity?.dispose();
       };
     }
 

@@ -8,15 +8,14 @@ import { ButtonLink } from '@/components/ui/button';
 import { BentoCard, DotGrid } from '@/components/ui/bento';
 import { cn } from '@/lib/utils';
 import { Wordmark } from '@/components/BrandMark';
-import Hero, { LabStage } from './landing/Hero';
+import Hero from './landing/Hero';
 import CycleShowcase from './landing/CycleShowcase';
 import Features from './landing/Features';
-import { CountUp, EASE, Parallax, Reveal, ScrollWords } from './landing/bits';
+import { CountUp, EASE, Reveal, ScrollWords } from './landing/bits';
 
 const ContributionSkyline = lazy(() => import('@/components/ui/contribution-skyline'));
 
 const NAV = [
-  ['#coba', 'Coba 3D'],
   ['#cara-kerja', 'Cara kerja'],
   ['#fitur', 'Fitur'],
   ['#dosen', 'Untuk dosen'],
@@ -41,22 +40,20 @@ export default function Landing() {
   if (ready && user) return <Navigate to={homeFor(user)} replace />;
 
   return (
-    <div className="tw relative min-h-screen overflow-x-clip">
+    <div className="tw app-theme relative min-h-screen overflow-x-clip">
       <Nav />
       <main>
         <Hero cases={stats?.cases ?? 36} />
-        <Marquee />
         <Problem />
-        <Lab />
 
-        <section id="cara-kerja" className="mx-auto max-w-[1320px] scroll-mt-10 px-4 pt-24 sm:px-6 lg:pt-32">
+        <section id="cara-kerja" className="mx-auto max-w-[1320px] scroll-mt-10 px-4 pt-28 sm:px-6 lg:pt-40">
           <SectionHead title={<>Satu siklus latihan terarah, <em className="text-teal">berulang sampai kompeten.</em></>} lead="Lima langkah ini terjadi setiap kali kamu mengerjakan satu kasus. Gulir untuk melihat tampilannya di aplikasi." />
           <div className="mt-6 lg:mt-0">
             <CycleShowcase />
           </div>
         </section>
 
-        <section id="fitur" className="mx-auto max-w-[1320px] scroll-mt-24 px-4 py-24 sm:px-6 lg:py-32">
+        <section id="fitur" className="mx-auto max-w-[1320px] scroll-mt-24 px-4 py-28 sm:px-6 lg:py-36">
           <SectionHead title={<>Semua yang kamu butuhkan untuk <em className="text-teal">berlatih mandiri.</em></>} />
           <div className="mt-14">
             <Features />
@@ -81,13 +78,13 @@ function Nav() {
   useMotionValueEvent(scrollY, 'change', (y) => setSolid(y > 24));
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-4">
-      <div className={cn('mx-auto flex h-16 max-w-[1320px] items-center justify-between rounded-[1.4rem] pl-4 pr-2 transition-all duration-500', solid || open ? 'border border-ink/8 bg-paper/80 shadow-[0_10px_30px_-18px_rgba(16,49,58,.35)] backdrop-blur-xl' : 'border border-transparent')}>
+      <div className={cn('mx-auto flex h-16 max-w-[1320px] items-center justify-between rounded-[1.4rem] pl-4 pr-2 transition-all duration-500', solid || open ? 'border border-line bg-white/85 shadow-[0_8px_24px_-16px_rgba(15,23,42,.25)] backdrop-blur-xl' : 'border border-transparent')}>
         <a href="#top" aria-label="SINAPS, ke atas">
           <Wordmark />
         </a>
         <nav className="hidden items-center gap-0.5 lg:flex" aria-label="Navigasi halaman">
           {NAV.map(([h, l]) => (
-            <a key={h} href={h} className="rounded-full px-3.5 py-2 font-display text-[13px] uppercase tracking-[0.14em] text-ink/65 transition-colors hover:bg-ink/5 hover:text-ink">
+            <a key={h} href={h} className="rounded-full px-3.5 py-2 text-[14px] font-medium text-ink/65 transition-colors hover:bg-ink/5 hover:text-ink">
               {l}
             </a>
           ))}
@@ -105,9 +102,9 @@ function Nav() {
         </div>
       </div>
       {open && (
-        <motion.nav initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mx-auto mt-2 flex max-w-[1320px] flex-col rounded-3xl border border-ink/8 bg-paper/95 p-2 shadow-xl backdrop-blur-xl lg:hidden">
+        <motion.nav initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mx-auto mt-2 flex max-w-[1320px] flex-col rounded-3xl border border-line bg-white p-2 shadow-xl lg:hidden">
           {NAV.map(([h, l]) => (
-            <a key={h} href={h} onClick={() => setOpen(false)} className="rounded-2xl px-4 py-3 font-display text-[14px] uppercase tracking-[0.14em] text-ink/80 hover:bg-ink/5">
+            <a key={h} href={h} onClick={() => setOpen(false)} className="rounded-2xl px-4 py-3 text-[15px] font-medium text-ink/80 hover:bg-ink/5">
               {l}
             </a>
           ))}
@@ -123,24 +120,8 @@ function Nav() {
 function SectionHead({ title, lead, tone = 'teal', className, center }: { title: React.ReactNode; lead?: string; tone?: 'teal' | 'light'; className?: string; center?: boolean }) {
   return (
     <div className={cn('max-w-3xl', center && 'mx-auto text-center', className)}>
-      <h2 className={cn('text-balance text-[clamp(1.9rem,3.6vw,3.1rem)] leading-[1.1] tracking-[-0.015em]', tone === 'light' ? 'text-mint' : 'text-ink')}>{title}</h2>
+      <h2 className={cn('text-balance font-serif text-[clamp(1.9rem,3.4vw,3rem)] leading-[1.12] tracking-[-0.01em]', tone === 'light' ? 'text-mint' : 'text-ink')}>{title}</h2>
       {lead && <p className={cn('mt-5 max-w-[60ch] text-pretty text-[16px] leading-relaxed', center && 'mx-auto', tone === 'light' ? 'text-mint/75' : 'text-ink/65')}>{lead}</p>}
-    </div>
-  );
-}
-
-function Marquee() {
-  const items = ['Cornerstone3D', 'SOOP · OpenNeuro ds004889', 'U-Net 2.5D', 'Bayesian Knowledge Tracing', 'Pemeriksa fakta tutor', 'UU PDP No. 27/2022', 'Mask buatan ahli', 'Dice · HD95 · recall per lesi'];
-  return (
-    <div className="relative border-y border-ink/8 bg-paper/60 py-4 [mask-image:linear-gradient(90deg,transparent,black_12%,black_88%,transparent)]">
-      <div className="flex w-max animate-marquee gap-10 whitespace-nowrap">
-        {[...items, ...items].map((t, i) => (
-          <span key={i} className="flex items-center gap-10 font-display text-[14px] font-medium uppercase tracking-[0.2em] text-ink/40">
-            {t}
-            <span className="size-1.5 rounded-full bg-sage" />
-          </span>
-        ))}
-      </div>
     </div>
   );
 }
@@ -149,7 +130,7 @@ function Marquee() {
 
 function Problem() {
   return (
-    <section className="mx-auto max-w-[1320px] px-4 pt-24 sm:px-6 lg:pt-36">
+    <section className="mx-auto max-w-[1320px] px-4 pt-28 sm:px-6 lg:pt-40">
       <ScrollWords
         text="Mahasiswa tidak butuh chatbot lagi. Mereka butuh tutor yang bisa diperiksa, dengan banyak kasus dan umpan balik yang cepat."
         className="mx-auto max-w-5xl justify-center text-center text-[clamp(1.75rem,3.6vw,3.05rem)] leading-[1.22] tracking-[-0.012em] text-ink"
@@ -259,43 +240,13 @@ function GaugeGraphic({ value }: { value: number }) {
   );
 }
 
-/* ── coba sendiri: hologram 3D yang dulu di hero ── */
-
-function Lab() {
-  return (
-    <section id="coba" className="mx-auto max-w-[1320px] scroll-mt-24 px-4 pt-24 sm:px-6 lg:pt-32">
-      <div className="grid items-center gap-12 lg:grid-cols-[0.8fr_1.2fr]">
-        <div>
-          <SectionHead title={<>Otak pasien sungguhan, <em className="text-teal">bisa kamu putar.</em></>} lead="Ini volume MRI asli dari dataset SOOP, bukan ilustrasi. Putar hologramnya, pisahkan slice-nya, lalu nyalakan kunci lesi buatan ahli untuk melihat jawaban yang benar." />
-          <dl className="mt-8 grid max-w-md grid-cols-3 border-t border-ink/10 pt-4">
-            {[
-              ['DWI', 'difusi', 'bg-sky'],
-              ['FLAIR', 'anatomi', 'bg-sage'],
-              ['Mask', 'kunci ahli', 'bg-terra'],
-            ].map(([k, v, dot]) => (
-              <div key={k}>
-                <dt className="flex items-center gap-2 font-display text-[15px] font-semibold uppercase tracking-[0.12em] text-teal">
-                  <span className={cn('size-2 rounded-full', dot)} />
-                  {k}
-                </dt>
-                <dd className="mt-1 text-[13px] text-ink/60">{v}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-        <LabStage />
-      </div>
-    </section>
-  );
-}
-
 function KcStrip() {
   return (
     <Reveal className="mt-4">
-      <div className="relative overflow-hidden rounded-[1.75rem] bg-paper p-6 ring-1 ring-ink/8 shadow-[0_24px_60px_-40px_rgba(16,49,58,.5)] lg:p-8">
+      <div className="relative overflow-hidden rounded-[1.75rem] bg-surface p-6 ring-1 ring-line lg:p-8">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
           <div className="lg:w-72">
-            <span className="grid size-11 place-items-center rounded-2xl bg-teal text-mint">
+            <span className="grid size-11 place-items-center rounded-2xl bg-teal text-white">
               <BookOpenCheck className="size-5" />
             </span>
             <h3 className="mt-4 text-[20px] font-bold">Enam kompetensi, satu modul untuk tiap KC</h3>
@@ -309,11 +260,11 @@ function KcStrip() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05, ease: EASE }}
-                className={cn('flex items-center gap-3 rounded-2xl px-3.5 py-3 text-[13.5px]', on ? 'bg-mint/70 ring-1 ring-teal/12' : 'border border-dashed border-ink/15 text-ink/45')}
+                className={cn('flex items-center gap-3 rounded-2xl px-3.5 py-3 text-[13.5px]', on ? 'bg-white ring-1 ring-line' : 'border border-dashed border-ink/15 text-ink/45')}
               >
-                <span className={cn('rounded-lg px-2 py-1 font-display text-[12px] font-semibold tracking-wider', on ? 'bg-teal text-mint' : 'bg-ink/8 text-ink/50')}>{k}</span>
+                <span className={cn('rounded-md px-2 py-0.5 font-mono text-[12px] font-semibold', on ? 'bg-teal text-white' : 'bg-ink/8 text-ink/50')}>{k}</span>
                 <span className="flex-1">{n}</span>
-                {!on && <em className="font-display text-[10.5px] uppercase not-italic tracking-[0.14em]">pilot</em>}
+                {!on && <em className="text-[11.5px] not-italic">pilot</em>}
               </motion.li>
             ))}
           </ul>
@@ -323,7 +274,7 @@ function KcStrip() {
   );
 }
 
-const SKYLINE_PALETTE = { light: ['#d6e9cd', '#aad39c', '#80a874', '#195764'], dark: ['#1e4d3b', '#3f7d57', '#80a874', '#aad39c'] };
+const SKYLINE_PALETTE = { light: ['#ccfbf1', '#5eead4', '#14b8a6', '#0f766e'], dark: ['#134e4a', '#0f766e', '#14b8a6', '#5eead4'] };
 
 function Dosen() {
   const checks = [
@@ -341,12 +292,7 @@ function Dosen() {
   const rot = useTransform(scrollYProgress, [0, 1], [14, 0]);
   const sc = useTransform(scrollYProgress, [0, 1], [0.9, 1]);
   return (
-    <section id="dosen" className="relative scroll-mt-20 overflow-hidden bg-teal-900 py-24 text-mint lg:py-32">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <div className="absolute -right-40 -top-40 size-[620px] rounded-full bg-teal-600/50 blur-[140px]" />
-        <div className="absolute -bottom-52 left-0 size-[520px] rounded-full bg-sage/25 blur-[140px]" />
-        <div className="grain absolute inset-0 opacity-50 mix-blend-overlay" />
-      </div>
+    <section id="dosen" className="relative scroll-mt-20 overflow-hidden bg-[#042f2e] py-28 text-white lg:py-36">
       <div className="relative mx-auto max-w-[1320px] px-4 sm:px-6">
         <div className="grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-end">
           <SectionHead tone="light" title={<>Pantau setiap mahasiswa <em className="text-leaf">tanpa mengoreksi satu per satu.</em></>} lead="Buat kelas, bagikan kodenya, lalu lihat perkembangan kelas secara langsung. Setiap umpan balik yang diterima mahasiswa bisa ditelusuri kembali ke datanya." />
@@ -365,8 +311,8 @@ function Dosen() {
           </div>
         </div>
         <div ref={ref} className="mt-14 [perspective:1600px]">
-          <motion.div style={reduce ? undefined : { rotateX: rot, scale: sc }} className="origin-bottom rounded-[2rem] bg-white/6 p-2 ring-1 ring-white/10 backdrop-blur">
-            <div className="rounded-[1.6rem] bg-paper p-1 text-ink">
+          <motion.div style={reduce ? undefined : { rotateX: rot, scale: sc }} className="origin-bottom rounded-[2rem] bg-white/[0.06] p-2 ring-1 ring-white/10">
+            <div className="rounded-[1.6rem] bg-white p-1 text-ink">
               <Suspense fallback={<div className="h-[420px]" />}>
                 <ContributionSkyline
                   className="!border-0 !bg-transparent"
@@ -397,22 +343,17 @@ function Proof() {
     { n: 1451, dec: 0, suf: '', k: 'Lesion mask akut', t: 'yang dipakai untuk menyusun indeks kesulitan kasus.' },
   ];
   return (
-    <section className="mx-auto max-w-[1320px] px-4 py-24 sm:px-6 lg:py-32">
-      <Parallax offset={30}>
-        <div className="relative overflow-hidden rounded-[2.5rem] bg-[linear-gradient(115deg,#195764_0%,#22655f_45%,#3f7d63_100%)] p-8 text-mint sm:p-12 lg:p-16">
-          <div className="grain pointer-events-none absolute inset-0 opacity-40 mix-blend-overlay" />
-          <h2 className="relative max-w-xl text-[clamp(1.4rem,2.2vw,1.9rem)] leading-snug">Sudah diuji pada data pasien nyata, bukan data contoh.</h2>
-          <div className="relative mt-10 grid gap-10 md:grid-cols-3 md:gap-6">
-            {P.map((p, i) => (
-              <Reveal key={i} delay={i * 0.08} className="md:border-l md:border-white/20 md:pl-6 md:first:border-0 md:first:pl-0">
-                <p className="font-display text-[12px] uppercase tracking-[0.2em] text-mint/70">{p.k}</p>
-                <CountUp to={p.n} decimals={p.dec} suffix={p.suf} className="mt-2 block text-[clamp(2.8rem,4.6vw,4.2rem)] font-bold leading-none" />
-                <p className="mt-4 max-w-xs text-[14px] leading-relaxed text-mint/80">{p.t}</p>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </Parallax>
+    <section className="mx-auto max-w-[1320px] px-4 py-28 sm:px-6 lg:py-36">
+      <SectionHead title={<>Sudah diuji pada data pasien nyata, <em className="text-teal">bukan data contoh.</em></>} />
+      <div className="mt-14 grid gap-10 border-t border-line pt-10 md:grid-cols-3 md:gap-8">
+        {P.map((p, i) => (
+          <Reveal key={i} delay={i * 0.08} className="md:border-l md:border-line md:pl-8 md:first:border-0 md:first:pl-0">
+            <CountUp to={p.n} decimals={p.dec} suffix={p.suf} className="block text-[clamp(3rem,5vw,4.5rem)] font-semibold leading-none tracking-[-0.03em] text-teal tabular-nums" />
+            <p className="mt-4 text-[15px] font-semibold text-ink">{p.k}</p>
+            <p className="mt-1.5 max-w-xs text-[14px] leading-relaxed text-ink/60">{p.t}</p>
+          </Reveal>
+        ))}
+      </div>
     </section>
   );
 }
@@ -424,10 +365,10 @@ function Privacy() {
     [ShieldCheck, 'Alat bantu belajar', 'SINAPS tidak ditujukan untuk mendiagnosis pasien. Kunci jawaban selalu mask buatan ahli, bukan prediksi model.'],
   ] as const;
   return (
-    <section id="privasi" className="mx-auto max-w-[1320px] scroll-mt-24 px-4 pb-24 sm:px-6 lg:pb-32">
+    <section id="privasi" className="mx-auto max-w-[1320px] scroll-mt-24 px-4 pb-28 sm:px-6 lg:pb-36">
       <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
         <SectionHead title={<>Dibangun hati-hati, <em className="text-teal">sejak dari datanya.</em></>} />
-        <dl className="divide-y divide-ink/10 border-y border-ink/10">
+        <dl className="divide-y divide-line border-y border-line">
           {P.map(([Icon, t, d]) => (
             <div key={t} className="grid gap-2 py-6 sm:grid-cols-[15rem_1fr] sm:gap-8">
               <dt className="flex items-center gap-2.5 text-[16px] font-bold text-ink">
@@ -444,36 +385,19 @@ function Privacy() {
 }
 
 function FinalCta() {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] });
-  const ring = useTransform(scrollYProgress, [0, 1], [0.6, 1.15]);
   return (
-    <section className="mx-auto max-w-[1320px] px-4 pb-16 sm:px-6">
+    <section className="mx-auto max-w-[1360px] px-3 pb-12 sm:px-5">
       <Reveal>
-        <div ref={ref} className="relative overflow-hidden rounded-[2.5rem] bg-teal-950 px-6 py-20 text-center text-mint sm:px-12 lg:py-28">
-          <motion.div aria-hidden="true" style={reduce ? undefined : { scale: ring }} className="pointer-events-none absolute inset-0">
-            {[0, 1, 2, 3, 4].map((i) => (
-              <span key={i} className="absolute left-1/2 top-1/2 rounded-full border border-sky/15" style={{ width: 280 + i * 180, height: 280 + i * 180, transform: 'translate(-50%,-50%)' }} />
-            ))}
-          </motion.div>
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-            <div className="absolute left-1/2 top-1/2 size-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-teal/60 blur-[100px]" />
-            <div className="grain absolute inset-0 opacity-50 mix-blend-overlay" />
-          </div>
-          <div className="relative">
-            <h2 className="mx-auto max-w-3xl text-[clamp(2rem,4vw,3.4rem)] leading-[1.12]">
-              Siap membaca <em className="text-leaf">kasus pertamamu?</em>
-            </h2>
-            <p className="mx-auto mt-5 max-w-xl text-[16px] text-mint/70">Daftar dengan NIM, masukkan kode kelas dari dosenmu, lalu mulai dari modul orientasi.</p>
-            <div className="mt-9 flex flex-wrap justify-center gap-3">
-              <ButtonLink to="/daftar" variant="light" size="lg">
-                Daftar sebagai mahasiswa <ArrowRight className="size-4" />
-              </ButtonLink>
-              <ButtonLink to="/masuk" size="lg" className="border border-white/15 bg-white/5 text-mint shadow-none hover:bg-white/10">
-                Sudah punya akun
-              </ButtonLink>
-            </div>
+        <div className="rounded-[2rem] bg-[#020708] px-6 py-20 text-center sm:px-12 md:rounded-[2.5rem] lg:py-28">
+          <h2 className="mx-auto max-w-3xl text-balance text-[clamp(2.1rem,4.2vw,3.6rem)] font-bold leading-[1.02] tracking-[-0.03em] text-white">Siap membaca kasus pertamamu?</h2>
+          <p className="mx-auto mt-5 max-w-xl text-[16.5px] leading-relaxed text-zinc-400">Daftar dengan NIM, masukkan kode kelas dari dosenmu, lalu mulai dari modul orientasi.</p>
+          <div className="mt-9 flex flex-wrap justify-center gap-2.5">
+            <ButtonLink to="/daftar" size="lg" className="bg-white text-[#020708] shadow-none hover:bg-zinc-200">
+              Daftar sebagai mahasiswa <ArrowRight className="size-4" />
+            </ButtonLink>
+            <ButtonLink to="/masuk" size="lg" className="bg-transparent text-zinc-200 shadow-none ring-1 ring-white/15 hover:bg-white/[0.06]">
+              Sudah punya akun
+            </ButtonLink>
           </div>
         </div>
       </Reveal>

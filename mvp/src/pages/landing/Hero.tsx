@@ -1,154 +1,77 @@
 import { lazy, Suspense, useRef, useState } from 'react';
-import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from 'framer-motion';
-import { Layers, MessageCircleQuestion, Move3d, ScanLine, Sparkles } from 'lucide-react';
-import SculptureHero from '@/components/ui/liquid-sculpture-hero';
-import { Spotlight } from '@/components/ui/spotlight';
-import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
+import { motion, useReducedMotion } from 'framer-motion';
+import { ArrowRight, Move3d } from 'lucide-react';
 import { EASE } from './bits';
 
 const MriHologram = lazy(() => import('@/components/three/MriHologram'));
 
 /**
- * Hero partikel cair (adaptasi 21st.dev liquid-sculpture-hero) dengan "patung" dari irisan FLAIR asli.
- * Saat digulir, hero sedikit mengecil dan sudutnya membulat seperti kartu yang terangkat.
+ * Hero (adaptasi 21st.dev "lunar-gravity-card"): kartu hitam, judul di kiri, dan di kanan
+ * volume MRI asli pasien SOOP yang dikelilingi cincin partikel. Satu-satunya 3D otak di halaman.
  */
 export default function Hero({ cases }: { cases: number }) {
-  const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.92]);
-  const radius = useTransform(scrollYProgress, [0, 0.6], [0, 40]);
-  const fade = useTransform(scrollYProgress, [0.4, 1], [1, 0.35]);
+  const [ringKey, setRingKey] = useState(0);
+  const down = useRef<[number, number] | null>(null);
+  const enter = (d: number) => (reduce ? {} : { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.9, delay: d, ease: EASE } });
 
   return (
-    <div ref={ref} id="top" className="relative">
-      <motion.div style={reduce ? undefined : { scale, borderRadius: radius, opacity: fade }} className="origin-top overflow-hidden will-change-transform">
-        <SculptureHero
-          src="/hero/mri-strip.webp"
-          mobileSrc="/hero/mri-portrait.webp"
-          imageAlt="Lima irisan aksial FLAIR otak pasien stroke dari dataset SOOP, lesi ditandai warna terakota"
-          topInset={92}
-          background="#f1efe6"
-          textColor="#10313a"
-          accentColor="#195764"
-          backdropText="Sinaps"
-          intro
-          strength={1.05}
-          radius={200}
-          turbulence={1.1}
-          headline={'Latih matamu membaca\nMRI stroke.'}
-          headlineAccent="MRI stroke."
-          body="Baca kasus MRI nyata, tandai lesinya, lalu langsung tahu di bagian mana kamu keliru. Umpan baliknya setingkat voxel, tanpa harus menunggu radiolog."
-          primaryCta={{ label: 'Mulai belajar gratis', href: '/daftar' }}
-          secondaryCta={{ label: 'Saya dosen', href: '/daftar?peran=dosen' }}
-          footnote={
-            <>
-            <dl className="flex gap-7 border-t border-ink/10 pt-4">
-              {[
-                [String(cases), 'kasus MRI'],
-                ['6', 'modul'],
-                ['4', 'metrik nilai'],
-              ].map(([n, l]) => (
-                <div key={l}>
-                  <dt className="text-[22px] font-bold leading-none text-teal">{n}</dt>
-                  <dd className="mt-1 font-display text-[11px] uppercase tracking-[0.18em] text-ink/55">{l}</dd>
-                </div>
-              ))}
-            </dl>
-            <p className="mt-4 text-[12.5px] text-ink/50">Tutor neuroradiologi adaptif · Final ICC Campus Data Week 2026</p>
-            </>
-          }
-        />
-      </motion.div>
-    </div>
-  );
-}
+    <section id="top" className="px-3 pt-[5.5rem] sm:px-5 sm:pt-24">
+      <div className="relative mx-auto flex max-w-[1360px] flex-col overflow-hidden rounded-[2rem] bg-[#020708] ring-1 ring-white/[0.07] shadow-[0_40px_100px_-40px_rgba(2,7,8,.55)] md:h-[min(86svh,780px)] md:min-h-[620px] md:flex-row md:rounded-[2.5rem]">
+        {/* gelap dari kiri supaya teks selalu terbaca di atas cincin */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 z-10 h-[58%] bg-gradient-to-b from-[#020708] via-[#020708]/90 to-transparent md:inset-y-0 md:left-0 md:h-full md:w-[58%] md:bg-gradient-to-r" />
 
-/** Hologram 3D dari volume MRI asli: slice merenggang mengikuti gulir, bisa diputar dan diatur. */
-export function LabStage() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [series, setSeries] = useState<'DWI' | 'FLAIR'>('DWI');
-  const [split, setSplit] = useState(false);
-  const [lesion, setLesion] = useState(true);
-  const [scrollEx, setScrollEx] = useState(0);
-  const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
-  useMotionValueEvent(scrollYProgress, 'change', (v) => setScrollEx(Math.min(1, Math.max(0, (v - 0.25) * 2.2))));
-  const explode = split ? 1 : scrollEx * 0.9;
-
-  return (
-    <motion.div ref={ref} initial={reduce ? false : { opacity: 0, y: 40, scale: 0.97 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true, margin: '-80px' }} transition={{ duration: 1, ease: EASE }} className="relative">
-      <div className="relative aspect-[4/4.2] overflow-hidden rounded-[2rem] bg-[radial-gradient(120%_90%_at_50%_0%,#1f6b7a_0%,#0f3a43_45%,#061a1f_100%)] shadow-[0_40px_80px_-30px_rgba(10,38,44,.65)] ring-1 ring-white/10 sm:aspect-[4/3.4]">
-        <Spotlight size={420} className="-z-0" />
-        <div className="grain pointer-events-none absolute inset-0 opacity-60 mix-blend-overlay" />
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(147,199,207,.07)_1px,transparent_1px),linear-gradient(90deg,rgba(147,199,207,.07)_1px,transparent_1px)] bg-[size:44px_44px] [mask-image:radial-gradient(70%_60%_at_50%_45%,black,transparent)]" />
-        <Suspense fallback={null}>
-          <MriHologram className="absolute inset-0" series={series} explode={explode} lesion={lesion} />
-        </Suspense>
-        <div className="pointer-events-none absolute inset-x-5 top-5 flex items-center justify-between font-display text-[11.5px] uppercase tracking-[0.16em] text-sky/80">
-          <span className="flex items-center gap-2">
-            <span className="size-1.5 animate-pulse rounded-full bg-leaf" /> SOOP sub-754 · {series}
-          </span>
-          <span className="rounded-full border border-sky/25 px-2.5 py-0.5">25 slice · 6 mm</span>
-        </div>
-        <div className="absolute inset-x-4 bottom-4 flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-1 rounded-full border border-white/10 bg-teal-950/60 p-1 backdrop-blur-md">
-            {(['DWI', 'FLAIR'] as const).map((s) => (
-              <button key={s} onClick={() => setSeries(s)} aria-pressed={series === s} className={cn('rounded-full px-3.5 py-1.5 font-display text-[12px] tracking-[0.12em] transition-colors', series === s ? 'bg-mint text-teal-900' : 'text-sky/80 hover:text-mint')}>
-                {s}
-              </button>
+        <div className="relative z-20 flex flex-col justify-center px-7 pb-4 pt-12 sm:px-12 md:w-[48%] md:py-0 md:pl-16 lg:pl-20">
+          <motion.h1 {...enter(0.1)} className="text-[clamp(2.7rem,5.4vw,5.1rem)] font-bold leading-[0.96] tracking-[-0.035em]">
+            <span className="text-white">Latih matamu</span>
+            <br />
+            <span className="text-zinc-500">membaca MRI stroke.</span>
+          </motion.h1>
+          <motion.p {...enter(0.22)} className="mt-6 max-w-[25rem] text-[16.5px] leading-relaxed text-zinc-400">
+            Baca kasus MRI pasien sungguhan, tandai lesinya, lalu langsung tahu di bagian mana kamu keliru. Umpan balik setingkat voxel, tanpa menunggu radiolog.
+          </motion.p>
+          <motion.div {...enter(0.32)} className="mt-8 flex flex-wrap gap-2.5">
+            <Link to="/daftar" className="group inline-flex h-12 items-center gap-2 rounded-full bg-white px-6 text-[15px] font-semibold text-[#020708] transition-[background-color,transform] duration-150 hover:bg-zinc-200 active:scale-[0.97]">
+              Mulai belajar gratis <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+            <Link to="/daftar?peran=dosen" className="inline-flex h-12 items-center rounded-full px-6 text-[15px] font-medium text-zinc-200 ring-1 ring-white/15 transition-[background-color,transform] duration-150 hover:bg-white/[0.06] active:scale-[0.97]">
+              Saya dosen
+            </Link>
+          </motion.div>
+          <motion.dl {...enter(0.42)} className="mt-10 flex gap-8 border-t border-white/10 pt-5">
+            {[
+              [String(cases), 'kasus MRI asli'],
+              ['6', 'modul belajar'],
+              ['4', 'metrik penilaian'],
+            ].map(([n, l]) => (
+              <div key={l}>
+                <dt className="text-[22px] font-semibold leading-none tabular-nums text-white">{n}</dt>
+                <dd className="mt-1.5 text-[12.5px] text-zinc-500">{l}</dd>
+              </div>
             ))}
-          </div>
-          <div className="flex items-center gap-1 rounded-full border border-white/10 bg-teal-950/60 p-1 backdrop-blur-md">
-            <StageToggle on={split} onClick={() => setSplit(!split)} icon={<Layers className="size-3.5" />} label="Pisahkan slice" />
-            <StageToggle on={lesion} onClick={() => setLesion(!lesion)} icon={<ScanLine className="size-3.5" />} label="Kunci lesi" />
-          </div>
+          </motion.dl>
         </div>
-        <p className="pointer-events-none absolute bottom-[4.6rem] left-1/2 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap text-[11.5px] text-sky/60">
-          <Move3d className="size-3.5" /> Seret untuk memutar
-        </p>
+
+        <div
+          className="relative z-0 h-[440px] w-full md:absolute md:inset-y-0 md:right-0 md:h-full md:w-[66%]"
+          onPointerDown={(e) => (down.current = [e.clientX, e.clientY])}
+          onPointerUp={(e) => {
+            const d = down.current;
+            // klik tanpa seret: cincin dibentuk ulang
+            if (d && Math.hypot(e.clientX - d[0], e.clientY - d[1]) < 6) setRingKey((k) => k + 1);
+            down.current = null;
+          }}
+        >
+          <Suspense fallback={null}>
+            <MriHologram className="absolute inset-0" ring ringKey={ringKey} series="DWI" lesion scan={false} zoom={1.32} />
+          </Suspense>
+          <p className="pointer-events-none absolute right-6 top-6 z-20 hidden font-mono text-[11px] text-zinc-500 md:block">SOOP sub-754 · DWI · 25 slice</p>
+          <p className="pointer-events-none absolute bottom-6 right-6 z-20 flex items-center gap-1.5 text-[12px] text-zinc-500">
+            <Move3d className="size-3.5" /> Seret untuk memutar, klik untuk mengulang
+          </p>
+        </div>
       </div>
-
-      <FloatCard className="-left-3 top-[14%] sm:-left-8" delay={0.5}>
-        <span className="font-display text-[11px] uppercase tracking-[0.16em] text-ink/55">Dice terhadap kunci</span>
-        <span className="mt-1 flex items-baseline gap-1.5">
-          <b className="text-[26px] leading-none text-teal">0,81</b>
-          <span className="rounded-full bg-leaf/50 px-1.5 text-[10px] font-bold text-teal-900">+0,12</span>
-        </span>
-      </FloatCard>
-      <FloatCard className="-right-2 top-[40%] sm:-right-6" delay={0.65} slow>
-        <span className="font-display text-[11px] uppercase tracking-[0.16em] text-ink/55">Jenis kesalahan</span>
-        <span className="mt-1 flex items-center gap-2 text-[13px] font-bold text-ink">
-          <span className="size-2 rounded-full bg-terra" /> Lesi kecil terlewat
-        </span>
-      </FloatCard>
-      <FloatCard className="-left-2 bottom-[16%] hidden max-w-[16rem] sm:-left-10 sm:block" delay={0.8}>
-        <span className="flex items-center gap-1.5 font-display text-[11px] uppercase tracking-[0.16em] text-ink/55">
-          <MessageCircleQuestion className="size-3.5 text-teal" /> Tutor · Sokratik
-        </span>
-        <span className="mt-1.5 text-[13px] leading-snug text-ink/85">Ada fokus yang belum kamu tandai. Adakah area terang di DWI yang gelap di ADC sekitar slice 15?</span>
-      </FloatCard>
-      <p className="mt-3 flex items-center justify-end gap-1.5 text-[11.5px] text-ink/45">
-        <Sparkles className="size-3" /> Volume MRI asli dari SOOP (OpenNeuro ds004889, CC0). Angka di kartu hanya ilustrasi.
-      </p>
-    </motion.div>
-  );
-}
-
-function StageToggle({ on, onClick, icon, label }: { on: boolean; onClick: () => void; icon: React.ReactNode; label: string }) {
-  return (
-    <button onClick={onClick} aria-pressed={on} className={cn('flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11.5px] font-bold transition-colors', on ? 'bg-leaf text-teal-900' : 'text-sky/80 hover:text-mint')}>
-      {icon}
-      <span className="hidden sm:inline">{label}</span>
-    </button>
-  );
-}
-
-function FloatCard({ children, className, delay, slow }: { children: React.ReactNode; className?: string; delay: number; slow?: boolean }) {
-  const reduce = useReducedMotion();
-  return (
-    <motion.div initial={reduce ? false : { opacity: 0, y: 16, scale: 0.95 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.8, delay, ease: EASE }} className={cn('absolute z-20', className)}>
-      <div className={cn('flex flex-col rounded-2xl border border-white/60 bg-paper/90 px-4 py-3 shadow-[0_18px_40px_-18px_rgba(16,49,58,.45)] backdrop-blur-xl', reduce ? '' : 'animate-float', slow && '[animation-delay:-3s] [animation-duration:9s]')}>{children}</div>
-    </motion.div>
+    </section>
   );
 }

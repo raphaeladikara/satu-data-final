@@ -97,14 +97,13 @@ function StepList({ i, progress, onPick, animated = 0 }: { i: number; progress: 
               role="tab"
               aria-selected={on}
               onClick={() => onPick(k)}
-              className={cn('relative w-full overflow-hidden rounded-[1.4rem] p-4 text-left transition-[background-color,box-shadow] duration-300', on ? 'bg-paper shadow-[0_18px_44px_-26px_rgba(16,49,58,.5)] ring-1 ring-ink/8' : 'hover:bg-paper/50')}
+              className={cn('relative w-full overflow-hidden rounded-[1.4rem] p-4 text-left transition-[background-color,box-shadow] duration-300', on ? 'bg-white shadow-[0_12px_32px_-20px_rgba(15,23,42,.35)] ring-1 ring-line' : 'hover:bg-surface')}
             >
               <div className="flex items-start gap-4">
-                <span className={cn('grid size-11 shrink-0 place-items-center rounded-2xl transition-colors duration-300', on ? 'bg-teal text-mint' : done ? 'bg-leaf/45 text-teal-900' : 'bg-ink/5 text-ink/45')}>
+                <span className={cn('grid size-11 shrink-0 place-items-center rounded-2xl transition-colors duration-300', on ? 'bg-teal text-white' : done ? 'bg-ok-soft text-ok-ink' : 'bg-ink/5 text-ink/45')}>
                   {done ? <Check className="size-[18px]" /> : <Icon className="size-[18px]" />}
                 </span>
                 <div className="min-w-0 pt-0.5">
-                  <span className="font-display text-[11.5px] uppercase tracking-[0.2em] text-ink/40">Langkah 0{k + 1}</span>
                   <b className={cn('block text-[16.5px] font-bold transition-colors', on ? 'text-ink' : 'text-ink/55')}>{s.t}</b>
                   <AnimatePresence initial={false}>
                     {on && (
@@ -118,9 +117,9 @@ function StepList({ i, progress, onPick, animated = 0 }: { i: number; progress: 
               {on && (
                 <span className="absolute inset-x-4 bottom-0 h-[3px] overflow-hidden rounded-full bg-ink/5">
                   {animated ? (
-                    <motion.span className="block h-full origin-left rounded-full bg-gradient-to-r from-teal to-leaf" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: animated / 1000, ease: 'linear' }} />
+                    <motion.span className="block h-full origin-left rounded-full bg-teal" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: animated / 1000, ease: 'linear' }} />
                   ) : (
-                    <span className="block h-full origin-left rounded-full bg-gradient-to-r from-teal to-leaf" style={{ transform: `scaleX(${progress})` }} />
+                    <span className="block h-full origin-left rounded-full bg-teal" style={{ transform: `scaleX(${progress})` }} />
                   )}
                 </span>
               )}
@@ -139,7 +138,7 @@ function AppFrame({ i }: { i: number }) {
   const [hi, setHi] = useState(215);
   const graded = i >= 2;
   return (
-    <div className="relative overflow-hidden rounded-[2rem] bg-[linear-gradient(160deg,#eaf3de_0%,#dfeee6_45%,#cfe4e6_100%)] p-3 ring-1 ring-ink/8 shadow-[0_40px_90px_-50px_rgba(16,49,58,.6)] sm:p-4">
+    <div className="relative overflow-hidden rounded-[2rem] bg-surface p-3 ring-1 ring-ink/8 shadow-[0_40px_90px_-50px_rgba(16,49,58,.6)] sm:p-4">
       <div className="overflow-hidden rounded-[1.5rem] bg-muslin ring-1 ring-ink/8">
         {/* bilah atas aplikasi */}
         <div className="flex items-center gap-3 border-b border-ink/8 bg-paper/90 px-4 py-2.5">
@@ -154,13 +153,13 @@ function AppFrame({ i }: { i: number }) {
             ].map(([Icon, l]) => {
               const I = Icon as typeof Home;
               return (
-                <span key={l as string} className={cn('flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-bold', l === 'Latihan' ? 'bg-sky/60 text-teal-900' : 'text-ink/50')}>
+                <span key={l as string} className={cn('flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-bold', l === 'Latihan' ? 'bg-teal text-white' : 'text-ink/50')}>
                   <I className="size-3.5" /> {l as string}
                 </span>
               );
             })}
           </nav>
-          <span className="ml-auto grid size-8 place-items-center rounded-full bg-gradient-to-br from-teal to-sage text-[11px] font-bold text-mint md:ml-0">AR</span>
+          <span className="ml-auto grid size-8 place-items-center rounded-full bg-teal text-[11px] font-bold text-white md:ml-0">AR</span>
         </div>
 
         <div className="grid gap-3 p-3 sm:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] sm:p-4">
@@ -227,7 +226,7 @@ const KC = [
 function StepPick() {
   return (
     <>
-      <Panel className="bg-[radial-gradient(120%_90%_at_0%_0%,#1a5562,#0f3a43_60%,#0a262c)] text-mint ring-white/10">
+      <Panel className="bg-teal-900 text-mint ring-white/10">
         <Label className="text-leaf">Kasus berikutnya</Label>
         <b className="mt-2 block text-[19px] leading-snug">Latihan terarah K3</b>
         <p className="mt-1 text-[12.5px] text-mint/70">KC terlemahmu. Prasyarat K1 dan K2 sudah terpenuhi.</p>
@@ -389,14 +388,14 @@ function StepMastery() {
                 </div>
                 <div className="relative mt-2 h-2 overflow-hidden rounded-full bg-ink/6">
                   <div className="absolute inset-y-0 left-0 rounded-full bg-ink/15" style={{ width: `${b * 100}%` }} />
-                  <motion.div initial={{ width: `${b * 100}%` }} animate={{ width: `${a * 100}%` }} transition={{ duration: 1.1, delay: 0.25 + idx * 0.14, ease: EASE }} className={cn('absolute inset-y-0 left-0 rounded-full', up ? 'bg-gradient-to-r from-teal to-sage' : 'bg-terra')} />
+                  <motion.div initial={{ width: `${b * 100}%` }} animate={{ width: `${a * 100}%` }} transition={{ duration: 1.1, delay: 0.25 + idx * 0.14, ease: EASE }} className={cn('absolute inset-y-0 left-0 rounded-full', up ? 'bg-ok' : 'bg-terra')} />
                 </div>
               </li>
             );
           })}
         </ul>
       </Panel>
-      <Panel className="bg-[linear-gradient(150deg,#195764,#2f7a73_55%,#80a874)] text-mint ring-white/10">
+      <Panel className="bg-teal-900 text-mint ring-white/10">
         <Label className="text-leaf">Bayesian Knowledge Tracing</Label>
         <p className="mt-1.5 text-[14px] leading-snug">P(kuasai) diperbarui dari setiap jawaban, lalu menentukan kasus berikutnya.</p>
       </Panel>

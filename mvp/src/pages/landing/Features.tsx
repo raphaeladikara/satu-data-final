@@ -124,7 +124,7 @@ function MetricsGraphic() {
           <div key={k} className="flex flex-col items-center gap-2">
             <span className="text-[12px] font-bold text-mint/85">{t}</span>
             <div className="flex h-36 w-full items-end overflow-hidden rounded-xl bg-white/6">
-              <motion.div initial={{ height: 0 }} whileInView={{ height: `${v * 100}%` }} viewport={{ once: true }} transition={{ duration: 1.1, delay: 0.2 + i * 0.1, ease: EASE }} className={cn('w-full rounded-xl', i === 1 ? 'bg-terra' : 'bg-gradient-to-t from-teal-600 to-leaf')} />
+              <motion.div initial={{ height: 0 }} whileInView={{ height: `${v * 100}%` }} viewport={{ once: true }} transition={{ duration: 1.1, delay: 0.2 + i * 0.1, ease: EASE }} className={cn('w-full rounded-xl', i === 1 ? 'bg-terra' : 'bg-teal')} />
             </div>
             <span className="font-display text-[10.5px] uppercase tracking-[0.14em] text-mint/55">{k}</span>
           </div>
