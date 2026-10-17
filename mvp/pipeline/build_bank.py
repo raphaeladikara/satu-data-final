@@ -43,7 +43,11 @@ def to_u8(vol, lo, hi):
 
 def write_vol(path, u8):
     # urutan x tercepat (indeks = x + y*X + z*X*Y), sesuai scalarData Cornerstone
-    path.write_bytes(gzip.compress(np.asfortranarray(u8).tobytes(order="F"), compresslevel=9))
+    raw = np.asfortranarray(u8).tobytes(order="F")
+    # citra tidak berubah saat model dilatih ulang; jangan tulis ulang supaya git tidak mencatat 108 berkas biner
+    if path.exists() and gzip.decompress(path.read_bytes()) == raw:
+        return
+    path.write_bytes(gzip.compress(raw, compresslevel=9, mtime=0))
 
 
 def geometry(img, shape):

@@ -80,4 +80,18 @@ uv venv .venv && uv pip install --python .venv nibabel numpy scipy pandas reques
 .venv/Scripts/python eval_error_rules.py    # uji aturan jenis kesalahan
 ```
 
+## Memperbarui model setelah latih ulang
+
+Web tidak perlu diubah. Setelah kernel Kaggle selesai, unduh `sinaps_out.zip`, lalu:
+
+```bash
+cd mvp/pipeline
+.venv/Scripts/python update_model.py path/ke/sinaps_out.zip          # bangun ulang + tampilkan Dice lama -> baru
+.venv/Scripts/python update_model.py path/ke/sinaps_out.zip --push   # bila hasilnya lebih baik: commit + push
+```
+
+Skrip ini mengganti prediksi di `server_data/`, menyalin metrik ke `pipeline/results/unet25d/`, dan
+memperbarui tabel hasil di README. Citra kasus tidak ditulis ulang. Proyek Vercel yang terhubung ke
+GitHub redeploy otomatis setelah push. Butuh data SOOP lokal di `data/soop/` (sudah ada di laptop ini).
+
 SINAPS adalah alat bantu belajar dan tidak ditujukan untuk mendiagnosis pasien.
