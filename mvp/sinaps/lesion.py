@@ -2,7 +2,8 @@
 import math
 
 import numpy as np
-from scipy import ndimage
+
+from .ndi import label26, sum_ones
 
 MIN_FOCUS_ML = 0.1
 # 26-ketetanggaan: dua voxel yang bersentuhan di sudut tetap satu fokus
@@ -15,11 +16,11 @@ def voxel_ml(spacing):
 
 def foci(mask, spacing, min_ml=MIN_FOCUS_ML):
     """Label komponen terhubung; kembalikan (labels, daftar fokus bermakna terurut dari terbesar)."""
-    labels, n = ndimage.label(mask > 0, structure=STRUCT)
+    labels, n = label26(mask > 0)
     if n == 0:
         return labels, []
     vml = voxel_ml(spacing)
-    sizes = ndimage.sum_labels(np.ones_like(labels), labels, index=np.arange(1, n + 1))
+    sizes = sum_ones(labels, n)
     out = []
     for i, sz in enumerate(sizes, start=1):
         ml = float(sz) * vml

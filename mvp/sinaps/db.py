@@ -34,7 +34,7 @@ attempts = Table(
     Column("id", Integer, primary_key=True, autoincrement=True),
     Column("student_id", String(32), index=True),
     Column("case_id", String(16)),
-    Column("target_kc", String(4)),
+    Column("target_kc", String(8)),  # "K1".."K6" atau "bebas"
     Column("tier", String(8)),
     Column("started_at", Float),
     Column("submitted_at", Float),

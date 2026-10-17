@@ -3,20 +3,35 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "regions": [
+    "hnd1"
+  ],
   "functions": {
     "api/index.py": {
       "includeFiles": "{sinaps/**,server_data/**,corpus/**,public/cases/index.json}",
-      "maxDuration": 60
+      "maxDuration": 60,
+      "excludeFiles": "{node_modules/**,dist/**,src/**,pipeline/**,results/**,public/cases/sub-*/**,.venv/**,.vite/**,.local/**}"
     }
   },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index" },
-    { "source": "/((?!api/|cases/|assets/).*)", "destination": "/index.html" }
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/((?!api/|cases/|assets/).*)",
+      "destination": "/index.html"
+    }
   ],
   "headers": [
     {
       "source": "/cases/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
+      ]
     }
   ]
 }

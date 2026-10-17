@@ -69,7 +69,7 @@ def login(body: Login):
     if not body.nim.strip():
         raise HTTPException(400, "NIM/ID kosong")
     sid = pseudonym(body.nim)
-    db.ensure_student(sid, body.kelas.strip() or "umum")
+    db.ensure_student(sid, body.kelas.strip()[:64] or "umum")
     return {"sid": sid}
 
 
@@ -216,7 +216,7 @@ def ask_tutor(body: TutorReq):
     facts = tutor.build_facts(cases.public_case(a["case_id"]), cases.secrets()[a["case_id"]], phase,
                               a["result"], profile(m))
     out = tutor.ask(body.mode, facts, body.message[:2000], body.history, body.image)
-    db.log_tutor(student_id=body.sid, attempt_id=body.attempt_id, case_id=a["case_id"], mode=body.mode, phase=phase,
+    db.log_tutor(student_id=body.sid, attempt_id=body.attempt_id, case_id=a["case_id"], mode=body.mode[:16], phase=phase,
                  message=body.message[:2000], response=out["reply"], model=out["model"], latency_ms=out["latency_ms"],
                  facts={"issues": out["issues"], "source": out["source"], "rujukan": facts.get("rujukan")})
     return {**out, "phase": phase, "rujukan": facts.get("rujukan")}

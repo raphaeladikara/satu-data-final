@@ -4,9 +4,9 @@ Empat metrik (Subbab III.E): Dice, recall per lesi, galat volume relatif, HD95.
 Keempatnya dipetakan ke lima jenis kesalahan dengan aturan keputusan transparan berambang.
 """
 import numpy as np
-from scipy import ndimage
 
-from .lesion import STRUCT, foci, voxel_ml
+from .lesion import foci, voxel_ml
+from .ndi import erode26, nearest_dist
 
 ERROR_TYPES = {
     "hampir_benar": "Hampir benar",
@@ -32,7 +32,7 @@ K6_PASS = {"dice": 0.6, "lesion_recall": 1.0}
 
 
 def _surface(m):
-    return m & ~ndimage.binary_erosion(m, structure=STRUCT, border_value=0)
+    return m & ~erode26(m)
 
 
 def hd95(p, g, spacing):
@@ -40,9 +40,7 @@ def hd95(p, g, spacing):
     if not p.any() or not g.any():
         return None
     sp, sg = _surface(p), _surface(g)
-    dg = ndimage.distance_transform_edt(~sg, sampling=spacing)
-    dp = ndimage.distance_transform_edt(~sp, sampling=spacing)
-    d = np.concatenate([dg[sp], dp[sg]])
+    d = np.concatenate([nearest_dist(sp, sg, spacing), nearest_dist(sg, sp, spacing)])
     return float(np.percentile(d, 95))
 
 
