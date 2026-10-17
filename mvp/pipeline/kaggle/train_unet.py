@@ -288,7 +288,12 @@ def main():
     # ---- 2. praproses ----
     log(f"[2/5] Praproses {len(tr_ids)} subjek latih (normalisasi, 2.5D, resize {RES} px)...")
     t = time.time()
-    xs, ys, ws, used, skip = [], [], [], [], 0
+    # tulis langsung ke tensor yang dialokasikan sekali. Halaman yang tidak terpakai tidak memakan RAM;
+    # potongan per pasien yang dikumpulkan di list tidak dikembalikan malloc ke OS dan membuat run3 OOM.
+    cap = len(tr_ids) * 32
+    X = torch.empty((cap, 6, RES, RES), dtype=torch.float16)
+    Y = torch.empty((cap, RES, RES), dtype=torch.bool)
+    ws, used, skip, k = [], [], 0, 0
     for i, s in enumerate(tr_ids, 1):
         try:
             sub = load_subject(fetched[s])
@@ -303,31 +308,27 @@ def main():
             x = stack25d(to_slices(d), to_slices(a))
             y = (to_slices(g.astype(np.float32)) > 0.5).float()
             keep = torch.from_numpy(b.any(axis=(0, 1)))  # hanya slice yang memuat otak
-            xs.append(x[keep].half())
-            ys.append(y[keep].bool())
+            x, y = x[keep].half(), y[keep].bool()
+            n = len(x)
+            if k + n > len(X):  # jarang: volume dengan slice sangat banyak
+                X = torch.cat([X[:k], torch.empty((cap // 4, 6, RES, RES), dtype=torch.float16)])
+                Y = torch.cat([Y[:k], torch.empty((cap // 4, RES, RES), dtype=torch.bool)])
+            X[k:k + n], Y[k:k + n] = x, y
+            k += n
             small = g.sum() * float(np.prod(sp)) / 1000 < 5
-            has = ys[-1].any(dim=(1, 2)).float()
+            has = y.any(dim=(1, 2)).float()
             ws.append(1 + has * ((W_SMALL if small else W_LESION) - 1))
+            del x, y
             used.append(s)
         if i % 100 == 0 or i == len(tr_ids):
             rate = i / (time.time() - t)
             log(f"[2/5] praproses {i}/{len(tr_ids)} | dipakai {len(used)} dilewati {skip} | "
                 f"RAM {ram_gb():.1f} GB | sisa ~{fmt_dur((len(tr_ids) - i) / rate)}")
-    # salin per potong ke tensor yang dialokasikan sekali; torch.cat menggandakan RAM dan OOM di 192 px
-    n_sl = sum(len(x) for x in xs)
-    X = torch.empty((n_sl, 6, RES, RES), dtype=torch.float16)
-    Y = torch.empty((n_sl, RES, RES), dtype=torch.bool)
-    k = 0
-    for i in range(len(xs)):
-        n = len(xs[i])
-        X[k:k + n], Y[k:k + n] = xs[i], ys[i]
-        xs[i] = ys[i] = None
-        k += n
-    del xs, ys
+    X, Y = X[:k], Y[:k]
     W = torch.cat(ws)
     log(f"[2/5] sampling: {int((W > 1).sum())} slice berlesi diberi bobot {W_LESION}/{W_SMALL} "
         f"(pasien < 5 ml), sisanya 1")
-    pos = float(Y.float().mean()) * 100
+    pos = float(Y.sum()) / Y.numel() * 100
     log(f"[2/5] selesai: {len(used)} pasien, {len(X)} slice ({pos:.2f}% voxel lesi) | RAM {ram_gb():.1f} GB")
 
     val = []
