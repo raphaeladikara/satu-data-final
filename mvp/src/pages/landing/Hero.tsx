@@ -14,7 +14,8 @@ export default function Hero({ cases }: { cases: number }) {
   const reduce = useReducedMotion();
   const [ringKey, setRingKey] = useState(0);
   const down = useRef<[number, number] | null>(null);
-  const enter = (d: number) => (reduce ? {} : { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.9, delay: d, ease: EASE } });
+  // teks hero langsung terlihat; hanya geser kecil supaya tidak tertahan saat WebGL sedang memuat
+  const enter = (d: number) => (reduce ? {} : { initial: { y: 12 }, animate: { y: 0 }, transition: { duration: 0.8, delay: d, ease: EASE } });
 
   return (
     <section id="top" className="px-3 pt-[5.5rem] sm:px-5 sm:pt-24">
@@ -64,7 +65,7 @@ export default function Hero({ cases }: { cases: number }) {
           }}
         >
           <Suspense fallback={null}>
-            <MriHologram className="absolute inset-0" ring ringKey={ringKey} series="DWI" lesion scan={false} zoom={1.32} />
+            <MriHologram className="absolute inset-0" ring ringKey={ringKey} series="DWI" lesion scan={false} zoom={1.75} />
           </Suspense>
           <p className="pointer-events-none absolute right-6 top-6 z-20 hidden font-mono text-[11px] text-zinc-500 md:block">SOOP sub-754 · DWI · 25 slice</p>
           <p className="pointer-events-none absolute bottom-6 right-6 z-20 flex items-center gap-1.5 text-[12px] text-zinc-500">

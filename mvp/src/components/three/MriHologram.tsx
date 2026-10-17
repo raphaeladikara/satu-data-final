@@ -235,7 +235,7 @@ export default function MriHologram({
       pivot.add(base);
 
       const reducedNow = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const gravity = live.current.ring ? createGravityRing(Math.max(w, h) * 0.56, { reduced: reducedNow, count: window.innerWidth < 768 ? 26000 : 52000 }) : null;
+      const gravity = live.current.ring ? createGravityRing(Math.max(w, h) * 0.78, { reduced: reducedNow, count: window.innerWidth < 768 ? 26000 : 52000 }) : null;
       if (gravity) {
         gravity.group.rotation.set(0.1, 0, 0.16);
         pivot.add(gravity.group);
