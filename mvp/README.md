@@ -75,7 +75,7 @@ uv venv .venv && uv pip install --python .venv nibabel numpy scipy pandas reques
 .venv/Scripts/python mask_stats.py
 .venv/Scripts/python download_soop.py images --n-train 0
 .venv/Scripts/kaggle kernels push -p kaggle --accelerator NvidiaTeslaT4   # latih U-Net di Kaggle GPU
-.venv/Scripts/kaggle kernels output raphaeladikara/sinaps-unet25d-run2 -p kaggle_out
+.venv/Scripts/kaggle kernels output raphaeladikara/sinaps-unet25d-run3 -p kaggle_out
 .venv/Scripts/python build_bank.py          # citra + kunci jawaban + prediksi model
 .venv/Scripts/python eval_error_rules.py    # uji aturan jenis kesalahan
 ```

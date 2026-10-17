@@ -1,6 +1,8 @@
 """SINAPS - pelatihan U-Net 2.5D segmentasi lesi stroke akut (dijalankan di Kaggle GPU).
 
-Masukan model: 3 slice DWI + 3 slice ADC yang bertetangga (6 kanal), resolusi 128 px.
+Masukan model: 3 slice DWI + 3 slice ADC yang bertetangga (6 kanal), resolusi RES px (bawaan 192).
+Run3: resolusi 192 px (run2: 128), slice berlesi diambil lebih sering (terutama pasien lesi < 5 ml),
+prediksi dirata-rata dengan versi cermin kiri-kanan (TTA).
 Data: SOOP (OpenNeuro ds004889, CC0), diunduh langsung dari S3 publik OpenNeuro.
 Subjek bank kasus SINAPS (30 subjek) TIDAK ikut pelatihan; dipakai sebagai data uji.
 
@@ -36,7 +38,8 @@ from scipy import ndimage
 
 S3 = "https://s3.amazonaws.com/openneuro.org/ds004889"
 BANK = "sub-3 sub-94 sub-137 sub-203 sub-267 sub-303 sub-577 sub-580 sub-652 sub-654 sub-698 sub-724 sub-754 sub-763 sub-830 sub-898 sub-901 sub-924 sub-934 sub-998 sub-1041 sub-1043 sub-1150 sub-1171 sub-1232 sub-1269 sub-1301 sub-1320 sub-1362 sub-1385 sub-1394 sub-1413 sub-1424 sub-1517 sub-1634 sub-1671".split()
-RES = 128
+RES = int(os.environ.get("RES", 192))
+W_LESION, W_SMALL = 2.0, 4.0  # bobot sampling slice berlesi; slice berlesi milik pasien < 5 ml
 SEED = 42
 EPOCHS = int(os.environ.get("EPOCHS", 30))
 OUT = Path("/kaggle/working") if Path("/kaggle/working").exists() else Path("out")
@@ -127,8 +130,10 @@ def predict_volume(model, dwi, adc, device, batch=32):
     probs = []
     model.eval()
     for i in range(0, len(x), batch):
+        xb = x[i:i + batch].to(device)
         with torch.autocast(device_type=device.type, enabled=device.type == "cuda"):
-            p = torch.sigmoid(model(x[i:i + batch].to(device)).float())
+            # TTA: rata-rata dengan versi cermin kiri-kanan (sumbu yang sama dengan augmentasi training)
+            p = (torch.sigmoid(model(xb).float()) + torch.sigmoid(model(xb.flip(-2)).float()).flip(-2)) / 2
         probs.append(F.interpolate(p, size=dwi.shape[:2], mode="bilinear", align_corners=False)[:, 0].cpu())
     p = torch.cat(probs).numpy().transpose(1, 2, 0)
     return p * b
@@ -283,7 +288,7 @@ def main():
     # ---- 2. praproses ----
     log(f"[2/5] Praproses {len(tr_ids)} subjek latih (normalisasi, 2.5D, resize {RES} px)...")
     t = time.time()
-    xs, ys, used, skip = [], [], [], 0
+    xs, ys, ws, used, skip = [], [], [], [], 0
     for i, s in enumerate(tr_ids, 1):
         try:
             sub = load_subject(fetched[s])
@@ -293,20 +298,35 @@ def main():
         if sub is None or not sub[2].any():
             skip += 1
         else:
-            dwi, adc, g, _ = sub
+            dwi, adc, g, sp = sub
             d, a, b = normalize(dwi, adc)
             x = stack25d(to_slices(d), to_slices(a))
             y = (to_slices(g.astype(np.float32)) > 0.5).float()
             keep = torch.from_numpy(b.any(axis=(0, 1)))  # hanya slice yang memuat otak
             xs.append(x[keep].half())
             ys.append(y[keep].bool())
+            small = g.sum() * float(np.prod(sp)) / 1000 < 5
+            has = ys[-1].any(dim=(1, 2)).float()
+            ws.append(1 + has * ((W_SMALL if small else W_LESION) - 1))
             used.append(s)
         if i % 100 == 0 or i == len(tr_ids):
             rate = i / (time.time() - t)
             log(f"[2/5] praproses {i}/{len(tr_ids)} | dipakai {len(used)} dilewati {skip} | "
                 f"RAM {ram_gb():.1f} GB | sisa ~{fmt_dur((len(tr_ids) - i) / rate)}")
-    X, Y = torch.cat(xs), torch.cat(ys)
+    # salin per potong ke tensor yang dialokasikan sekali; torch.cat menggandakan RAM dan OOM di 192 px
+    n_sl = sum(len(x) for x in xs)
+    X = torch.empty((n_sl, 6, RES, RES), dtype=torch.float16)
+    Y = torch.empty((n_sl, RES, RES), dtype=torch.bool)
+    k = 0
+    for i in range(len(xs)):
+        n = len(xs[i])
+        X[k:k + n], Y[k:k + n] = xs[i], ys[i]
+        xs[i] = ys[i] = None
+        k += n
     del xs, ys
+    W = torch.cat(ws)
+    log(f"[2/5] sampling: {int((W > 1).sum())} slice berlesi diberi bobot {W_LESION}/{W_SMALL} "
+        f"(pasien < 5 ml), sisanya 1")
     pos = float(Y.float().mean()) * 100
     log(f"[2/5] selesai: {len(used)} pasien, {len(X)} slice ({pos:.2f}% voxel lesi) | RAM {ram_gb():.1f} GB")
 
@@ -330,7 +350,7 @@ def main():
     log_every = max(1, it_per_ep // 4)
     for ep in range(EPOCHS):
         model.train()
-        perm = torch.randperm(len(X))
+        perm = torch.multinomial(W, len(X), replacement=True)
         tot, t_ep = 0.0, time.time()
         for it, i in enumerate(range(0, len(X), 64), 1):
             idx = perm[i:i + 64]
@@ -393,6 +413,7 @@ def main():
     big, small = df[df.gt_ml >= 5], df[df.gt_ml < 5]
     metrics = {
         "n_train_patients": len(used), "n_train_slices": len(X), "n_val": len(val), "epochs": EPOCHS,
+        "res": RES, "tta": "flip kiri-kanan", "sampling_weights": [W_LESION, W_SMALL],
         "best_val_dice": best, "history": hist, "torch": torch.__version__,
         "gpu": torch.cuda.get_device_name(0) if device.type == "cuda" else "cpu",
         "train_minutes": round((time.time() - t_train) / 60, 1),

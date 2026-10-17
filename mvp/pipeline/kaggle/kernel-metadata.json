@@ -1,6 +1,6 @@
 {
-  "id": "raphaeladikara/sinaps-unet25d-run2",
-  "title": "SINAPS UNet25D run2",
+  "id": "raphaeladikara/sinaps-unet25d-run3",
+  "title": "SINAPS UNet25D run3",
   "code_file": "train_unet.py",
   "language": "python",
   "kernel_type": "script",
