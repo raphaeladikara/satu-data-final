@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, BookOpenCheck, ClipboardCheck, Database, Download, EyeOff, FileSearch, GraduationCap, Menu, ShieldCheck, Stethoscope, Users, X } from 'lucide-react';
 import { api } from '../api';
 import { homeFor, useAuth } from '../auth';
@@ -14,6 +14,12 @@ import Features from './landing/Features';
 import { CountUp, EASE, Reveal, ScrollWords } from './landing/bits';
 
 const ContributionSkyline = lazy(() => import('@/components/ui/contribution-skyline'));
+
+// ikon menu dan X saling crossfade; menu masuk 180ms, keluar lebih cepat
+const EASE_OUT = [0.23, 1, 0.32, 1] as const;
+const ICON_T = { duration: 0.15, ease: EASE_OUT };
+const ICON_IN = { opacity: 1, scale: 1, rotate: 0, filter: 'blur(0px)' };
+const ICON_OUT = (rotate: number) => ({ opacity: 0, scale: 0.6, rotate, filter: 'blur(2px)' });
 
 const NAV = [
   ['#cara-kerja', 'Cara kerja'],
@@ -96,13 +102,23 @@ function Nav() {
           <ButtonLink to="/daftar" size="sm">
             Daftar
           </ButtonLink>
-          <button className="grid size-9 place-items-center rounded-full text-ink lg:hidden" onClick={() => setOpen(!open)} aria-expanded={open} aria-label="Menu">
-            {open ? <X className="size-5" /> : <Menu className="size-5" />}
+          <button className="relative grid size-9 place-items-center rounded-full text-ink transition-transform duration-150 active:scale-[0.94] lg:hidden" onClick={() => setOpen(!open)} aria-expanded={open} aria-label="Menu">
+            <motion.span className="absolute inset-0 grid place-items-center" initial={false} animate={open ? ICON_OUT(-45) : ICON_IN} transition={ICON_T}>
+              <Menu className="size-5" />
+            </motion.span>
+            <motion.span className="absolute inset-0 grid place-items-center" initial={false} animate={open ? ICON_IN : ICON_OUT(45)} transition={ICON_T}>
+              <X className="size-5" />
+            </motion.span>
           </button>
         </div>
       </div>
-      {open && (
-        <motion.nav initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mx-auto mt-2 flex max-w-[1320px] flex-col rounded-3xl border border-line bg-white p-2 shadow-xl lg:hidden">
+      <AnimatePresence>
+        {open && (
+        <motion.nav
+          initial={{ opacity: 0, y: -6, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1, transition: { duration: 0.18, ease: EASE_OUT } }}
+          exit={{ opacity: 0, y: -4, scale: 0.98, transition: { duration: 0.13, ease: 'easeOut' } }}
+          className="mx-auto mt-2 flex origin-top max-w-[1320px] flex-col rounded-3xl border border-line bg-white p-2 shadow-xl lg:hidden">
           {NAV.map(([h, l]) => (
             <a key={h} href={h} onClick={() => setOpen(false)} className="rounded-2xl px-4 py-3 text-[15px] font-medium text-ink/80 hover:bg-ink/5">
               {l}
@@ -112,7 +128,8 @@ function Nav() {
             Masuk
           </ButtonLink>
         </motion.nav>
-      )}
+        )}
+      </AnimatePresence>
     </header>
   );
 }
