@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { motion, useScroll, useSpring } from 'framer-motion';
+import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion';
 import { ArrowLeft, ArrowRight, BookOpenText, Box, Check, CheckCircle2, ChevronRight, Clock, FlaskConical, Lightbulb, ListChecks, MonitorPlay, RotateCcw, Target, XCircle } from 'lucide-react';
 import { api, fmt, type TeachingCase } from '../../api';
 import { AppShell } from '@/components/AppShell';
@@ -316,6 +316,13 @@ function LabSection({ caseId, note, seri }: { caseId: string; note: string; seri
   );
 }
 
+const EASE_OUT = [0.23, 1, 0.32, 1] as const;
+const SWAP = {
+  initial: { opacity: 0, filter: 'blur(2px)' },
+  animate: { opacity: 1, filter: 'blur(0px)', transition: { duration: 0.22, ease: EASE_OUT } },
+  exit: { opacity: 0, filter: 'blur(2px)', transition: { duration: 0.12, ease: 'easeOut' } },
+} as const;
+
 function QuizBlock({ lessonId, items, onSaved }: { lessonId: string; items: Quiz[]; onSaved: () => void }) {
   const [ans, setAns] = useState<(number | null)[]>(() => items.map(() => null));
   const [checked, setChecked] = useState(false);
@@ -392,9 +399,11 @@ function QuizBlock({ lessonId, items, onSaved }: { lessonId: string; items: Quiz
           </li>
         ))}
       </ol>
-      <div className="mt-5 flex flex-wrap items-center gap-4 rounded-[1.6rem] card-surface p-5">
+      <div className="mt-5 rounded-[1.6rem] card-surface p-5">
+        {/* hasil kuis menggantikan baris ini dengan crossfade singkat supaya perubahan status terbaca */}
+        <AnimatePresence mode="wait" initial={false}>
         {!checked ? (
-          <>
+          <motion.div key="answering" {...SWAP} className="flex flex-wrap items-center gap-4">
             <div className="mr-auto">
               <p className="text-[14px] font-medium">
                 {answered} dari {items.length} soal dijawab
@@ -406,12 +415,12 @@ function QuizBlock({ lessonId, items, onSaved }: { lessonId: string; items: Quiz
             <button className={buttonClass('primary', 'md')} disabled={answered < items.length} onClick={check}>
               Periksa jawaban
             </button>
-          </>
+          </motion.div>
         ) : (
-          <>
-            <span className={cn('grid size-14 place-items-center rounded-full font-serif text-2xl', pass ? 'bg-sage text-white' : 'bg-terra text-white')}>
+          <motion.div key="result" {...SWAP} className="flex flex-wrap items-center gap-4">
+            <motion.span initial={{ scale: 0.9 }} animate={{ scale: 1 }} transition={{ duration: 0.26, ease: EASE_OUT }} className={cn('grid size-14 place-items-center rounded-full font-serif text-2xl', pass ? 'bg-sage text-white' : 'bg-terra text-white')}>
               {Math.round(score * items.length)}/{items.length}
-            </span>
+            </motion.span>
             <div className="mr-auto">
               <p className="text-[16px] font-semibold">{pass ? 'Lulus, modul selesai!' : 'Belum lulus, coba lagi'}</p>
               <p className="text-[13px] text-ink/55">{pass ? 'Progres tersimpan. Lanjutkan ke latihan atau modul berikutnya.' : `Butuh minimal ${need} jawaban benar. Baca penjelasannya, lalu ulangi.`}</p>
@@ -425,8 +434,9 @@ function QuizBlock({ lessonId, items, onSaved }: { lessonId: string; items: Quiz
             >
               <RotateCcw className="size-4" /> Ulangi kuis
             </button>
-          </>
+          </motion.div>
         )}
+        </AnimatePresence>
       </div>
     </section>
   );
