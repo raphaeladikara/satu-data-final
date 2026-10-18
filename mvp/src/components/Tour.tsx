@@ -209,9 +209,8 @@ export function Tour({ steps, open, onClose, label = 'Panduan' }: { steps: TourS
           key={i}
           ref={cardRef}
           initial={reduce ? false : { opacity: 0, y: side === 'top' ? -8 : 8, scale: 0.97 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={reduce ? undefined : { opacity: 0, scale: 0.97 }}
-          transition={{ duration: 0.25 }}
+          animate={{ opacity: 1, y: 0, scale: 1, transition: { duration: 0.22, ease: [0.23, 1, 0.32, 1] } }}
+          exit={reduce ? undefined : { opacity: 0, scale: 0.97, transition: { duration: 0.15, ease: 'easeOut' } }}
           className="pointer-events-auto absolute rounded-3xl border border-white/70 bg-paper p-5 text-ink shadow-[0_30px_70px_-20px_rgba(6,26,31,.7)]"
           style={{ width: CW, left: cx, top: cy }}
           aria-live="polite"
