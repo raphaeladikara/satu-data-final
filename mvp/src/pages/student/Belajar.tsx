@@ -112,7 +112,7 @@ export default function Belajar() {
             />
           ) : (
             <div className="grid h-[min(560px,72svh)] place-items-center">
-              <span className="size-9 animate-spin rounded-full border-2 border-teal/20 border-t-teal" />
+              <span className="size-9 animate-[spin_0.7s_linear_infinite] rounded-full border-2 border-teal/20 border-t-teal" />
             </div>
           )}
         </div>

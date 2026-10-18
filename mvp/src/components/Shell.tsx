@@ -40,7 +40,7 @@ export function Empty({ title, children }: { title: string; children?: ReactNode
 export function Loading({ text = 'Memuat…' }: { text?: string }) {
   return (
     <div className="tw flex items-center gap-3 !bg-transparent py-6 text-[14px] text-ink/55">
-      <span className="size-5 animate-spin rounded-full border-2 border-teal/20 border-t-teal" />
+      <span className="size-5 animate-[spin_0.7s_linear_infinite] rounded-full border-2 border-teal/20 border-t-teal" />
       {text}
     </div>
   );
