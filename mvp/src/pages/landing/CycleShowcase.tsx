@@ -193,7 +193,7 @@ function AppFrame({ i }: { i: number }) {
 
           <div className="min-h-[22rem]">
             <AnimatePresence mode="wait">
-              <motion.div key={i} initial={{ opacity: 0, y: 14, filter: 'blur(6px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} exit={{ opacity: 0, y: -10, filter: 'blur(6px)' }} transition={{ duration: 0.4, ease: EASE }} className="flex h-full flex-col gap-3">
+              <motion.div key={i} initial={{ opacity: 0, y: 14, filter: 'blur(4px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.25, ease: EASE } }} exit={{ opacity: 0, y: -10, filter: 'blur(4px)', transition: { duration: 0.15, ease: EASE } }} className="flex h-full flex-col gap-3">
                 {i === 0 && <StepPick />}
                 {i === 1 && <StepRead series={series} setSeries={setSeries} hi={hi} setHi={setHi} />}
                 {i === 2 && <StepGrade />}
