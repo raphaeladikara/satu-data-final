@@ -370,7 +370,7 @@ function QuizBlock({ lessonId, items, onSaved }: { lessonId: string; items: Quiz
                     disabled={checked}
                     onClick={() => setAns(ans.map((a, k) => (k === i ? j : a)))}
                     className={cn(
-                      'flex items-center gap-3 rounded-2xl border px-4 py-3 text-left text-[14.5px] transition-all',
+                      'flex items-center gap-3 rounded-2xl border px-4 py-3 text-left text-[14.5px] transition-[border-color,background-color,box-shadow,opacity,transform] duration-150 ease-out enabled:active:scale-[0.98]',
                       right ? 'border-sage bg-leaf/35 text-teal-900' : wrong ? 'border-terra bg-terra-soft/60' : sel ? 'border-teal bg-mint shadow-[0_0_0_3px_rgba(25,87,100,.12)]' : 'border-ink/10 hover:border-ink/25 hover:bg-muslin',
                       checked && !right && !wrong && 'opacity-55',
                     )}
