@@ -14,14 +14,16 @@ finalis dinilai ulang dari nol.
 
 | Tanggal | Kegiatan | Catatan |
 |---|---|---|
-| 10 Okt 2026 | Pengumuman Top 6 | selesai |
+| 10 Okt 2026 | Pengumuman Top 6 | selesai, lewat platform resmi Campus Data Week 2026 |
 | 10–23 Okt | Masa persiapan | Bab 4, Bab 5, MVP, presentasi |
 | **Jum, 23 Okt 2026, 23.59 WIB** | **Batas pengumpulan karya ilmiah + link MVP** | terlambat = pengurangan poin |
 | Sel, 27 Okt 2026 | Opening + Technical Meeting Final | **wajib hadir luring** di Unair; undian urutan tampil |
 | Rab, 28 Okt 2026 | Presentasi final, awarding, closing | **wajib hadir luring** di Unair |
 
 Tidak hadir tanpa alasan jelas = **gugur**. Minimal **2 anggota** hadir di Surabaya; absen
-anggota hanya diterima karena force majeure. Rundown hari final diumumkan saat TM 27 Okt.
+anggota hanya diterima karena force majeure. Tim wajib hadir **tepat waktu** di opening, TM, dan
+presentasi final. Panitia minta transportasi dan penginapan ke Surabaya direncanakan dari sekarang.
+Rundown dan detail teknis hari final diumumkan saat TM 27 Okt.
 
 ---
 
@@ -37,9 +39,12 @@ anggota hanya diterima karena force majeure. Rundown hari final diumumkan saat T
 | **IV Hasil dan Pembahasan** | **BARU** | 1) Hasil Implementasi (tangkapan layar/output) · 2) Pengujian (pakai metrik Bab 3) · 3) Pembahasan (apakah menjawab rumusan masalah Bab 1) · 4) Keterbatasan (yang belum jalan/belum diuji) |
 | **V Penutup** | **BARU** | 1) Kesimpulan (jawaban singkat RQ) · 2) Rencana Pengembangan · 3) Dampak bagi target pengguna |
 
-- **Topik dan rumusan masalah wajib sama persis** dengan draf semifinal (RQ1–RQ3). Ganti topik = pelanggaran.
+- **Topik dan rumusan masalah wajib sama persis** dengan draf semifinal (RQ1–RQ3); tim hanya boleh merevisi isinya. Ganti topik = pelanggaran.
 - Kekurangan di semifinal boleh dipakai untuk memperbaiki Bab 1–3.
 - Format, nama dan urutan subbab mengikuti **template resmi panitia**.
+- **Batas halaman: tidak disebut** di PPT ketentuan final maupun di guidebook semifinal. Keduanya
+  hanya bilang format (termasuk halaman maks, font, margin, sitasi) ikut template panitia. Cek
+  template / tanyakan di grup koordinasi. Patokan: draf semifinal Bab 1–3 sekitar 12 halaman.
 - **Similarity Turnitin < 15%** (tidak termasuk kutipan & daftar pustaka), **laporan Turnitin dilampirkan**.
 - **Pernyataan penggunaan AI** di lampiran (seperti di semifinal).
 - File PDF: **`Rizzz_ICC2026_Final.pdf`**.
@@ -54,8 +59,9 @@ anggota hanya diterima karena force majeure. Rundown hari final diumumkan saat T
 
 ### 3. PPT / pitch deck — OPSIONAL
 
-Tidak ada template panitia, tidak memengaruhi nilai. Pilihan: slide dulu lalu demo, langsung
-demo, atau gabungan.
+Tidak ada template panitia dan formatnya bebas; ada atau tidaknya PPT tidak memengaruhi nilai.
+Yang dinilai cara tim menyampaikan karyanya. Pilihan: slide dulu lalu demo, langsung demo, atau
+gabungan.
 
 ---
 
@@ -90,6 +96,9 @@ ilmiah → isi link GitHub MVP → Submit.
 
 Diskualifikasi untuk: plagiarisme, joki, kerja sama antartim, pemakaian AI di luar batas,
 demo palsu.
+
+Pertanyaan ke panitia lewat grup koordinasi peserta. Keputusan panitia dan dewan juri bersifat
+final dan mengikat.
 
 ## Checklist sebelum submit (dari panitia)
 
@@ -136,5 +145,5 @@ Satu Data Final/
 ├── penjelasan_lomba.md            file ini
 ├── guide_lomba_semifinal.md       ringkasan guidebook (tema, semifinal, hadiah, data SOOP)
 ├── paper/                         PDF draf semifinal Bab 1-3 (sumber lengkap di repo lama)
-└── mvp/                           (belum ada) source code prototipe SINAPS
+└── mvp/                           source code prototipe SINAPS (lihat mvp/README.md)
 ```
