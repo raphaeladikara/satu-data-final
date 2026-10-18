@@ -196,6 +196,10 @@ function Problem() {
   );
 }
 
+// satu whileInView di parent; tiap titik hanya membawa delay-nya lewat custom, bukan ratusan observer
+const FADE_IN = { hidden: { opacity: 0 }, show: (delay: number) => ({ opacity: 1, transition: { delay } }) };
+const POP_IN = { hidden: { scale: 0.4, opacity: 0 }, show: (delay: number) => ({ scale: 1, opacity: 1, transition: { delay, duration: 0.4, ease: EASE } }) };
+
 /** 1 radiolog di antara kerumunan titik (≈125.000 orang per radiolog). */
 function PeopleGraphic() {
   const cols = 22;
@@ -203,7 +207,7 @@ function PeopleGraphic() {
   const center = Math.floor(rows / 2) * cols + Math.floor(cols / 2);
   return (
     <div className="absolute inset-0 grid place-items-start justify-center pt-9">
-      <div className="grid gap-[7px]" style={{ gridTemplateColumns: `repeat(${cols}, 6px)` }}>
+      <motion.div className="grid gap-[7px]" style={{ gridTemplateColumns: `repeat(${cols}, 6px)` }} initial="hidden" whileInView="show" viewport={{ once: true }}>
         {Array.from({ length: cols * rows }, (_, i) =>
           i === center ? (
             <span key={i} className="relative size-[6px]">
@@ -211,10 +215,10 @@ function PeopleGraphic() {
               <span className="absolute -inset-[3px] rounded-full bg-leaf shadow-[0_0_14px_#aad39c]" />
             </span>
           ) : (
-            <motion.span key={i} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: (i % cols) * 0.02 + Math.floor(i / cols) * 0.015 }} className="size-[6px] rounded-full bg-sky/25" />
+            <motion.span key={i} custom={(i % cols) * 0.02 + Math.floor(i / cols) * 0.015} variants={FADE_IN} className="size-[6px] rounded-full bg-sky/25" />
           ),
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -223,18 +227,11 @@ function WaffleGraphic({ value }: { value: number }) {
   return (
     <div className="absolute inset-0 grid place-items-start justify-center pt-8">
       <DotGrid />
-      <div className="relative grid grid-cols-10 gap-[6px]">
+      <motion.div className="relative grid grid-cols-10 gap-[6px]" initial="hidden" whileInView="show" viewport={{ once: true }}>
         {Array.from({ length: 100 }, (_, i) => (
-          <motion.span
-            key={i}
-            initial={{ scale: 0.4, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.008, duration: 0.4, ease: EASE }}
-            className={cn('size-[15px] rounded-[4px]', i < value ? 'bg-leaf shadow-[0_0_10px_rgba(170,211,156,.45)]' : 'bg-white/8')}
-          />
+          <motion.span key={i} custom={i * 0.008} variants={POP_IN} className={cn('size-[15px] rounded-[4px]', i < value ? 'bg-leaf shadow-[0_0_10px_rgba(170,211,156,.45)]' : 'bg-white/8')} />
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 }
