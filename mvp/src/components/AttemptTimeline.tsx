@@ -3,9 +3,10 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Check, ChevronRight, X } from 'lucide-react';
 import { fmt, type Me } from '../api';
 import { cn } from '@/lib/utils';
+import { Avatar } from '@/pages/dosen/ui';
 import { BADGE, FILL, TEXT, TIER, diceTone, type Tone } from '@/lib/status';
 
-type Row = Me['attempts'][number];
+type Row = Me['attempts'][number] & { sid?: string; nama?: string };
 
 const dayKey = (t: number) => new Date(t * 1000).toLocaleDateString('sv-SE');
 function dayLabel(t: number) {
@@ -27,7 +28,8 @@ function overall(r: Row): Tone {
 }
 
 /** Riwayat percobaan sebagai garis waktu per hari: titik berwarna hasil, Dice, KC, dan jenis kesalahan. */
-export function AttemptTimeline({ rows, base = '/riwayat', compact }: { rows: Row[]; base?: string; compact?: boolean }) {
+/** `showStudent` (dasbor dosen): nama dan avatar mahasiswa tampil di depan setiap baris. */
+export function AttemptTimeline({ rows, base = '/riwayat', compact, showStudent }: { rows: Row[]; base?: string; compact?: boolean; showStudent?: boolean }) {
   const reduce = useReducedMotion();
   const groups: { label: string; items: Row[] }[] = [];
   for (const r of rows) {
@@ -62,6 +64,15 @@ export function AttemptTimeline({ rows, base = '/riwayat', compact }: { rows: Ro
                     to={`${base}/${r.id}`}
                     className="group my-0.5 flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 rounded-xl px-3 py-2.5 transition-colors hover:bg-surface focus-visible:bg-surface"
                   >
+                    {showStudent && r.nama && (
+                      <span className="flex w-[12rem] shrink-0 items-center gap-2.5">
+                        <Avatar nama={r.nama} className="size-8 text-[11px]" />
+                        <span className="min-w-0">
+                          <b className="block truncate text-[13.5px] font-medium text-ink">{r.nama}</b>
+                          <span className="block truncate font-mono text-[10.5px] text-ink/40">{r.sid}</span>
+                        </span>
+                      </span>
+                    )}
                     <span className="flex w-[9.5rem] shrink-0 items-center gap-2">
                       <b className="font-mono text-[13px] font-semibold text-ink">{r.case_id}</b>
                       <span className={cn('rounded px-1.5 py-px text-[10.5px] font-semibold uppercase tracking-wide', BADGE[TIER[r.tier] ?? 'none'])}>{r.tier}</span>

@@ -11,10 +11,10 @@ const RING: Record<Tone, string> = { ok: '#16a34a', warn: '#d97706', bad: '#dc26
 
 type Item = { key: string; kind: 'modul' | 'kasus'; label: string; done: boolean; to: string | null };
 
-function items(t: Assignment): Item[] {
+function items(t: Assignment, readOnly?: boolean): Item[] {
   return [
-    ...t.lesson_ids.map((l) => ({ key: `m-${l}`, kind: 'modul' as const, label: lessonById(l)?.judul ?? l, done: t.lessons_done.includes(l), to: `/belajar/${l}` })),
-    ...t.case_ids.map((c) => ({ key: `k-${c}`, kind: 'kasus' as const, label: c, done: t.cases_done.includes(c), to: t.cases_done.includes(c) ? null : `/latihan?kasus=${c}` })),
+    ...t.lesson_ids.map((l) => ({ key: `m-${l}`, kind: 'modul' as const, label: lessonById(l)?.judul ?? l, done: t.lessons_done.includes(l), to: readOnly ? null : `/belajar/${l}` })),
+    ...t.case_ids.map((c) => ({ key: `k-${c}`, kind: 'kasus' as const, label: c, done: t.cases_done.includes(c), to: readOnly || t.cases_done.includes(c) ? null : `/latihan?kasus=${c}` })),
   ];
 }
 
@@ -34,10 +34,11 @@ function Ring({ value, tone }: { value: number; tone: Tone }) {
 }
 
 /** Satu tugas sebagai daftar periksa: cincin kemajuan, bilah bersegmen, dan langkah yang bisa diklik. */
-export function TaskChecklist({ task, defaultOpen }: { task: Assignment; defaultOpen?: boolean }) {
+/** `readOnly` (dosen): langkah tidak bisa diklik dan tanpa tombol aksi. */
+export function TaskChecklist({ task, defaultOpen, readOnly }: { task: Assignment; defaultOpen?: boolean; readOnly?: boolean }) {
   const reduce = useReducedMotion();
   const [open, setOpen] = useState(defaultOpen ?? !task.tuntas);
-  const list = items(task);
+  const list = items(task, readOnly);
   const due = dueStatus(task.due_at, task.tuntas);
   const nextIdx = list.findIndex((x) => !x.done);
   const pct = task.selesai / Math.max(1, task.total);
@@ -77,7 +78,7 @@ export function TaskChecklist({ task, defaultOpen }: { task: Assignment; default
               {task.catatan && <p className="mb-4 rounded-xl bg-surface px-4 py-3 text-[14px] leading-relaxed text-ink/75">{task.catatan}</p>}
               <ol>
                 {list.map((x, i) => (
-                  <Step key={x.key} item={x} state={x.done ? 'done' : i === nextIdx ? 'next' : 'todo'} first={i === 0} last={i === list.length - 1} prevDone={i > 0 && list[i - 1].done} />
+                  <Step key={x.key} readOnly={readOnly} item={x} state={x.done ? 'done' : i === nextIdx ? 'next' : 'todo'} first={i === 0} last={i === list.length - 1} prevDone={i > 0 && list[i - 1].done} />
                 ))}
               </ol>
               <p className="mt-4 text-[12px] leading-relaxed text-ink/45">Kasus dihitung selesai bila jawabannya dikirim setelah tugas diberikan; modul dihitung selesai bila kuisnya lulus.</p>
@@ -89,9 +90,9 @@ export function TaskChecklist({ task, defaultOpen }: { task: Assignment; default
   );
 }
 
-function Step({ item, state, first, last, prevDone }: { item: Item; state: 'done' | 'next' | 'todo'; first: boolean; last: boolean; prevDone: boolean }) {
+function Step({ item, state, first, last, prevDone, readOnly }: { item: Item; state: 'done' | 'next' | 'todo'; first: boolean; last: boolean; prevDone: boolean; readOnly?: boolean }) {
   const Icon = item.kind === 'modul' ? BookOpen : ScanLine;
-  const action = state === 'done' ? (item.kind === 'modul' ? 'Ulas lagi' : null) : item.kind === 'modul' ? 'Buka modul' : 'Kerjakan kasus';
+  const action = readOnly ? null : state === 'done' ? (item.kind === 'modul' ? 'Ulas lagi' : null) : item.kind === 'modul' ? 'Buka modul' : 'Kerjakan kasus';
   const body = (
     <>
       <span className={cn('grid size-8 shrink-0 place-items-center rounded-lg', state === 'done' ? 'bg-muted text-ink/40' : 'bg-mint text-teal')}>
