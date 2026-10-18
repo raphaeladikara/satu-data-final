@@ -27,6 +27,9 @@ ATURAN FAKTA (wajib):
 5. Bila FAKTA.fase = "sebelum_submit", kunci jawaban masih terkunci: jangan sebut lokasi, hemisfer, jumlah fokus,
    volume, atau nomor slice lesi. Bimbing cara membacanya (gulir semua slice, bandingkan DWI dengan ADC, atur
    window/level, periksa kedua hemisfer).
+6. FAKTA adalah catatan internal sistem. Tulis isinya dalam kalimat biasa: jangan menyebut kata "FAKTA", "JSON",
+   "kunci penilaian", nama field (mis. multifokal, radc_median, vol_err), atau nilai true/false. Tulis "satu fokus,
+   tidak multifokal", bukan "multifokal: false"; sebut sumbernya sebagai "data kasus ini" atau "mask ahli".
 
 MODE:
 - sokratik: jawab dengan satu atau dua pertanyaan penuntun, paling banyak 4 kalimat, tanpa membocorkan jawaban.
@@ -80,19 +83,48 @@ def fact_check(text, facts):
                 text = text.replace(sent, " ")
     f = facts.get("temuan_terstruktur")
     issues = []
-    if not f:
-        if facts.get("fase") == "sebelum_submit" and HEMI.search(text):
-            issues.append("menyebut hemisfer sebelum jawaban dikirim")
-        return issues
-    sides = {f["hemisfer"]} if f["hemisfer"] in ("kiri", "kanan") else {"kiri", "kanan"}
-    for m in HEMI.finditer(text):
-        ctx = text[max(0, m.start() - 40):m.start()].lower()
-        if m.group(1).lower() not in sides and not re.search(r"bukan|tidak|salah|keliru", ctx):
-            issues.append(f"menyebut hemisfer {m.group(1).lower()} padahal data: {f['hemisfer']}")
-    if not f["multifokal"] and re.search(r"\bmultifokal\b", text, re.I) and not re.search(
-            r"(bukan|tidak)\s+multifokal", text, re.I):
-        issues.append("menyebut multifokal padahal data: satu fokus")
-    return issues
+    for clause in _klausa(text):
+        if KLAIM.search(clause):
+            continue
+        if not f:
+            if facts.get("fase") == "sebelum_submit" and not GENERIK.search(clause) and any(
+                    not _disangkal(clause, m) for m in HEMI.finditer(clause)):
+                issues.append("menyebut hemisfer sebelum jawaban dikirim")
+            continue
+        sides = {f["hemisfer"]} if f["hemisfer"] in ("kiri", "kanan") else {"kiri", "kanan"}
+        for m in HEMI.finditer(clause):
+            if m.group(1).lower() not in sides and not GENERIK.search(clause) and not _disangkal(clause, m):
+                issues.append(f"menyebut hemisfer {m.group(1).lower()} padahal data: {f['hemisfer']}")
+        if not f["multifokal"]:
+            for m in MULTI.finditer(clause):
+                if not _disangkal(clause, m):
+                    issues.append("menyebut multifokal padahal data: satu fokus")
+    return list(dict.fromkeys(issues))
+
+
+# Kalimat koreksi tidak boleh terbaca sebagai klaim tutor (temuan uji Bab IV: 5 dari 36 koreksi skenario C ditandai).
+# Teks dipecah per klausa. Sebuah sebutan dilewati bila didahului penyangkalan di klausanya ("bukan hemisfer kiri"),
+# bila klausanya menyatakan ketidaksesuaian ("... tidak sesuai dengan data"), atau bila klausanya mengutip klaim
+# mahasiswa ("klaim 'hemisfer kiri'", "menurutmu ..."). Sebutan biasa ("lesi di hemisfer kiri") tetap diperiksa.
+GENERIK = re.compile(r"kiri\s+(dan|maupun|atau|ke)\s+kanan|kanan\s+(dan|maupun|atau|ke)\s+kiri", re.I)
+MULTI = re.compile(r"\bmultifokal\b(?!\s*[:=]\s*(false|salah|tidak)\b)", re.I)
+SANGKAL_DEPAN = re.compile(r"\b(bukan|tidak|tak|belum|alih-alih)\b", re.I)
+TIDAK_SESUAI = re.compile(r"\b(tidak|kurang|belum)\s+(sesuai|tepat|benar|cocok|didukung)|\bbertentangan|\bkeliru\b|\bpadahal\b|"
+                          r"\bsalah\b", re.I)
+KLAIM = re.compile(r"\b(klaim\w*|kamu\s+(sebut|bilang|kira|tulis|menyebut)\w*|anda\s+(sebut|bilang|kira|tulis|menyebut)\w*|"
+                   r"menurut(mu|\s+kamu|\s+anda|\s+beliau|\s+dosen)|(pendapat|dugaan|usulan)(mu)?)\b", re.I)
+KUTIP = re.compile(r"[\"“”][^\"“”]{0,60}[\"“”]")
+
+
+def _klausa(text):
+    text = KUTIP.sub(" ", re.sub(r"[*_`#>]", "", text))
+    parts = re.split(r"(?<=[.!?])\s+|[;\n]|,\s+(?=(?:bukan|tetapi|tapi|namun|melainkan|sedangkan)\b)|\s+[-–—]\s+",
+                     text)
+    return [c for c in parts if c and c.strip()]
+
+
+def _disangkal(clause, m):
+    return bool(SANGKAL_DEPAN.search(clause[:m.start()]) or TIDAK_SESUAI.search(clause))
 
 
 def num(x, d=2):
@@ -157,19 +189,12 @@ def _offline_body(mode, facts, f):
     return " ".join(lines)
 
 
-def ask(mode, facts, message, history=None, image_data_url=None):
-    """Kembalikan dict: reply, model, latency_ms, issues, source."""
-    if mode == "rujukan":
-        facts["rujukan"] = rag.search(message + " " + json.dumps(facts.get("temuan_terstruktur", {}), ensure_ascii=False))
-    key = os.environ.get("OPENAI_API_KEY")
-    t0 = time.time()
-    if not key:
-        reply = offline_reply(mode, facts, message)
-        return {"reply": reply, "model": "templat-offline", "source": "offline",
-                "latency_ms": int((time.time() - t0) * 1000), "issues": fact_check(reply, facts)}
-    from openai import OpenAI
+# Penalaran model dibuat rendah supaya jawaban lebih cepat (satu permintaan mode penjelasan, 18 Okt: 6,7 -> 5,1 dtk).
+# Keandalannya diuji ulang dengan paper/script/analysis/a08_tutor_mvp.py.
+REASONING = os.environ.get("OPENAI_REASONING", "low")
 
-    client = OpenAI(api_key=key, timeout=30)
+
+def _inputs(mode, facts, message, history, image_data_url):
     content = [{"type": "input_text",
                 "text": f"MODE: {mode}\nFAKTA:\n{json.dumps(facts, ensure_ascii=False)}\n\nPESAN MAHASISWA:\n{message}"}]
     if image_data_url:
@@ -177,12 +202,80 @@ def ask(mode, facts, message, history=None, image_data_url=None):
     inputs = [{"role": h["role"], "content": h["content"]} for h in (history or [])[-6:]
               if h.get("role") in ("user", "assistant") and h.get("content")]
     inputs.append({"role": "user", "content": content})
+    return inputs
+
+
+# Penyaring token sampah. Uji 18 Okt (432 jawaban): 2 jawaban berakhir dengan token yang tidak ada hubungannya
+# dengan isi ("Erotiske", "彩神争霸官方"). Aksara non-Latin dan potongan kata yatim sesudah kalimat terakhir dibuang
+# dari jawaban akhir, lalu dicatat sebagai catatan pemeriksa supaya terlihat di audit dosen.
+ASING = re.compile(r"[Ѐ-ӿ֐-ۿ฀-๿぀-ヿ㐀-鿿가-힯]+")
+EKOR_YATIM = re.compile(r"(?<=[.!?)])\s+([^\s.!?]{2,30})\s*$")
+
+
+def bersihkan(text):
+    """Kembalikan (teks bersih, daftar potongan yang dibuang)."""
+    buang = ASING.findall(text)
+    text = ASING.sub("", text)
+    m = EKOR_YATIM.search(text)
+    if m and not re.search(r"[*_`:\d]", m.group(1)):
+        buang.append(m.group(1))
+        text = text[:m.start()]
+    return re.sub(r"[ \t]+\n", "\n", text).strip(), buang
+
+
+def _done(reply, facts, **kw):
+    reply, buang = bersihkan(reply)
+    issues = fact_check(reply, facts) + ([f"token asing dihapus: {' '.join(buang)}"] if buang else [])
+    return {"reply": reply, **kw, "issues": issues}
+
+
+def ask_stream(mode, facts, message, history=None, image_data_url=None):
+    """Generator: ("delta", teks) selama model menulis, lalu ("done", dict) seperti ask().
+
+    Respons bertahap membuat mahasiswa melihat kalimat pertama setelah first_token_ms, bukan setelah seluruh
+    jawaban selesai. Pemeriksa fakta tetap dijalankan pada jawaban utuh.
+    """
+    if mode == "rujukan":
+        facts["rujukan"] = rag.search(message + " " + json.dumps(facts.get("temuan_terstruktur", {}), ensure_ascii=False))
+    key = os.environ.get("OPENAI_API_KEY")
+    t0 = time.time()
+    ms = lambda: int((time.time() - t0) * 1000)  # noqa: E731
+    if not key:
+        reply = offline_reply(mode, facts, message)
+        yield "delta", reply
+        yield "done", _done(reply, facts, model="templat-offline", source="offline", latency_ms=ms(),
+                            first_token_ms=ms())
+        return
+    from openai import OpenAI
+
+    client = OpenAI(api_key=key, timeout=30)
+    parts, first = [], None
     try:
-        r = client.responses.create(model=MODEL, instructions=SYSTEM, input=inputs, max_output_tokens=700)
-        reply = r.output_text.strip()
-        source = "llm"
+        stream = client.responses.create(model=MODEL, instructions=SYSTEM, max_output_tokens=700, stream=True,
+                                         input=_inputs(mode, facts, message, history, image_data_url),
+                                         reasoning={"effort": REASONING})
+        for ev in stream:
+            if ev.type == "response.output_text.delta" and ev.delta:
+                first = first if first is not None else ms()
+                parts.append(ev.delta)
+                yield "delta", ev.delta
+            elif ev.type in ("response.failed", "error"):
+                raise RuntimeError(getattr(ev, "message", None) or "respons gagal")
+        reply, source = "".join(parts).strip(), "llm"
+        if not reply:
+            raise RuntimeError("jawaban kosong")
     except Exception as e:  # LLM gagal: jangan diam-diam pura-pura berhasil
         reply = offline_reply(mode, facts, message)
         source = f"offline (LLM gagal: {type(e).__name__})"
-    return {"reply": reply, "model": MODEL if source == "llm" else "templat-offline", "source": source,
-            "latency_ms": int((time.time() - t0) * 1000), "issues": fact_check(reply, facts)}
+        yield "reset", reply
+    yield "done", _done(reply, facts, model=MODEL if source == "llm" else "templat-offline", source=source,
+                        latency_ms=ms(), first_token_ms=first if first is not None else ms())
+
+
+def ask(mode, facts, message, history=None, image_data_url=None):
+    """Kembalikan dict: reply, model, latency_ms, first_token_ms, issues, source."""
+    out = None
+    for kind, val in ask_stream(mode, facts, message, history, image_data_url):
+        if kind == "done":
+            out = val
+    return out

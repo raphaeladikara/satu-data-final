@@ -5,6 +5,7 @@ import { Enums as ToolEnums } from '@cornerstonejs/tools';
 import { api, type Attempt, type KCInfo, type SubmitResult, type TutorReply } from '../../api';
 import { SinapsViewer, initCornerstone, rleDecode, rleEncode, type Mode } from '../../viewer/cs';
 import MasteryBars from '../../components/MasteryBars';
+import Markdown from '../../components/Markdown';
 import { TopBar } from '../../components/Shell';
 import { Tour, useTour, type TourStep } from '../../components/Tour';
 import { Target } from 'lucide-react';
@@ -313,8 +314,24 @@ export default function Latihan() {
     setInput('');
     setAsking(true);
     try {
-      const r = await api.tutor({ attempt_id: att.attempt_id, mode: tMode, message, image, history });
-      setMsgs((m) => [...m, { role: 'assistant', content: r.reply, meta: r }]);
+      // jawaban ditulis bertahap: gelembung asisten muncul sejak kalimat pertama, lalu diganti hasil akhir
+      let shown = false;
+      const show = (content: string, meta?: TutorReply) =>
+        setMsgs((m) => {
+          const msg: Msg = { role: 'assistant', content, meta };
+          if (!shown) {
+            shown = true;
+            return [...m, msg];
+          }
+          return [...m.slice(0, -1), msg];
+        });
+      const r = await api.tutorStream({ attempt_id: att.attempt_id, mode: tMode, message, image, history }, (t) => {
+        if (t) {
+          setAsking(false);
+          show(t);
+        }
+      });
+      show(r.reply, r);
     } catch (e) {
       setMsgs((m) => [...m, { role: 'assistant', content: `Tutor gagal dihubungi: ${(e as Error).message}` }]);
     } finally {
@@ -588,7 +605,7 @@ export default function Latihan() {
               {msgs.map((m, i) => (
                 <div key={i} className={`msg ${m.role}`}>
                   {m.image && <span className="att">slice terlampir</span>}
-                  <p>{m.content}</p>
+                  {m.role === 'assistant' ? <Markdown text={m.content} /> : <p>{m.content}</p>}
                   {m.meta && (
                     <span className="meta">
                       {m.meta.source === 'llm' ? m.meta.model : m.meta.source} · {id(m.meta.latency_ms / 1000, 1)} dtk

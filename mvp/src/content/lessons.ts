@@ -305,7 +305,7 @@ export const LESSONS: Lesson[] = [
         judul: 'Empat metrik, bukan hanya Dice',
         isi: [
           'Dice mengukur tumpang tindih tandaanmu dengan kunci (0 sampai 1). Pada lesi multifokal, Dice didominasi lesi terbesar: melewatkan fokus kecil hampir tidak menurunkan Dice. Karena itu SINAPS juga menghitung recall per lesi (proporsi fokus yang tersentuh), galat volume relatif, dan HD95 (jarak permukaan persentil ke-95, dalam mm).',
-          'Keempat metrik dipetakan ke lima jenis kesalahan: hampir benar, terlalu luas, terlalu sempit, lesi kecil terlewat, dan salah lokasi. K6 dinilai benar bila Dice ≥ 0,6 dan semua fokus tersentuh.',
+          'Keempat metrik dipetakan ke lima jenis kesalahan: hampir benar, terlalu luas, terlalu sempit, lesi kecil terlewat, dan salah lokasi. K6 dinilai benar bila Dice ≥ 0,6, semua fokus tersentuh, dan volume tandaan tidak lebih dari 25% di atas kunci.',
         ],
       },
       {
@@ -321,7 +321,7 @@ export const LESSONS: Lesson[] = [
         tanya: 'Delineasimu Dice 0,82 tetapi satu dari tiga fokus terlewat. Penilaian K6-nya…',
         opsi: ['Benar, karena Dice tinggi', 'Belum tepat, karena tidak semua fokus tersentuh', 'Tidak dinilai'],
         benar: 1,
-        alasan: 'K6 menuntut Dice ≥ 0,6 dan recall per lesi 100%. Fokus kecil penting untuk penalaran etiologi.',
+        alasan: 'K6 menuntut Dice ≥ 0,6, recall per lesi 100%, dan galat volume paling banyak +25%. Fokus kecil penting untuk penalaran etiologi.',
       },
       {
         tanya: 'Tandaanmu meliputi lesi dan tepi yang ADC-nya normal. Jenis kesalahan yang paling mungkin…',

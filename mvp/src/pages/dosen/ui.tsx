@@ -2,6 +2,7 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { ArrowDownUp, Bot, ChevronDown, Search, ShieldAlert, type LucideIcon } from 'lucide-react';
 import { type StudentRow, type TutorLog } from '../../api';
 import { cn } from '@/lib/utils';
+import Markdown from '@/components/Markdown';
 import { BADGE, FILL, TEXT, type Tone } from '@/lib/status';
 
 /** Komponen kecil bersama halaman dosen: avatar, filter pil, tab segmen, tile angka, status mahasiswa. */
@@ -235,7 +236,7 @@ export function TutorThread({ t, who, meta }: { t: TutorLog; who?: string; meta?
           <Bot className="size-3.5" />
         </span>
         <div className={cn('max-w-[46rem] rounded-2xl rounded-tl-md border px-3.5 py-2.5 text-[13.5px] leading-relaxed', flagged ? 'border-bad/25 bg-bad-soft/40' : 'border-teal/15 bg-mint/50')}>
-          <p className="whitespace-pre-line text-ink/85">{t.response}</p>
+          <Markdown text={t.response} className="text-ink/85" />
           {flagged && (
             <p className="mt-2 flex items-start gap-1.5 border-t border-bad/15 pt-2 text-[12.5px] font-medium text-bad-ink">
               <ShieldAlert className="mt-0.5 size-3.5 shrink-0" /> Pemeriksa fakta: {t.issues.join('; ')}

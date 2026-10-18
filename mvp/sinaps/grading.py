@@ -22,13 +22,19 @@ ERROR_TYPES = {
 THRESHOLDS = {
     "loc_dice": 0.70,   # Dice rendah ...
     "loc_vol": 0.10,    # ... padahal volume hampir sama (|galat| <= 10%) -> salah lokasi
-    "miss_vol": -0.25,  # ada fokus terlewat dan volume tidak menyusut jauh -> lesi terlewat, selain itu terlalu sempit
+    "miss_vol": -0.10,  # ada fokus terlewat: volume tidak menyusut ...
+    "miss_dice": 0.90,  # ... atau fokus yang ditandai tertutup rapi (Dice fokus tersentuh >= 0,9) -> lesi terlewat,
+                        # selain itu terlalu sempit. Syarat kedua ditambahkan 18 Okt: fokus terlewat yang besar
+                        # menyusutkan volume, sehingga aturan volume saja melabelinya terlalu sempit
+                        # (validasi silang 5 fold, 672 anotasi: akurasi 94,6% -> 97,8%).
     "over_vol": 0.10,   # galat volume > +10% -> terlalu luas
     "under_vol": -0.10, # galat volume < -10% -> terlalu sempit
 }
 
-# Batas benar/salah tiap KC untuk BKT (Subbab III.F)
-K6_PASS = {"dice": 0.6, "lesion_recall": 1.0}
+# Batas benar/salah tiap KC untuk BKT (Subbab III.F). Syarat galat volume ditambahkan setelah uji Bab IV menemukan
+# 26 dari 33 anotasi terlalu luas lolos dengan Dice + recall saja (uji pertama 18 Okt). Ambang +25% dipilih pada anotasi sintetis seed lain
+# (bukan data uji): seluruh anotasi hampir benar tetap lolos (galat maks +22%), anotasi terlalu luas yang lolos 78% -> 7%.
+K6_PASS = {"dice": 0.6, "lesion_recall": 1.0, "vol_err_max": 0.25}
 
 
 def _surface(m):
@@ -59,8 +65,16 @@ def metrics(p, g, spacing):
                           "slice_terbesar": int(np.argmax(np.bincount(vox[:, 2]))) + 1,
                           "pusat_voxel": vox.mean(0).round(1).tolist()})
     recall = sum(f["tersentuh"] for f in per_focus) / len(per_focus) if per_focus else 1.0
+    # Dice terhadap fokus yang tersentuh saja: tinggi bila mahasiswa menandai rapi tetapi melewatkan fokus lain
+    touched = np.zeros_like(g)
+    for f, pf in zip(fs, per_focus):
+        if pf["tersentuh"]:
+            touched |= labels == f["label"]
+    vt = int(touched.sum())
+    dice_touched = 2 * int(np.logical_and(p, touched).sum()) / (vp + vt) if (vp + vt) else 1.0
     return {
         "dice": dice,
+        "dice_tersentuh": dice_touched,
         "lesion_recall": recall,
         "vol_err": (vp - vg) / vg if vg else 0.0,
         "hd95": hd95(p, g, spacing),
@@ -78,7 +92,8 @@ def classify(m, t=THRESHOLDS):
     if m["dice"] < t["loc_dice"] and abs(m["vol_err"]) <= t["loc_vol"]:
         return "salah_lokasi"
     if m["lesion_recall"] < 1:
-        return "lesi_terlewat" if m["vol_err"] > t["miss_vol"] else "terlalu_sempit"
+        rapi = m.get("dice_tersentuh", 0) >= t.get("miss_dice", 9)
+        return "lesi_terlewat" if (m["vol_err"] > t["miss_vol"] or rapi) else "terlalu_sempit"
     if m["vol_err"] > t["over_vol"]:
         return "terlalu_luas"
     if m["vol_err"] < t["under_vol"]:
@@ -91,8 +106,9 @@ def grade_delineation(p, g, spacing, t=THRESHOLDS):
     etype = classify(m, t)
     m["jenis_kesalahan"] = etype
     m["jenis_kesalahan_label"] = ERROR_TYPES[etype]
-    m["benar"] = m["dice"] >= K6_PASS["dice"] and m["lesion_recall"] >= K6_PASS["lesion_recall"]
-    for k in ("dice", "lesion_recall", "vol_err", "precision", "volume_mahasiswa_ml", "volume_kunci_ml"):
+    m["benar"] = (m["dice"] >= K6_PASS["dice"] and m["lesion_recall"] >= K6_PASS["lesion_recall"]
+                  and m["vol_err"] <= K6_PASS["vol_err_max"])
+    for k in ("dice", "dice_tersentuh", "lesion_recall", "vol_err", "precision", "volume_mahasiswa_ml", "volume_kunci_ml"):
         m[k] = round(float(m[k]), 4)
     if m["hd95"] is not None:
         m["hd95"] = round(m["hd95"], 2)

@@ -4,6 +4,7 @@ import { api, fmt, JENJANG, type Assignment, type AttemptDetail, type CaseRow, t
 import { useAuth } from '../../auth';
 import JoinClass from '../../components/JoinClass';
 import ReadViewer from '../../components/ReadViewer';
+import Markdown from '../../components/Markdown';
 import { Empty, Loading, Page } from '../../components/Shell';
 
 import { ArrowRight, Check, Search } from 'lucide-react';
@@ -200,9 +201,9 @@ export function Tinjau({ back = '/riwayat' }: { back?: string }) {
                     <p>
                       <b>Mahasiswa:</b> {t.message}
                     </p>
-                    <p>
-                      <b>Tutor:</b> {t.response}
-                    </p>
+                    <div>
+                      <b>Tutor:</b> <Markdown text={t.response} />
+                    </div>
                     {t.issues.length > 0 && <p className="warn small">Pemeriksa fakta: {t.issues.join('; ')}</p>}
                   </li>
                 ))}

@@ -1,6 +1,7 @@
 """SINAPS - orkestrator API (FastAPI). Di Vercel berjalan sebagai Python Function; lokal: uvicorn api.index:app."""
 import csv
 import io
+import json
 import os
 import random
 import re
@@ -11,7 +12,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from fastapi import Depends, FastAPI, Header, HTTPException  # noqa: E402
-from fastapi.responses import Response  # noqa: E402
+from fastapi.responses import Response, StreamingResponse  # noqa: E402
 from pydantic import BaseModel  # noqa: E402
 
 from sinaps import auth, bkt, cases, db, grading, tutor  # noqa: E402
@@ -541,8 +542,7 @@ class TutorReq(BaseModel):
     history: list[dict] | None = None
 
 
-@app.post("/api/tutor")
-def ask_tutor(body: TutorReq, a=Depends(student)):
+def _tutor_ctx(body, a):
     att = _attempt(a["id"], body.attempt_id)
     if body.mode not in ("sokratik", "penjelasan", "rujukan"):
         raise HTTPException(400, "mode tidak dikenal")
@@ -550,12 +550,41 @@ def ask_tutor(body: TutorReq, a=Depends(student)):
     m, _ = db.get_mastery(a["id"], bkt.initial())
     facts = tutor.build_facts(cases.public_case(att["case_id"]), cases.secrets()[att["case_id"]], phase,
                               att["result"], profile(m, a))
-    out = tutor.ask(body.mode, facts, body.message[:2000], body.history, body.image)
+    return att, phase, facts
+
+
+def _tutor_log(body, a, att, phase, facts, out):
     db.log_tutor(student_id=a["id"], attempt_id=body.attempt_id, case_id=att["case_id"], mode=body.mode[:16],
                  phase=phase, message=body.message[:2000], response=out["reply"], model=out["model"],
                  latency_ms=out["latency_ms"],
                  facts={"issues": out["issues"], "source": out["source"], "rujukan": facts.get("rujukan")})
     return {**out, "phase": phase, "rujukan": facts.get("rujukan")}
+
+
+@app.post("/api/tutor")
+def ask_tutor(body: TutorReq, a=Depends(student)):
+    att, phase, facts = _tutor_ctx(body, a)
+    out = tutor.ask(body.mode, facts, body.message[:2000], body.history, body.image)
+    return _tutor_log(body, a, att, phase, facts, out)
+
+
+@app.post("/api/tutor/stream")
+def ask_tutor_stream(body: TutorReq, a=Depends(student)):
+    """Sama dengan /api/tutor, tetapi jawaban dikirim bertahap sebagai NDJSON: {"delta"}, {"reset"}, lalu {"done"}.
+
+    Bila platform menahan respons sampai selesai, klien tetap menerima baris yang sama sekaligus di akhir.
+    """
+    att, phase, facts = _tutor_ctx(body, a)
+
+    def gen():
+        for kind, val in tutor.ask_stream(body.mode, facts, body.message[:2000], body.history, body.image):
+            if kind == "done":
+                yield json.dumps({"done": _tutor_log(body, a, att, phase, facts, val)}, ensure_ascii=False) + "\n"
+            else:
+                yield json.dumps({kind: val}, ensure_ascii=False) + "\n"
+
+    return StreamingResponse(gen(), media_type="application/x-ndjson",
+                             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
 # --- dosen --------------------------------------------------------------------

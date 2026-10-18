@@ -331,6 +331,37 @@ export const api = {
   reveal: (attempt_id: number, k1: Record<string, string>) => send<{ seq_order: Record<string, string>; benar: boolean }>('POST', '/api/reveal', { attempt_id, k1 }),
   submit: (body: Record<string, unknown>) => send<SubmitResult>('POST', '/api/submit', body),
   tutor: (body: Record<string, unknown>) => send<TutorReply>('POST', '/api/tutor', body),
+  /** Jawaban tutor bertahap (NDJSON). onText menerima teks sejauh ini; hasil akhir sama dengan api.tutor. */
+  tutorStream: async (body: Record<string, unknown>, onText: (text: string) => void): Promise<TutorReply> => {
+    const res = await raw('/api/tutor/stream', { method: 'POST', body: JSON.stringify(body) });
+    if (!res.body) return api.tutor(body);
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    let buf = '';
+    let text = '';
+    let done: TutorReply | null = null;
+    const line = (s: string) => {
+      if (!s.trim()) return;
+      const ev = JSON.parse(s) as { delta?: string; reset?: string; done?: TutorReply };
+      if (ev.delta !== undefined) text += ev.delta;
+      if (ev.reset !== undefined) text = ev.reset;
+      if (ev.done) done = ev.done;
+      onText(text);
+    };
+    for (;;) {
+      const { value, done: end } = await reader.read();
+      if (value) buf += dec.decode(value, { stream: !end });
+      let i;
+      while ((i = buf.indexOf('\n')) >= 0) {
+        line(buf.slice(0, i));
+        buf = buf.slice(i + 1);
+      }
+      if (end) break;
+    }
+    line(buf);
+    if (!done) throw new ApiError(502, 'Jawaban tutor terputus');
+    return done;
+  },
   attempt: (id: number) => req<AttemptDetail>(`/api/attempts/${id}`),
   assignments: () => req<Assignment[]>('/api/assignments'),
   saveLesson: (id: string, b: { quiz_score?: number; completed?: boolean }) => send<{ ok: boolean }>('POST', `/api/lessons/${id}`, b),

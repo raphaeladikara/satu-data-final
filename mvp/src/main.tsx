@@ -33,6 +33,10 @@ const VerifikasiKasus = named(kelola, 'VerifikasiKasus');
 const S = (el: React.ReactNode) => <RequireRole role="mahasiswa">{el}</RequireRole>;
 const D = (el: React.ReactNode) => <RequireRole role="dosen">{el}</RequireRole>;
 
+// Bangunkan fungsi API sejak halaman pertama dibuka. Fungsi Vercel yang lama tidak dipakai butuh sekitar 2 detik
+// untuk aktif kembali; dengan ping ini jeda itu terjadi saat pengguna masih membaca halaman depan atau login.
+fetch('/api/health', { cache: 'no-store' }).catch(() => {});
+
 // tanpa StrictMode: Cornerstone3D memegang konteks WebGL yang tidak boleh dibuat dua kali
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>

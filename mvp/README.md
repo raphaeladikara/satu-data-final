@@ -13,9 +13,9 @@ lalu penguasaan KC diperbarui dengan BKT.
 | API orkestrator (FastAPI) | `api/index.py` (Vercel Python Function) |
 | 2. Bank kasus | `pipeline/build_bank.py` → `public/cases/` (citra) + `server_data/` (kunci jawaban, tidak pernah dikirim sebelum submit) |
 | 3. Modul visi | `pipeline/kaggle/train_unet.py` (U-Net 2.5D, dilatih di Kaggle GPU), temuan terstruktur JSON di `build_bank.py` |
-| 4. Penilaian | `sinaps/grading.py`: Dice, recall per lesi, galat volume, HD95 → 5 jenis kesalahan |
+| 4. Penilaian | `sinaps/grading.py`: Dice, recall per lesi, galat volume, HD95, Dice fokus tersentuh → 5 jenis kesalahan; K6 benar bila Dice ≥ 0,6, semua fokus tersentuh, galat volume ≤ +25% |
 | 5. Adaptasi (BKT) | `sinaps/bkt.py`: persamaan (3)–(4), prasyarat KC, pemilihan tingkat kesulitan dari tersil indeks D |
-| 6. Tutor LLM | `sinaps/tutor.py` + `sinaps/rag.py`: mode Sokratik / penjelasan / rujukan, fakta terkunci sebelum submit, pemeriksa fakta, log audit |
+| 6. Tutor LLM | `sinaps/tutor.py` + `sinaps/rag.py`: mode Sokratik / penjelasan / rujukan, fakta terkunci sebelum submit, jawaban bertahap (`/api/tutor/stream`, NDJSON), penalaran rendah (`OPENAI_REASONING`), pemeriksa fakta yang mengenali kalimat koreksi, penyaring token sampah, log audit |
 | Dasbor dosen | `src/pages/dosen/`: ringkasan kelas, peta penguasaan KC per mahasiswa, lintasan BKT, jenis kesalahan tersering, tugas, verifikasi kasus, audit log tutor, ekspor CSV |
 | Penyimpanan berpseudonim | `sinaps/db.py`: Postgres (`DATABASE_URL`) atau SQLite lokal; NIM hanya disimpan sebagai hash |
 | Akun & kelas | `sinaps/auth.py`: NIM/username + kata sandi (PBKDF2), token HMAC; dosen membuat kelas, mahasiswa bergabung dengan kode kelas |
@@ -52,7 +52,7 @@ setiap tingkat kesulitan punya minimal 10 kasus). Subjek bank tidak pernah dipak
 | Uji | Skrip | Hasil |
 |---|---|---|
 | Morfologi 1.451 mask akut | `pipeline/mask_stats.py` | median 8,4 ml (IQR 1,7–34,5), 17% < 1 ml, 60% multifokal; tersil D: −0,169 dan 0,774 |
-| Aturan jenis kesalahan (672 anotasi sintetis, 36 subjek, 5-fold tingkat subjek) | `pipeline/eval_error_rules.py` | akurasi 94,6% (IK 95% 91,8–97,0) vs 47,3% (IK 95% 40,6–53,7) bila hanya Dice; hasil di `pipeline/results/` |
+| Aturan jenis kesalahan (672 anotasi sintetis, 36 subjek, 5-fold tingkat subjek) | `pipeline/eval_error_rules.py` | akurasi 97,8% (IK 95% 96,0–99,1); aturan lama tanpa Dice fokus tersentuh 94,6% (91,8–97,0); 47,3% (40,6–53,7) bila hanya Dice; hasil di `pipeline/results/` |
 | Segmentasi U-Net 2.5D (1.170 pasien latih, 30 epoch, T4 50 menit) pada 36 subjek bank | `pipeline/kaggle/train_unet.py` | Dice rerata 0,738 (IK 95% 0,645–0,813), median 0,816; recall per lesi 0,80; Dice 0,805 untuk lesi ≥ 5 ml (n=28) dan 0,503 untuk < 5 ml (n=8); hasil di `pipeline/results/unet25d/` |
 
 Angka aturan jenis kesalahan berasal dari kesalahan sintetis, jadi dibaca sebagai batas atas
@@ -89,6 +89,7 @@ respons. Tanpa `DATABASE_URL`, log disimpan di SQLite `mvp/.local/sinaps.db`.
 2. Environment variables:
    - `OPENAI_API_KEY` — kunci API OpenAI untuk tutor.
    - `OPENAI_MODEL` — opsional, bawaan `gpt-5.6-luna`.
+   - `OPENAI_REASONING` — opsional, tingkat penalaran tutor (`none`, `low`, `medium`, ...), bawaan `low`.
    - `DATABASE_URL` — string koneksi Postgres. Untuk Supabase pakai *transaction pooler* (port 6543).
      Tanpa ini, Vercel memakai SQLite di `/tmp` yang terhapus saat fungsi dingin.
    - `DOSEN_KEY` — kode pendaftaran akun dosen. Tanpa ini kodenya `SINAPS2026` (hanya untuk lokal).
