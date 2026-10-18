@@ -205,7 +205,7 @@ function SparkGraphic() {
         </text>
         <motion.polygon points={`0,160 ${d} 260,160`} fill="url(#spark-fill)" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 1, delay: 0.9 }} />
         <motion.polyline points={d} fill="none" stroke="#eaf3de" strokeWidth="2.6" strokeLinejoin="round" strokeLinecap="round" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1.6, ease: EASE }} />
-        <motion.circle cx="260" cy={150 - 0.96 * 120} r="5" fill="#aad39c" initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }} transition={{ delay: 1.5 }} />
+        <motion.circle cx="260" cy={150 - 0.96 * 120} r="5" fill="#aad39c" initial={{ scale: 0.6, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }} transition={{ delay: 1.2, duration: 0.25, ease: [0.23, 1, 0.32, 1] }} />
       </svg>
     </div>
   );
