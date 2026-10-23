@@ -30,12 +30,12 @@ export default function VideoTour() {
 
   return (
     <section id="video" className="mx-auto max-w-[1320px] scroll-mt-24 px-4 pt-20 sm:px-6 lg:pt-28">
-      <Reveal className="mx-auto max-w-3xl text-center">
+      <Reveal className="mx-auto max-w-5xl text-center">
         <Eyebrow className="justify-center">Tonton dulu · 5 menit</Eyebrow>
         <h2 className="mt-5 text-balance font-serif text-[clamp(1.9rem,3.4vw,3rem)] leading-[1.12] tracking-[-0.01em] text-ink">
-          Dari ruang kuliah yang kekurangan kasus, <em className="text-teal">sampai tutor yang tidak mengarang.</em>
+          Dari ruang kuliah yang kekurangan kasus,<br className="hidden md:block" /> <em className="text-teal">sampai tutor yang tidak mengarang.</em>
         </h2>
-        <p className="mx-auto mt-5 max-w-[60ch] text-pretty text-[16px] leading-relaxed text-ink/65">
+        <p className="mx-auto mt-5 max-w-[80ch] text-pretty text-[16px] leading-relaxed text-ink/65">
           Ikuti Dika, mahasiswa yang besok ujian membaca MRI stroke tanpa data pasien. Lihat bagaimana SINAPS menilai anotasinya, membimbing lewat pertanyaan, dan melapor ke dosen.
         </p>
       </Reveal>
