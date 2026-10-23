@@ -109,9 +109,9 @@ def hapus():
     print("data demo dihapus")
 
 
-def simulate_attempt(c, S, ok, sk, t_submit, rng, nrng):
+def simulate_attempt(c, S, ok, sk, t_submit, rng, nrng, cid=None):
     sk = min(0.95, sk)
-    att = ok(c.get("/api/next", params={"baru": "true"}, headers=S))
+    att = ok(c.get(f"/api/open/{cid}", headers=S) if cid else c.get("/api/next", params={"baru": "true"}, headers=S))
     cid = att["case"]["id"]
     f = cases.secrets()[cid]["findings"]
     g = cases.masks(cid)["gt"]
