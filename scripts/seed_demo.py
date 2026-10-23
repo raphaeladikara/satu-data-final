@@ -30,7 +30,8 @@ import numpy as np
 
 MVP = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(MVP))
-os.environ.pop("OPENAI_API_KEY", None)  # tutor demo memakai templat offline, tanpa biaya API
+if "--llm" not in sys.argv:
+    os.environ.pop("OPENAI_API_KEY", None)  # bawaan: tutor demo memakai templat offline, tanpa biaya API
 
 from fastapi.testclient import TestClient  # noqa: E402
 from sqlalchemy import delete, update  # noqa: E402
@@ -42,20 +43,22 @@ from sinaps.ndi import erode26, label26  # noqa: E402
 PASSWORD = "sinaps-demo"
 DOSEN = {"demo.dosen": "dr. Demo Pengampu, Sp.Rad.", "demo.dosen2": "dr. Rina Kusuma, Sp.N."}
 CLASSES = [  # dosen, nama kelas, mahasiswa: (nama fiktif, kemampuan awal 0-1, jumlah kasus, hari sejak terakhir aktif)
-    ("demo.dosen", "Demo · Blok Neurologi 2026 · Kelas A", [
+    ("demo.dosen", "Blok Neurologi 2026 · Kelas A", [
         ("Alya Ramadhani", 0.85, 9, 0), ("Bima Pratama", 0.55, 7, 1), ("Citra Lestari", 0.7, 8, 0),
         ("Dimas Saputra", 0.35, 5, 2), ("Eka Wulandari", 0.9, 10, 0), ("Fajar Nugroho", 0.45, 3, 9),
         ("Gita Maharani", 0.65, 6, 1), ("Hendra Wijaya", 0.25, 4, 3), ("Intan Permata", 0.75, 7, 0),
         ("Joko Susilo", 0.5, 0, 12)]),
-    ("demo.dosen", "Demo · Blok Neurologi 2026 · Kelas B", [
+    ("demo.dosen", "Blok Neurologi 2026 · Kelas B", [
         ("Kevin Halim", 0.6, 5, 0), ("Laras Ayuningtyas", 0.8, 6, 1), ("Made Surya", 0.3, 4, 8),
         ("Nadia Putri", 0.7, 3, 2), ("Oki Firmansyah", 0.4, 2, 4)]),
-    ("demo.dosen2", "Demo · Kepaniteraan Neurologi RS Pendidikan", [
+    ("demo.dosen2", "Kepaniteraan Neurologi RS Pendidikan", [
         ("Putu Ananda", 0.75, 6, 0), ("Qori Amalia", 0.5, 4, 1), ("Rizky Maulana", 0.9, 8, 0),
         ("Sari Handayani", 0.2, 2, 5)]),
 ]
 TANPA_KELAS = ("Tegar Wibowo", "praklinik")  # NIM terakhir, belum bergabung ke kelas mana pun
 N_STUDENTS = sum(len(x[2]) for x in CLASSES) + 1
+VIDEO_NIM = "2210211021"  # akun yang didaftarkan langsung saat merekam video demo; ikut dihapus
+WOW = ("DEMO0002", "sub-1150")  # percobaan contoh: Dice tinggi tetapi sebagian besar fokus terlewat
 QUESTIONS = ["Bagian mana yang terlewat?", "Kenapa tandaanku dianggap terlalu luas?",
              "Apakah lesinya di hemisfer kiri?", "Bagaimana membedakan restriksi sejati dan T2 shine-through?"]
 
@@ -92,7 +95,7 @@ def perturb(g, skill, rng):
 
 
 def hapus():
-    sids = [auth.pseudonym(f"DEMO{i:04d}") for i in range(1, N_STUDENTS + 1)]
+    sids = [auth.pseudonym(f"DEMO{i:04d}") for i in range(1, N_STUDENTS + 1)] + [auth.pseudonym(VIDEO_NIM)]
     dids = [auth.dosen_id(u) for u in DOSEN]
     with db.engine().begin() as c:
         for t in (db.attempts, db.tutor_logs, db.mastery, db.lessons):
@@ -137,10 +140,36 @@ def simulate_attempt(c, S, ok, sk, t_submit, rng, nrng):
                      .values(created_at=t_submit + 60))
 
 
+def simulate_wow(c, S, ok, cid, t_submit):
+    """K1-K3 benar, K6 hanya fokus terbesar: Dice tetap tinggi padahal banyak fokus kecil terlewat."""
+    att = ok(c.get(f"/api/open/{cid}", headers=S))
+    f = cases.secrets()[cid]["findings"]
+    g = cases.masks(cid)["gt"]
+    truth = db.get_attempt(att["attempt_id"])["seq_order"]
+    ok(c.post("/api/reveal", json={"attempt_id": att["attempt_id"], "k1": truth}, headers=S))
+    lab, n = label26(g)
+    sizes = np.bincount(lab.ravel())[1:]
+    p = np.isin(lab, np.argsort(sizes)[::-1][:3] + 1)
+    body = {"attempt_id": att["attempt_id"], "k1": truth, "k2_point": [round(x) for x in f["fokus"][0]["pusat_voxel"]],
+            "k2_hemisfer": f["hemisfer"], "k3_adc_bin": grading.adc_bin(f["adc_relatif_lesi"]),
+            "k3_restriksi": f["restriksi_sejati"], "mask_rle": cases.rle_encode(p)}
+    r = ok(c.post("/api/submit", json=body, headers=S))
+    ok(c.post("/api/tutor", json={"attempt_id": att["attempt_id"], "mode": "penjelasan",
+                                  "message": "Dice saya sudah tinggi, kenapa K6 masih salah?"}, headers=S))
+    with db.engine().begin() as conn:
+        conn.execute(update(db.attempts).where(db.attempts.c.id == att["attempt_id"])
+                     .values(started_at=t_submit - 840, submitted_at=t_submit))
+        conn.execute(update(db.tutor_logs).where(db.tutor_logs.c.attempt_id == att["attempt_id"])
+                     .values(created_at=t_submit + 60))
+    d = r["delineasi"]
+    print(f"    + {cid}: Dice {d['dice']:.2f}, recall fokus {d['lesion_recall']:.2f}, {d['jenis_kesalahan_label']}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--hapus", action="store_true")
     ap.add_argument("--seed", type=int, default=7)
+    ap.add_argument("--llm", action="store_true", help="tutor memakai LLM sungguhan (perlu OPENAI_API_KEY)")
     a = ap.parse_args()
     hapus()
     if a.hapus:
@@ -186,6 +215,8 @@ def main():
             times = sorted(rng.uniform(now - 13 * 86400, span_end) for _ in range(n_cases))
             for j, t_submit in enumerate(times):
                 simulate_attempt(c, S, ok, skill + 0.04 * j, t_submit, rng, nrng)
+            if nim == WOW[0] and WOW[1] not in db.submitted_case_ids(sid):
+                simulate_wow(c, S, ok, WOW[1], now - 2 * 86400)
             last = times[-1] if times else now - idle_days * 86400
             db.update_account(sid, last_seen=last, created_at=now - 14 * 86400)
             print(f"  {nim} {nama}: {n_cases} kasus")
