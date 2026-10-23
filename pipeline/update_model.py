@@ -99,8 +99,8 @@ def main():
         print(f"      {k:20s} {before}{t[k]:.3f}")
 
     if "--push" in sys.argv:
-        repo = MVP.parent
-        paths = ["mvp/server_data", "mvp/public/cases", "mvp/pipeline/results/unet25d", "mvp/README.md"]
+        repo = MVP
+        paths = ["server_data", "public/cases", "pipeline/results/unet25d", "README.md"]
         subprocess.run(["git", "add", *paths], cwd=repo, check=True)
         msg = f"Perbarui model U-Net: Dice uji {t['dice_mean']:.3f}, median {t['dice_median']:.3f}"
         subprocess.run(["git", "commit", "-m", msg], cwd=repo, check=True)

@@ -1,4 +1,4 @@
-"""Retrieval sederhana (BM25) atas korpus rujukan berbahasa Indonesia di mvp/corpus/*.md.
+"""Retrieval sederhana (BM25) atas korpus rujukan berbahasa Indonesia di corpus/*.md.
 
 Setiap berkas korpus diawali baris 'sumber: ...'. Potongan dipisah oleh judul '## '.
 """

@@ -17,7 +17,7 @@ from pathlib import Path
 
 import requests
 
-ROOT = Path(__file__).resolve().parents[2] / "data" / "soop"
+ROOT = Path(__file__).resolve().parents[1] / "data" / "soop"
 S3 = "https://s3.amazonaws.com/openneuro.org"
 DS = "ds004889"
 NS = {"s3": "http://s3.amazonaws.com/doc/2006-03-01/"}

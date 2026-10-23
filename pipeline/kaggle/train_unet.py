@@ -436,7 +436,7 @@ def main():
         for p in ["unet25d.pt", "metrics.json", "history.json", "test_per_subject.csv", "train_log.txt", *sorted(
                 f"pred_bank/{q.name}" for q in (OUT / "pred_bank").glob("*.npz"))]:
             z.write(OUT / p, p)
-    log(f"[5/5] SELESAI. Unduh {OUT / 'sinaps_out.zip'} lalu ekstrak ke mvp/pipeline/kaggle_out/")
+    log(f"[5/5] SELESAI. Unduh {OUT / 'sinaps_out.zip'} lalu ekstrak ke pipeline/kaggle_out/")
 
 
 if __name__ == "__main__":

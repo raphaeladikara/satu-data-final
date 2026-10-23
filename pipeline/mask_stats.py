@@ -12,7 +12,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from sinaps.lesion import stats  # noqa: E402
 
-ROOT = Path(__file__).resolve().parents[2] / "data" / "soop"
+ROOT = Path(__file__).resolve().parents[1] / "data" / "soop"
 
 
 def main():

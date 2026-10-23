@@ -1,18 +1,29 @@
 # data MRI SOOP (besar, unduh ulang dari OpenNeuro ds004889)
 data/
-**/.venv/
-**/.env
+.venv/
+.env
 __pycache__/
 *.pyc
 ~$*
 
-# MVP
-**/node_modules/
-mvp/dist/
-mvp/.local/
-mvp/.vercel/
-mvp/pipeline/kaggle_out/
+node_modules/
+dist/
+.local/
+.vercel/
+.vite/
 *.tsbuildinfo
-mvp/.vite/
-# keluaran mentah Kaggle (bobot model 30 MB); ringkasan metrik ada di mvp/pipeline/results/unet25d/
-mvp/results/
+pipeline/kaggle_out/
+# keluaran mentah Kaggle (bobot model 30 MB); ringkasan metrik ada di pipeline/results/unet25d/
+/results/
+review/
+
+# berkas lomba (paper, video, ketentuan, catatan demo) disimpan di luar repo
+/*.pdf
+*.mp4
+paper/
+CLAUDE.md
+.claude/
+penjelasan_lomba.md
+guide_lomba_semifinal.md
+demo_*.md
+demo_latihan_img/

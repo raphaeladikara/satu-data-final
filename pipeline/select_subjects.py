@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[2] / "data" / "soop"
+ROOT = Path(__file__).resolve().parents[1] / "data" / "soop"
 
 
 def select(n_bank=30, n_train=0, seed=42, min_per_tier=10):

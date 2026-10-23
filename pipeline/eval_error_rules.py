@@ -20,7 +20,7 @@ sys.path.insert(0, str(HERE.parent))
 from sinaps.grading import THRESHOLDS, classify, metrics  # noqa: E402
 from sinaps.lesion import foci  # noqa: E402
 
-SOOP = HERE.parents[1] / "data" / "soop"
+SOOP = HERE.parent / "data" / "soop"
 OUT = HERE / "results"
 TYPES = ["hampir_benar", "terlalu_luas", "terlalu_sempit", "lesi_terlewat", "salah_lokasi"]
 INPLANE = np.zeros((3, 3, 3), bool)
