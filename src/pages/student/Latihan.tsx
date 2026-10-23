@@ -69,10 +69,13 @@ const LATIHAN_TOUR: TourStep[] = [
     body: 'Tekan Panduan di bilah atas kapan saja untuk memutar ulang.',
   },
 ];
-const TUTOR_HINTS = {
-  before: ['Bagaimana membedakan DWI dan ADC?', 'Apa itu T2 shine-through?', 'Bagaimana cara mencari fokus kecil?'],
-  after: ['Bagian mana yang terlewat?', 'Kenapa jawaban K3-ku keliru?', 'Jelaskan lesi di kasus ini'],
-};
+const TUTOR_HINTS_BEFORE = ['Bagaimana membedakan DWI dan ADC?', 'Apa itu T2 shine-through?', 'Bagaimana cara mencari fokus kecil?'];
+// saran setelah submit mengikuti hasil: jangan menawarkan "kenapa keliru" untuk jawaban yang benar
+const tutorHintsAfter = (r: SubmitResult) => [
+  r.delineasi?.fokus.some((f) => !f.tersentuh) ? 'Bagian mana yang terlewat?' : 'Bagaimana memperbaiki delineasiku?',
+  r.kc.K3?.benar ? 'Apa arti nilai ADC lesi ini?' : 'Kenapa jawaban K3-ku keliru?',
+  'Jelaskan lesi di kasus ini',
+];
 
 type Msg = {
   role: 'user' | 'assistant';
@@ -890,7 +893,7 @@ export default function Latihan() {
                 status={k3Filled ? 'filled' : adcBin || restr !== null ? 'partial' : 'todo'}
                 summary={adcBin || restr !== null ? `ADC ${adcBin || '?'} · ${restr === null ? '?' : restr ? 'restriksi sejati' : 'T2 shine-through'}` : 'Belum dijawab'}
               >
-                <p className="lt-help">Arahkan kursor ke lesi pada seri ADC. Nilai ADC relatif (dibanding median otak) tampil di bawah dan di kiri bawah citra.</p>
+                <p className="lt-help">Arahkan kursor ke lesi pada seri ADC. Nilai ADC relatif (dibanding median otak) tampil di bawah dan di kiri bawah citra. Yang dinilai adalah nilai khas seluruh lesi, jadi cek beberapa titik di dalam lesi.</p>
                 <div className={cn('lt-readout', activeName === 'ADC' && probe?.value != null && 'live')}>
                   {activeName === 'ADC' ? (
                     <>
@@ -1062,7 +1065,7 @@ export default function Latihan() {
                   )}
                 </div>
                 <div className="lt-hints">
-                  {(result ? TUTOR_HINTS.after : TUTOR_HINTS.before).map((h) => (
+                  {(result ? tutorHintsAfter(result) : TUTOR_HINTS_BEFORE).map((h) => (
                     <button key={h} className="lt-hint" disabled={!!tutorBusy || !att} onClick={() => sendTutor(h)}>
                       {h}
                     </button>
