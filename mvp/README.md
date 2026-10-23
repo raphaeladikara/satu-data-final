@@ -15,7 +15,7 @@ lalu penguasaan KC diperbarui dengan BKT.
 | 3. Modul visi | `pipeline/kaggle/train_unet.py` (U-Net 2.5D, dilatih di Kaggle GPU), temuan terstruktur JSON di `build_bank.py` |
 | 4. Penilaian | `sinaps/grading.py`: Dice, recall per lesi, galat volume, HD95, Dice fokus tersentuh → 5 jenis kesalahan; K6 benar bila Dice ≥ 0,6, semua fokus tersentuh, galat volume ≤ +25% |
 | 5. Adaptasi (BKT) | `sinaps/bkt.py`: persamaan (3)–(4), prasyarat KC, pemilihan tingkat kesulitan dari tersil indeks D |
-| 6. Tutor LLM | `sinaps/tutor.py` + `sinaps/rag.py`: mode Sokratik / penjelasan / rujukan, fakta terkunci sebelum submit, jawaban bertahap (`/api/tutor/stream`, NDJSON), penalaran rendah (`OPENAI_REASONING`), pemeriksa fakta yang mengenali kalimat koreksi, penyaring token sampah, log audit |
+| 6. Tutor LLM | `sinaps/tutor.py` + `sinaps/rag.py`: mode Sokratik / penjelasan / rujukan, fakta terkunci sebelum submit, jawaban bertahap (`/api/tutor/stream`, NDJSON), penalaran rendah (`OPENAI_REASONING`), pemeriksa fakta berbasis aturan (hanya klaim hemisfer dan multifokal, mengenali kalimat koreksi), penyaring token sampah, pembatas laju (20/menit, 300/hari), log audit |
 | Dasbor dosen | `src/pages/dosen/`: ringkasan kelas, peta penguasaan KC per mahasiswa, lintasan BKT, jenis kesalahan tersering, tugas, verifikasi kasus, audit log tutor, ekspor CSV |
 | Penyimpanan berpseudonim | `sinaps/db.py`: Postgres (`DATABASE_URL`) atau SQLite lokal; NIM hanya disimpan sebagai hash |
 | Akun & kelas | `sinaps/auth.py`: NIM/username + kata sandi (PBKDF2), token HMAC; dosen membuat kelas, mahasiswa bergabung dengan kode kelas |

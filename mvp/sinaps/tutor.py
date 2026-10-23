@@ -58,10 +58,10 @@ def build_facts(case_pub, secret, phase, result=None, profile=None):
     if secret.get("model"):
         facts["pembaca_kedua_model"] = secret["model"]
     if result:
-        d = result.get("delineasi", {})
+        d = result.get("delineasi") or {}  # tidak ada bila mahasiswa tidak mengirim delineasi
         facts["hasil_penilaian"] = {
             "delineasi": {k: d.get(k) for k in ("dice", "lesion_recall", "vol_err", "hd95", "jenis_kesalahan_label",
-                                                "volume_mahasiswa_ml", "volume_kunci_ml")},
+                                                "volume_mahasiswa_ml", "volume_kunci_ml")} if d else None,
             "fokus_terlewat": [{"ml": x["ml"], "slice_terbesar": x["slice_terbesar"]}
                                for x in d.get("fokus", []) if not x["tersentuh"]][:8],
             "jawaban_kc": {k: {kk: vv for kk, vv in r.items() if kk != "kc"} for k, r in result.get("kc", {}).items()},
@@ -158,7 +158,7 @@ def offline_reply(mode, facts, message):
 
 
 def _offline_body(mode, facts, f):
-    h = facts.get("hasil_penilaian", {}).get("delineasi", {})
+    h = facts.get("hasil_penilaian", {}).get("delineasi") or {}
     missed = facts.get("hasil_penilaian", {}).get("fokus_terlewat", [])
     if mode == "sokratik":
         if missed:
@@ -199,10 +199,30 @@ def _inputs(mode, facts, message, history, image_data_url):
                 "text": f"MODE: {mode}\nFAKTA:\n{json.dumps(facts, ensure_ascii=False)}\n\nPESAN MAHASISWA:\n{message}"}]
     if image_data_url:
         content.append({"type": "input_image", "image_url": image_data_url})
-    inputs = [{"role": h["role"], "content": h["content"]} for h in (history or [])[-6:]
-              if h.get("role") in ("user", "assistant") and h.get("content")]
+    inputs = [{"role": h["role"], "content": h["content"]} for h in clean_history(history)]
     inputs.append({"role": "user", "content": content})
     return inputs
+
+
+HISTORY_TURNS = 6
+HISTORY_CHARS = 4000
+IMAGE_MAX_CHARS = 2_800_000  # ~2 MB setelah base64 didekode
+IMAGE_RE = re.compile(r"data:image/(png|jpeg);base64,[A-Za-z0-9+/]+={0,2}")
+
+
+def clean_history(history):
+    """Riwayat dari klien: hanya peran user/assistant berisi teks, dipotong, paling banyak HISTORY_TURNS terakhir."""
+    out = [{"role": h["role"], "content": h["content"][:HISTORY_CHARS]} for h in (history or [])
+           if isinstance(h, dict) and h.get("role") in ("user", "assistant") and isinstance(h.get("content"), str)
+           and h["content"].strip()]
+    return out[-HISTORY_TURNS:]
+
+
+def clean_image(data_url):
+    """Gambar Capture hanya diterima sebagai data URL PNG/JPEG base64 < ~2 MB; selain itu diabaikan."""
+    if not isinstance(data_url, str) or len(data_url) > IMAGE_MAX_CHARS or not IMAGE_RE.fullmatch(data_url):
+        return None
+    return data_url
 
 
 # Penyaring token sampah. Uji 18 Okt (432 jawaban): 2 jawaban berakhir dengan token yang tidak ada hubungannya
@@ -229,7 +249,13 @@ def _done(reply, facts, **kw):
     return {"reply": reply, **kw, "issues": issues}
 
 
-def ask_stream(mode, facts, message, history=None, image_data_url=None):
+# Batas waktu LLM: fungsi Vercel berhenti di maxDuration 60 dtk. Jawaban model dipotong setelah DEADLINE_S lalu diganti
+# templat offline; jeda antarpotongan paling lama READ_S. Terburuk 33 + 15 = 48 dtk, sisanya untuk pemeriksa fakta dan log.
+DEADLINE_S = 33
+READ_S = 15
+
+
+def ask_stream(mode, facts, message, history=None, image_data_url=None, deadline_s=DEADLINE_S):
     """Generator: ("delta", teks) selama model menulis, lalu ("done", dict) seperti ask().
 
     Respons bertahap membuat mahasiswa melihat kalimat pertama setelah first_token_ms, bukan setelah seluruh
@@ -248,13 +274,18 @@ def ask_stream(mode, facts, message, history=None, image_data_url=None):
         return
     from openai import OpenAI
 
-    client = OpenAI(api_key=key, timeout=30)
+    import httpx
+
+    client = OpenAI(api_key=key, timeout=httpx.Timeout(min(READ_S, deadline_s), connect=5), max_retries=0)
     parts, first = [], None
     try:
         stream = client.responses.create(model=MODEL, instructions=SYSTEM, max_output_tokens=700, stream=True,
                                          input=_inputs(mode, facts, message, history, image_data_url),
                                          reasoning={"effort": REASONING})
         for ev in stream:
+            if time.time() - t0 > deadline_s:
+                stream.close()
+                raise TimeoutError("melewati batas waktu")
             if ev.type == "response.output_text.delta" and ev.delta:
                 first = first if first is not None else ms()
                 parts.append(ev.delta)

@@ -2,9 +2,9 @@
  "sub-3": {
   "id": "sub-3",
   "sequences": {
-   "DWI": "93d5161073",
-   "ADC": "ea07331fb3",
-   "FLAIR": "9e854dad5f"
+   "DWI": "5f85b3b8b4",
+   "ADC": "c733e3f8c2",
+   "FLAIR": "6f8d5e5c91"
   },
   "findings": {
    "volume_ml": 156.58,
@@ -109,9 +109,9 @@
  "sub-94": {
   "id": "sub-94",
   "sequences": {
-   "DWI": "489f6343df",
-   "ADC": "6c1159bd3e",
-   "FLAIR": "794bcdb4cf"
+   "DWI": "87e3fadcde",
+   "ADC": "145ff07885",
+   "FLAIR": "e4aa867a42"
   },
   "findings": {
    "volume_ml": 8.37,
@@ -156,9 +156,9 @@
  "sub-137": {
   "id": "sub-137",
   "sequences": {
-   "DWI": "9c994d3154",
-   "ADC": "8aeb9d2a3b",
-   "FLAIR": "ffb8f8f582"
+   "DWI": "72b78ea901",
+   "ADC": "b4a45259ab",
+   "FLAIR": "70415c5434"
   },
   "findings": {
    "volume_ml": 0.57,
@@ -203,9 +203,9 @@
  "sub-203": {
   "id": "sub-203",
   "sequences": {
-   "DWI": "3d46af0c2d",
-   "ADC": "d253959a9f",
-   "FLAIR": "5d16cf1b80"
+   "DWI": "9e8652c089",
+   "ADC": "e3af1bc497",
+   "FLAIR": "ee9c9fa5d7"
   },
   "findings": {
    "volume_ml": 30.05,
@@ -265,9 +265,9 @@
  "sub-267": {
   "id": "sub-267",
   "sequences": {
-   "DWI": "5ebc059536",
-   "ADC": "37aa0dff02",
-   "FLAIR": "527938d88a"
+   "DWI": "177076d3b0",
+   "ADC": "4b4b3bed09",
+   "FLAIR": "3a1f15d142"
   },
   "findings": {
    "volume_ml": 5.63,
@@ -312,9 +312,9 @@
  "sub-303": {
   "id": "sub-303",
   "sequences": {
-   "DWI": "bdd8c2d081",
-   "ADC": "e853a9ef94",
-   "FLAIR": "5fa216096c"
+   "DWI": "8f66b781c7",
+   "ADC": "23c915f273",
+   "FLAIR": "f483066bde"
   },
   "findings": {
    "volume_ml": 488.31,
@@ -359,9 +359,9 @@
  "sub-577": {
   "id": "sub-577",
   "sequences": {
-   "DWI": "c780fd46da",
-   "ADC": "bfdf304a19",
-   "FLAIR": "2ea5bd7f6e"
+   "DWI": "4a9343f174",
+   "ADC": "194ebb1f56",
+   "FLAIR": "65cefccc48"
   },
   "findings": {
    "volume_ml": 1.63,
@@ -406,9 +406,9 @@
  "sub-580": {
   "id": "sub-580",
   "sequences": {
-   "DWI": "6e0516d66f",
-   "ADC": "b730db769e",
-   "FLAIR": "ce942c44af"
+   "DWI": "18b7d0469d",
+   "ADC": "7ae4646132",
+   "FLAIR": "905473e386"
   },
   "findings": {
    "volume_ml": 34.98,
@@ -528,9 +528,9 @@
  "sub-652": {
   "id": "sub-652",
   "sequences": {
-   "DWI": "a27d582199",
-   "ADC": "b83a214bae",
-   "FLAIR": "3e54217dd3"
+   "DWI": "70563d2cc3",
+   "ADC": "9c310d788c",
+   "FLAIR": "6815e865e1"
   },
   "findings": {
    "volume_ml": 137.58,
@@ -605,9 +605,9 @@
  "sub-654": {
   "id": "sub-654",
   "sequences": {
-   "DWI": "fcc3d51390",
-   "ADC": "7549e11f7a",
-   "FLAIR": "5ed38bf3e3"
+   "DWI": "bd27f77a43",
+   "ADC": "7d0b150e84",
+   "FLAIR": "5941718950"
   },
   "findings": {
    "volume_ml": 27.07,
@@ -652,9 +652,9 @@
  "sub-698": {
   "id": "sub-698",
   "sequences": {
-   "DWI": "47e33d0bfc",
-   "ADC": "7f30444238",
-   "FLAIR": "7f7bb6b914"
+   "DWI": "47c64f89cc",
+   "ADC": "7b377c5ea4",
+   "FLAIR": "b32d2897c8"
   },
   "findings": {
    "volume_ml": 183.42,
@@ -714,9 +714,9 @@
  "sub-724": {
   "id": "sub-724",
   "sequences": {
-   "DWI": "08106efbbb",
-   "ADC": "7e97394a82",
-   "FLAIR": "e25ac5abef"
+   "DWI": "4ffe6b5398",
+   "ADC": "9e3a53868e",
+   "FLAIR": "20eff75908"
   },
   "findings": {
    "volume_ml": 343.01,
@@ -851,9 +851,9 @@
  "sub-754": {
   "id": "sub-754",
   "sequences": {
-   "DWI": "590150eb2e",
-   "ADC": "d3c53a378b",
-   "FLAIR": "d364f72db8"
+   "DWI": "e720ed429e",
+   "ADC": "c94f6fb2bc",
+   "FLAIR": "6431b3f959"
   },
   "findings": {
    "volume_ml": 71.93,
@@ -913,9 +913,9 @@
  "sub-763": {
   "id": "sub-763",
   "sequences": {
-   "DWI": "85fe562d1b",
-   "ADC": "cad94a4c53",
-   "FLAIR": "c880fb5f95"
+   "DWI": "9369cdf9b7",
+   "ADC": "cde2396385",
+   "FLAIR": "118a62f373"
   },
   "findings": {
    "volume_ml": 8.32,
@@ -960,9 +960,9 @@
  "sub-830": {
   "id": "sub-830",
   "sequences": {
-   "DWI": "44b41b8606",
-   "ADC": "84315e4d08",
-   "FLAIR": "2ef91a5581"
+   "DWI": "ab3139f381",
+   "ADC": "cc533ed706",
+   "FLAIR": "2fb632b971"
   },
   "findings": {
    "volume_ml": 62.19,
@@ -1022,9 +1022,9 @@
  "sub-898": {
   "id": "sub-898",
   "sequences": {
-   "DWI": "8994661465",
-   "ADC": "1d7babc890",
-   "FLAIR": "549f2d4dca"
+   "DWI": "bc554e4e7c",
+   "ADC": "d69bee4f0e",
+   "FLAIR": "62820f4c18"
   },
   "findings": {
    "volume_ml": 8.82,
@@ -1084,9 +1084,9 @@
  "sub-901": {
   "id": "sub-901",
   "sequences": {
-   "DWI": "91ab89118b",
-   "ADC": "d945ec4f36",
-   "FLAIR": "a3f0a14d86"
+   "DWI": "287c77550c",
+   "ADC": "723339b5f3",
+   "FLAIR": "59331dade4"
   },
   "findings": {
    "volume_ml": 7.02,
@@ -1161,9 +1161,9 @@
  "sub-924": {
   "id": "sub-924",
   "sequences": {
-   "DWI": "5c958fe670",
-   "ADC": "80392ce51a",
-   "FLAIR": "1e25c3603e"
+   "DWI": "d58f73bbe2",
+   "ADC": "7a7ef235a9",
+   "FLAIR": "d7fb1d6816"
   },
   "findings": {
    "volume_ml": 44.03,
@@ -1253,9 +1253,9 @@
  "sub-934": {
   "id": "sub-934",
   "sequences": {
-   "DWI": "2c7a226537",
-   "ADC": "211ad4779c",
-   "FLAIR": "9fd1ce0dd2"
+   "DWI": "a0671cc87a",
+   "ADC": "4af047f5ef",
+   "FLAIR": "22438b8d04"
   },
   "findings": {
    "volume_ml": 0.73,
@@ -1300,9 +1300,9 @@
  "sub-998": {
   "id": "sub-998",
   "sequences": {
-   "DWI": "5407e0c330",
-   "ADC": "ab79ccc8c6",
-   "FLAIR": "0e21901733"
+   "DWI": "09b69277a7",
+   "ADC": "e3a6c0cb60",
+   "FLAIR": "7ecf6ae660"
   },
   "findings": {
    "volume_ml": 47.44,
@@ -2097,9 +2097,9 @@
  "sub-1041": {
   "id": "sub-1041",
   "sequences": {
-   "DWI": "e3ba449965",
-   "ADC": "6f84946840",
-   "FLAIR": "cd4b07245f"
+   "DWI": "fdb6a7f932",
+   "ADC": "612a245b82",
+   "FLAIR": "cde6a2acc8"
   },
   "findings": {
    "volume_ml": 119.09,
@@ -2204,9 +2204,9 @@
  "sub-1043": {
   "id": "sub-1043",
   "sequences": {
-   "DWI": "67ad7a2c8c",
-   "ADC": "864da3808c",
-   "FLAIR": "25692d9d88"
+   "DWI": "3b6a96f837",
+   "ADC": "7aa5bf7222",
+   "FLAIR": "2400ec17e5"
   },
   "findings": {
    "volume_ml": 0.26,
@@ -2251,9 +2251,9 @@
  "sub-1150": {
   "id": "sub-1150",
   "sequences": {
-   "DWI": "5264cefcc5",
-   "ADC": "31ea719247",
-   "FLAIR": "0be0f9d18f"
+   "DWI": "8e97adfac1",
+   "ADC": "c8919c4578",
+   "FLAIR": "253e0a15f1"
   },
   "findings": {
    "volume_ml": 87.62,
@@ -2388,9 +2388,9 @@
  "sub-1171": {
   "id": "sub-1171",
   "sequences": {
-   "DWI": "679bd0c0f8",
-   "ADC": "bab046e233",
-   "FLAIR": "0ed7b26c34"
+   "DWI": "2a6de9ff22",
+   "ADC": "de3df6a048",
+   "FLAIR": "e3b9b9f343"
   },
   "findings": {
    "volume_ml": 21.89,
@@ -2585,9 +2585,9 @@
  "sub-1232": {
   "id": "sub-1232",
   "sequences": {
-   "DWI": "15932f1a36",
-   "ADC": "af48799617",
-   "FLAIR": "c3636e3213"
+   "DWI": "93304b2e6b",
+   "ADC": "46a0a995f8",
+   "FLAIR": "857070ee0d"
   },
   "findings": {
    "volume_ml": 96.72,
@@ -2932,9 +2932,9 @@
  "sub-1269": {
   "id": "sub-1269",
   "sequences": {
-   "DWI": "6fe5d9286a",
-   "ADC": "97f33db929",
-   "FLAIR": "dbcd407994"
+   "DWI": "ed528e1063",
+   "ADC": "7b90559038",
+   "FLAIR": "251a1cfbe5"
   },
   "findings": {
    "volume_ml": 1.7,
@@ -2979,9 +2979,9 @@
  "sub-1301": {
   "id": "sub-1301",
   "sequences": {
-   "DWI": "c682666f92",
-   "ADC": "328400ff92",
-   "FLAIR": "0551a6a27b"
+   "DWI": "486898d261",
+   "ADC": "f1e1938d76",
+   "FLAIR": "4e887b1bd3"
   },
   "findings": {
    "volume_ml": 23.98,
@@ -3041,9 +3041,9 @@
  "sub-1320": {
   "id": "sub-1320",
   "sequences": {
-   "DWI": "c5c32b7a83",
-   "ADC": "3012f3cb56",
-   "FLAIR": "1b5e969ff0"
+   "DWI": "c707da8d66",
+   "ADC": "d75611c691",
+   "FLAIR": "8c6cdc5853"
   },
   "findings": {
    "volume_ml": 71.77,
@@ -3118,9 +3118,9 @@
  "sub-1362": {
   "id": "sub-1362",
   "sequences": {
-   "DWI": "a554a8ba85",
-   "ADC": "43428e83d1",
-   "FLAIR": "6ee7a1b01d"
+   "DWI": "eccb61ac2b",
+   "ADC": "c24257a52e",
+   "FLAIR": "4aa447ae04"
   },
   "findings": {
    "volume_ml": 10.15,
@@ -3300,9 +3300,9 @@
  "sub-1385": {
   "id": "sub-1385",
   "sequences": {
-   "DWI": "99dd322d7c",
-   "ADC": "ee5882e471",
-   "FLAIR": "9ab45a2838"
+   "DWI": "dcff0aa0e2",
+   "ADC": "d1706593bf",
+   "FLAIR": "149b40c346"
   },
   "findings": {
    "volume_ml": 0.71,
@@ -3347,9 +3347,9 @@
  "sub-1394": {
   "id": "sub-1394",
   "sequences": {
-   "DWI": "20c30c7a47",
-   "ADC": "cd77ea49ad",
-   "FLAIR": "a7a8a74d4e"
+   "DWI": "5792d93697",
+   "ADC": "75ac00a015",
+   "FLAIR": "666deca3f4"
   },
   "findings": {
    "volume_ml": 1.72,
@@ -3454,9 +3454,9 @@
  "sub-1413": {
   "id": "sub-1413",
   "sequences": {
-   "DWI": "e321f8f80b",
-   "ADC": "3e84af50aa",
-   "FLAIR": "65ac0ef4fd"
+   "DWI": "6134a392b2",
+   "ADC": "c773417e84",
+   "FLAIR": "780fa80b9b"
   },
   "findings": {
    "volume_ml": 60.99,
@@ -3501,9 +3501,9 @@
  "sub-1424": {
   "id": "sub-1424",
   "sequences": {
-   "DWI": "495ab10733",
-   "ADC": "d418f8a1db",
-   "FLAIR": "c36da2f862"
+   "DWI": "b616018845",
+   "ADC": "7546b8d7a3",
+   "FLAIR": "e4d344df34"
   },
   "findings": {
    "volume_ml": 3.59,
@@ -3623,9 +3623,9 @@
  "sub-1517": {
   "id": "sub-1517",
   "sequences": {
-   "DWI": "9c23f7f10f",
-   "ADC": "27980a1df6",
-   "FLAIR": "11c18825f3"
+   "DWI": "4412abd49f",
+   "ADC": "2b46e47393",
+   "FLAIR": "12be26d994"
   },
   "findings": {
    "volume_ml": 251.99,
@@ -3685,9 +3685,9 @@
  "sub-1634": {
   "id": "sub-1634",
   "sequences": {
-   "DWI": "3c522c74a2",
-   "ADC": "6eac3bde2d",
-   "FLAIR": "acff40f15b"
+   "DWI": "1efedbfdb9",
+   "ADC": "04d9b62d5a",
+   "FLAIR": "b60f8fd8b6"
   },
   "findings": {
    "volume_ml": 128.71,
@@ -3867,9 +3867,9 @@
  "sub-1671": {
   "id": "sub-1671",
   "sequences": {
-   "DWI": "abd5957ff7",
-   "ADC": "6ce28ea283",
-   "FLAIR": "86c810e5b0"
+   "DWI": "ce27c6088b",
+   "ADC": "f928a9b20e",
+   "FLAIR": "8cb41d95ee"
   },
   "findings": {
    "volume_ml": 29.23,

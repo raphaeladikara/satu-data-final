@@ -3,6 +3,8 @@
 Empat metrik (Subbab III.E): Dice, recall per lesi, galat volume relatif, HD95.
 Keempatnya dipetakan ke lima jenis kesalahan dengan aturan keputusan transparan berambang.
 """
+import math
+
 import numpy as np
 
 from .lesion import foci, voxel_ml
@@ -54,6 +56,7 @@ def metrics(p, g, spacing):
     p, g = p > 0, g > 0
     vp, vg = int(p.sum()), int(g.sum())
     inter = int(np.logical_and(p, g).sum())
+    # kunci tanpa lesi: Dice 1 hanya bila tandaan juga kosong (dibuat eksplisit, bukan kebetulan pembagian)
     dice = 2 * inter / (vp + vg) if (vp + vg) else 1.0
     labels, fs = foci(g, spacing)
     per_focus = []
@@ -87,6 +90,8 @@ def metrics(p, g, spacing):
 
 def classify(m, t=THRESHOLDS):
     """Aturan keputusan: urutan pemeriksaan dari kesalahan paling mendasar."""
+    if m["volume_kunci_ml"] == 0:  # kunci tanpa lesi: tandaan kosong benar, tandaan apa pun terlalu luas
+        return "hampir_benar" if m["volume_mahasiswa_ml"] == 0 else "terlalu_luas"
     if m["volume_mahasiswa_ml"] == 0:
         return "kosong"
     if m["dice"] < t["loc_dice"] and abs(m["vol_err"]) <= t["loc_vol"]:
@@ -106,8 +111,11 @@ def grade_delineation(p, g, spacing, t=THRESHOLDS):
     etype = classify(m, t)
     m["jenis_kesalahan"] = etype
     m["jenis_kesalahan_label"] = ERROR_TYPES[etype]
-    m["benar"] = (m["dice"] >= K6_PASS["dice"] and m["lesion_recall"] >= K6_PASS["lesion_recall"]
-                  and m["vol_err"] <= K6_PASS["vol_err_max"])
+    if m["volume_kunci_ml"] == 0:
+        m["benar"] = m["volume_mahasiswa_ml"] == 0
+    else:
+        m["benar"] = (m["dice"] >= K6_PASS["dice"] and m["lesion_recall"] >= K6_PASS["lesion_recall"]
+                      and m["vol_err"] <= K6_PASS["vol_err_max"])
     for k in ("dice", "dice_tersentuh", "lesion_recall", "vol_err", "precision", "volume_mahasiswa_ml", "volume_kunci_ml"):
         m[k] = round(float(m[k]), 4)
     if m["hd95"] is not None:
@@ -117,10 +125,14 @@ def grade_delineation(p, g, spacing, t=THRESHOLDS):
 
 def grade_point(point, g, tol_vox=1):
     """K2: titik klik (x, y, z voxel, berbasis 0) dianggap benar bila jatuh di lesi (toleransi 1 voxel in-plane)."""
-    if point is None:
+    try:
+        if point is None or len(point) != 3 or not all(math.isfinite(float(v)) for v in point):
+            return False
+        x, y, z = (int(round(float(v))) for v in point)
+    except (TypeError, ValueError):
         return False
-    x, y, z = (int(round(v)) for v in point)
-    if not (0 <= z < g.shape[2]):
+    # titik di luar volume (termasuk koordinat negatif) tidak pernah dihitung kena, walau toleransi menyentuh tepi
+    if not all(0 <= v < s for v, s in zip((x, y, z), g.shape)):
         return False
     xs = slice(max(0, x - tol_vox), x + tol_vox + 1)
     ys = slice(max(0, y - tol_vox), y + tol_vox + 1)

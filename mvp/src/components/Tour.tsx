@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, MousePointerClick, Sparkles, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '../auth';
 
 /**
  * Panduan bergaya tutorial game: layar diredupkan, elemen yang harus diperhatikan dikotakkan
@@ -29,8 +30,10 @@ export function tourSeen(id: string) {
   }
 }
 
-/** State panduan: mulai otomatis sekali per perangkat, bisa diputar ulang lewat start(). */
-export function useTour(id: string, { autoStart = true, delay = 900, when = true }: { autoStart?: boolean; delay?: number; when?: boolean } = {}) {
+/** State panduan: mulai otomatis sekali per akun di perangkat ini, bisa diputar ulang lewat start(). */
+export function useTour(tourId: string, { autoStart = true, delay = 900, when = true }: { autoStart?: boolean; delay?: number; when?: boolean } = {}) {
+  const { user } = useAuth();
+  const id = user ? `${tourId}-${user.id}` : tourId;
   const [open, setOpen] = useState(false);
   useEffect(() => {
     if (!autoStart || !when || tourSeen(id)) return;

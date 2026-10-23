@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { api, setUnauthorizedHandler, token, type User } from './api';
+import { ApiError, api, setUnauthorizedHandler, token, type User } from './api';
 
 type AuthState = {
   user: User | null;
@@ -27,11 +27,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setReady(true);
       return;
     }
-    api
-      .authMe()
-      .then(setUser)
-      .catch(() => token.clear())
-      .finally(() => setReady(true));
+    // hanya 401 yang berarti sesi habis; galat jaringan/cold start dicoba ulang supaya presenter tidak ter-logout
+    let alive = true;
+    (async () => {
+      for (let i = 0; i < 3 && alive; i++) {
+        try {
+          const u = await api.authMe();
+          if (alive) setUser(u);
+          break;
+        } catch (e) {
+          if (e instanceof ApiError && e.status === 401) {
+            token.clear();
+            break;
+          }
+          await new Promise((r) => setTimeout(r, 800 * (i + 1)));
+        }
+      }
+      if (alive) setReady(true);
+    })();
+    return () => {
+      alive = false;
+    };
   }, [signOut]);
 
   const signIn = useCallback((t: string, u: User) => {

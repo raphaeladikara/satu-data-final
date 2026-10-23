@@ -13,11 +13,14 @@ import time
 
 PEPPER = os.environ.get("SINAPS_PEPPER", "sinaps-icc-2026")
 SECRET = (os.environ.get("SINAPS_SECRET") or f"token:{PEPPER}").encode()
+SECRET_DEFAULT = not os.environ.get("SINAPS_SECRET")
 # kode untuk mendaftar sebagai dosen; set DOSEN_KEY di produksi
 DOSEN_KEY = os.environ.get("DOSEN_KEY") or "SINAPS2026"
 DOSEN_KEY_DEFAULT = not os.environ.get("DOSEN_KEY")
 TOKEN_TTL = 7 * 24 * 3600
 ITER = 120_000
+# dipakai saat akun tidak ada supaya waktu respons masuk sama (tanpa enumerasi NIM/username lewat waktu)
+DUMMY_HASH = f"pbkdf2${ITER}${'0' * 32}${'0' * 64}"
 
 
 def pseudonym(nim):

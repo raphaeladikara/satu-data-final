@@ -7,7 +7,6 @@ Keluaran: public/brain3d/<sub>.bin (gzip) = DWI | FLAIR | mask | ADC relatif x10
 diperkecil 2x di bidang aksial, dan public/brain3d/index.json berisi dimensi dan spacing.
 """
 import gzip
-import hashlib
 import json
 from pathlib import Path
 
@@ -21,7 +20,8 @@ CASES = ["sub-754", "sub-1320", "sub-652"]
 
 
 def seq_id(sub, name):
-    return hashlib.sha256(f"sinaps-{sub}-{name}".encode()).hexdigest()[:10]
+    """Nama berkas sekuens: ambil dari server_data/cases.json (berkas acak, bukan hash nama sekuens)."""
+    return json.loads((MVP / "server_data" / "cases.json").read_text(encoding="utf-8"))[sub]["sequences"][name]
 
 
 def load_vol(sub, name, dims):

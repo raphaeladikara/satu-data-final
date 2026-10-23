@@ -37,6 +37,21 @@ export function Empty({ title, children }: { title: string; children?: ReactNode
   );
 }
 
+/** Galat memuat data: pesan singkat + tombol coba lagi, supaya halaman tidak berputar selamanya. */
+export function LoadError({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  return (
+    <div role="alert" className="tw flex flex-col items-center gap-2 rounded-2xl border border-dashed border-bad/30 !bg-bad-soft/40 px-6 py-8 text-center">
+      <b className="text-[15px] font-medium text-bad-ink">Data belum bisa dimuat</b>
+      <p className="max-w-sm text-[13.5px] text-ink/60">{message}</p>
+      {onRetry && (
+        <button onClick={onRetry} className="mt-1 rounded-lg bg-teal px-3.5 py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-teal-800">
+          Coba lagi
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function Loading({ text = 'Memuat…' }: { text?: string }) {
   return (
     <div className="tw flex items-center gap-3 !bg-transparent py-6 text-[14px] text-ink/55">

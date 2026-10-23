@@ -58,7 +58,8 @@ def choose_case(cases, mastery, seen, kc=None):
     """cases: list dict dengan 'id' dan 'tier'. seen: id kasus yang sudah dikerjakan.
 
     kc: KC yang dipilih sendiri oleh mahasiswa (latihan terarah dari modul belajar); tanpa itu sistem
-    memilih KC terlemah yang prasyaratnya terpenuhi.
+    memilih KC terlemah yang prasyaratnya terpenuhi. Kasus yang sudah dikerjakan tidak pernah dipilih lagi
+    (kuncinya sudah terbuka); bila semua sudah dikerjakan, kasus = None dan tingkat = None.
     """
     k, blocked = choose_target(mastery)
     if kc in KC and KC[kc]["aktif"]:
@@ -71,5 +72,8 @@ def choose_case(cases, mastery, seen, kc=None):
         if pool:
             # urutan tetap tapi berbeda per mahasiswa: kasus paling jarang dilihat dulu
             return k, want, t, pool[len(seen) % len(pool)], blocked
-    pool = [c for c in cases if c["tier"] == want] or cases
-    return k, want, want, pool[len(seen) % len(pool)], blocked
+    pool = [c for c in cases if c["id"] not in seen]  # tingkat di luar ketiga tingkat baku
+    if pool:
+        c = pool[len(seen) % len(pool)]
+        return k, want, c["tier"], c, blocked
+    return k, want, None, None, blocked

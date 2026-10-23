@@ -134,7 +134,7 @@ export type Me = {
   ringkas: { n_kasus: number; mean_dice: number | null; kc_dikuasai: number };
   assignments: Assignment[];
 };
-export type CaseRow = { id: string; tier: string; D: number; vignette: Vignette; dikerjakan: boolean; dice: number | null };
+export type CaseRow = { id: string; tier: string; D: number; vignette: Vignette; dikerjakan: boolean; dice: number | null; attempt_id?: number | null };
 export type Review = AttemptDetail;
 export type AttemptDetail = Attempt &
   SubmitResult & {
@@ -268,19 +268,26 @@ export const setUnauthorizedHandler = (fn: () => void) => {
 
 async function raw(path: string, init?: RequestInit): Promise<Response> {
   const t = token.get();
-  const res = await fetch(path, {
-    ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(t ? { Authorization: `Bearer ${t}` } : {}),
-      ...(init?.headers || {}),
-    },
-  });
+  let res: Response;
+  try {
+    res = await fetch(path, {
+      ...init,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(t ? { Authorization: `Bearer ${t}` } : {}),
+        ...(init?.headers || {}),
+      },
+    });
+  } catch (e) {
+    if ((e as Error).name === 'AbortError') throw e;
+    throw new ApiError(0, 'Tidak bisa terhubung ke server. Periksa koneksi internet lalu coba lagi.');
+  }
   if (!res.ok) {
-    let msg = `Galat ${res.status}`;
+    let msg = res.status >= 500 ? 'Server sedang bermasalah. Coba lagi sebentar.' : `Galat ${res.status}`;
     try {
       const j = await res.json();
-      msg = typeof j.detail === 'string' ? j.detail : msg;
+      if (typeof j.detail === 'string') msg = j.detail;
+      else if (res.status === 422) msg = 'Data yang dikirim tidak valid.';
     } catch {
       /* bukan JSON */
     }
@@ -332,21 +339,28 @@ export const api = {
   submit: (body: Record<string, unknown>) => send<SubmitResult>('POST', '/api/submit', body),
   tutor: (body: Record<string, unknown>) => send<TutorReply>('POST', '/api/tutor', body),
   /** Jawaban tutor bertahap (NDJSON). onText menerima teks sejauh ini; hasil akhir sama dengan api.tutor. */
-  tutorStream: async (body: Record<string, unknown>, onText: (text: string) => void): Promise<TutorReply> => {
-    const res = await raw('/api/tutor/stream', { method: 'POST', body: JSON.stringify(body) });
+  tutorStream: async (body: Record<string, unknown>, onText: (text: string) => void, signal?: AbortSignal): Promise<TutorReply> => {
+    const res = await raw('/api/tutor/stream', { method: 'POST', body: JSON.stringify(body), signal });
     if (!res.body) return api.tutor(body);
     const reader = res.body.getReader();
     const dec = new TextDecoder();
     let buf = '';
     let text = '';
     let done: TutorReply | null = null;
+    let failed = '';
     const line = (s: string) => {
       if (!s.trim()) return;
-      const ev = JSON.parse(s) as { delta?: string; reset?: string; done?: TutorReply };
+      let ev: { delta?: string; reset?: string; done?: TutorReply; error?: string };
+      try {
+        ev = JSON.parse(s);
+      } catch {
+        return; // potongan rusak diabaikan; hasil akhir tetap dari baris done
+      }
+      if (ev.error) failed = ev.error;
       if (ev.delta !== undefined) text += ev.delta;
       if (ev.reset !== undefined) text = ev.reset;
       if (ev.done) done = ev.done;
-      onText(text);
+      if (!signal?.aborted) onText(text);
     };
     for (;;) {
       const { value, done: end } = await reader.read();
@@ -359,7 +373,7 @@ export const api = {
       if (end) break;
     }
     line(buf);
-    if (!done) throw new ApiError(502, 'Jawaban tutor terputus');
+    if (!done) throw new ApiError(502, failed || 'Jawaban tutor terputus. Coba kirim ulang pertanyaanmu.');
     return done;
   },
   attempt: (id: number) => req<AttemptDetail>(`/api/attempts/${id}`),

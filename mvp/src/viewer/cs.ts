@@ -3,6 +3,7 @@ import {
   Enums,
   RenderingEngine,
   cache,
+  getRenderingEngine,
   init as csInit,
   utilities as csUtils,
   volumeLoader,
@@ -48,10 +49,19 @@ const DEFAULT_VOI: Types.VOIRange = { lower: 0, upper: 200 };
 
 let ready: Promise<void> | null = null;
 
+/** Dibuang ketika viewer dihancurkan di tengah pemuatan (pindah kasus/halaman); pemanggil cukup mengabaikannya. */
+export class ViewerAborted extends Error {
+  constructor() {
+    super('viewer dihentikan');
+    this.name = 'ViewerAborted';
+  }
+}
+
 export function initCornerstone() {
   if (!ready) {
     ready = (async () => {
-      csInit();
+      // satu konteks WebGL cukup untuk satu viewport; bawaan 7 konteks per engine membuat GPU cepat penuh
+      csInit({ rendering: { webGlContextCount: 1 } } as Parameters<typeof csInit>[0]);
       toolsInit();
       [WindowLevelTool, PanTool, ZoomTool, StackScrollTool, BrushTool].forEach((t) => addTool(t));
     })();
@@ -88,29 +98,62 @@ function metadata(g: CaseGeometry, center: number, width: number) {
   };
 }
 
+/** Normal = -k (seperti AXIAL: dilihat dari kaki), atas = +j (anterior di atas pada ruang LPS). */
+function sliceOrientation(d: number[]) {
+  return {
+    viewPlaneNormal: [-d[6], -d[7], -d[8]] as Types.Point3,
+    viewUp: [d[3], d[4], d[5]] as Types.Point3,
+  };
+}
+
 export class SinapsViewer {
   engine: RenderingEngine;
   element: HTMLDivElement;
   geom: CaseGeometry;
   volumeIds: string[] = [];
   active = 0;
+  destroyed = false;
+  private resizeObs: ResizeObserver | null = null;
   private segVolumeIds: Partial<Record<SegKey, string>> = {};
   private visible: Record<SegKey, boolean> = { jawaban: true, kunci: false, model: false };
 
   constructor(element: HTMLDivElement, geom: CaseGeometry) {
     this.element = element;
     this.geom = geom;
-    this.engine = new RenderingEngine(ENGINE_ID);
+    // engine dipakai ulang antarkasus supaya konteks WebGL tidak menumpuk
+    this.engine = (getRenderingEngine(ENGINE_ID) as RenderingEngine | undefined) ?? new RenderingEngine(ENGINE_ID);
+    if (this.engine.getViewport(VP_ID)) this.engine.disableElement(VP_ID);
+    // kanvas ikut menyesuaikan saat panel digeser atau jendela berubah ukuran, tanpa mengubah zoom/slice
+    let raf = 0;
+    this.resizeObs = new ResizeObserver(() => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        if (!this.destroyed && this.engine.getViewport(VP_ID)) this.engine.resize(true, true);
+      });
+    });
+    this.resizeObs.observe(element);
     this.engine.enableElement({
       viewportId: VP_ID,
       type: Enums.ViewportType.ORTHOGRAPHIC,
       element,
-      defaultOptions: { orientation: Enums.OrientationAxis.AXIAL, background: [0, 0, 0] as Types.Point3 },
+      // Bidang pandang = bidang slice voxel, bukan AXIAL dunia: volume SOOP miring ~10 derajat, sehingga bidang aksial
+      // dunia memotong beberapa slice voxel sekaligus (nomor slice, lompatan ke fokus, dan kuas meleset 1-2 slice).
+      // Bukan OrientationAxis.ACQUISITION juga: itu memakai viewUp = -j sehingga citra terputar 180 derajat (posterior di atas).
+      defaultOptions: { orientation: sliceOrientation(geom.direction), background: [0, 0, 0] as Types.Point3 },
     });
   }
 
   get viewport() {
     return this.engine.getViewport(VP_ID) as Types.IVolumeViewport;
+  }
+
+  /** Siap dipakai: volume sudah termuat dan viewer belum dihancurkan. */
+  get ready() {
+    return !this.destroyed && this.volumeIds.length > 0 && !!this.viewport;
+  }
+
+  private check() {
+    if (this.destroyed) throw new ViewerAborted();
   }
 
   async load(files: string[], onProgress?: (n: number) => void) {
@@ -119,10 +162,11 @@ export class SinapsViewer {
     const datas = await Promise.all(
       files.map(async (f) => {
         const d = await fetchVolume(f);
-        onProgress?.(++done);
+        if (!this.destroyed) onProgress?.(++done);
         return d;
       }),
     );
+    this.check();
     datas.forEach((data, i) => {
       // tanpa ':' supaya Cornerstone tidak mencari image loader untuk slice volume lokal
       const id = `sinaps_${g.id}_${i}_${Date.now()}`;
@@ -137,6 +181,7 @@ export class SinapsViewer {
       this.volumeIds.push(id);
     });
     await this.viewport.setVolumes([{ volumeId: this.volumeIds[0] }]);
+    this.check();
     this.viewport.setProperties({ voiRange: DEFAULT_VOI });
     this.createSegmentations();
     this.setupTools();
@@ -217,12 +262,13 @@ export class SinapsViewer {
   }
 
   async showSeries(i: number) {
-    if (i === this.active) return;
+    if (i === this.active || !this.ready || !this.volumeIds[i]) return;
     const cam = this.viewport.getCamera();
     const voi = this.voiByVolume.get(this.volumeIds[this.active]);
     this.voiByVolume.set(this.volumeIds[this.active], this.viewport.getProperties()?.voiRange ?? voi);
     this.active = i;
     await this.viewport.setVolumes([{ volumeId: this.volumeIds[i] }]);
+    if (this.destroyed) return;
     this.attachSegmentations();
     this.viewport.setCamera(cam);
     this.viewport.setProperties({ voiRange: this.voiByVolume.get(this.volumeIds[i]) ?? DEFAULT_VOI });
@@ -232,6 +278,7 @@ export class SinapsViewer {
   private voiByVolume = new Map<string, Types.VOIRange | undefined>();
 
   resetView() {
+    if (!this.ready) return;
     this.viewport.resetCamera();
     this.viewport.setProperties({ voiRange: DEFAULT_VOI });
     this.middleSlice();
@@ -245,6 +292,7 @@ export class SinapsViewer {
 
   /** Lompat ke slice voxel k (berbasis 0) lewat koordinat dunia pusat slice. */
   jumpToVoxel(ijk: [number, number, number]) {
+    if (!this.ready) return;
     const vol = cache.getVolume(this.volumeIds[this.active])!;
     const world = vol.imageData!.indexToWorld(ijk as unknown as Types.Point3) as Types.Point3;
     const cam = this.viewport.getCamera();
@@ -261,6 +309,7 @@ export class SinapsViewer {
 
   /** Voxel (i, j, k) dan nilainya di bawah titik kanvas. */
   probe(canvasX: number, canvasY: number) {
+    if (!this.ready) return null;
     const world = this.viewport.canvasToWorld([canvasX, canvasY]);
     const vol = cache.getVolume(this.volumeIds[this.active]);
     if (!vol) return null;
@@ -272,6 +321,7 @@ export class SinapsViewer {
   }
 
   currentSlice(): number {
+    if (!this.ready) return 0;
     const cam = this.viewport.getCamera();
     const vol = cache.getVolume(this.volumeIds[this.active]);
     if (!vol) return 0;
@@ -302,6 +352,7 @@ export class SinapsViewer {
 
   setVisible(k: SegKey, on: boolean) {
     this.visible[k] = on;
+    if (!this.ready) return;
     segmentation.config.visibility.setSegmentationRepresentationVisibility(
       VP_ID,
       { segmentationId: SEG[k], type: ToolEnums.SegmentationRepresentations.Labelmap },
@@ -318,11 +369,13 @@ export class SinapsViewer {
   }
 
   undo() {
+    if (!this.ready) return;
     csUtils.HistoryMemo.DefaultHistoryMemo.undo();
     this.viewport.render();
   }
 
   redo() {
+    if (!this.ready) return;
     csUtils.HistoryMemo.DefaultHistoryMemo.redo();
     this.viewport.render();
   }
@@ -338,6 +391,12 @@ export class SinapsViewer {
   }
 
   destroy() {
+    if (this.destroyed) return;
+    this.destroyed = true;
+    this.resizeObs?.disconnect();
+    // riwayat urung bersifat global: kosongkan supaya Ctrl+Z tidak menyentuh coretan kasus sebelumnya
+    const memo = csUtils.HistoryMemo.DefaultHistoryMemo;
+    memo.size = memo.size;
     try {
       segmentation.removeAllSegmentationRepresentations();
       segmentation.removeAllSegmentations();
@@ -345,7 +404,11 @@ export class SinapsViewer {
       /* belum ada segmentasi */
     }
     ToolGroupManager.destroyToolGroup(TG_ID);
-    this.engine.destroy();
+    try {
+      if (this.engine.getViewport(VP_ID)) this.engine.disableElement(VP_ID);
+    } catch {
+      /* elemen sudah dilepas */
+    }
     for (const id of [...this.volumeIds, ...Object.values(this.segVolumeIds)]) cache.removeVolumeLoadObject(id!);
     this.volumeIds = [];
   }

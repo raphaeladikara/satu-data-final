@@ -52,6 +52,8 @@ def rle_encode(mask):
 
 def rle_decode(runs, shape):
     total = int(np.prod(shape))
+    if len(runs) > total + 1 or any(type(r) is not int or r < 0 for r in runs):
+        raise ValueError("RLE harus berisi bilangan bulat >= 0")
     if sum(runs) != total:
         raise ValueError(f"panjang RLE {sum(runs)} != {total}")
     vals = np.zeros(len(runs), dtype=np.uint8)

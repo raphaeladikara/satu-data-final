@@ -128,7 +128,10 @@ export default function Ringkasan() {
   const attention = data.students.filter((s) => s.flags.length);
   const errs = Object.entries(data.error_counts).sort((a, b) => b[1] - a[1]);
   const kelasName = kelas ? data.kelas.find((k) => k.id === kelas)?.nama : `${data.kelas.length} kelas`;
-  const weakest = ACTIVE.reduce((a, k) => ((data.kc_avg[k]?.mean ?? 1) < (data.kc_avg[a]?.mean ?? 1) ? k : a), ACTIVE[0]);
+  // tanpa data penguasaan sama sekali tidak ada KC terlemah (jangan tandai K1 merah secara default)
+  const weakest = ACTIVE.some((k) => data.kc_avg[k]?.mean != null)
+    ? ACTIVE.reduce((a, k) => ((data.kc_avg[k]?.mean ?? 1) < (data.kc_avg[a]?.mean ?? 1) ? k : a), ACTIVE[0])
+    : null;
   const recentAll = [...data.recent].sort((a, b) => b.submitted_at - a.submitted_at).filter((r) => !kc || r.kc[kc] !== undefined);
   const recent = showAll ? recentAll : recentAll.slice(0, 10);
   const doExport = async (j: 'penguasaan' | 'percobaan') => {
@@ -804,6 +807,7 @@ export function DetailMahasiswa() {
   const [d, setD] = useState<StudentDetail | null>(null);
   const [err, setErr] = useState('');
   const [pw, setPw] = useState('');
+  const [actErr, setActErr] = useState('');
   const [tab, setTab] = useState<Tab>('kasus');
   useEffect(() => {
     api.student(sid).then(setD).catch((e) => setErr(e.message));
@@ -814,12 +818,22 @@ export function DetailMahasiswa() {
   const errs = Object.entries(d.error_counts).sort((a, b) => b[1] - a[1]);
   const reset = async () => {
     if (!confirm(`Atur ulang kata sandi ${s.nama}? Kata sandi lama langsung tidak berlaku.`)) return;
-    setPw((await api.resetPassword(sid)).password);
+    setActErr('');
+    try {
+      setPw((await api.resetPassword(sid)).password);
+    } catch (e) {
+      setActErr((e as Error).message);
+    }
   };
   const remove = async () => {
     if (!confirm(`Keluarkan ${s.nama} dari ${s.kelas?.nama}? Riwayat latihannya tidak dihapus.`)) return;
-    await api.moveStudent(sid, null);
-    history.back();
+    setActErr('');
+    try {
+      await api.moveStudent(sid, null);
+      history.back();
+    } catch (e) {
+      setActErr((e as Error).message);
+    }
   };
   const dices = d.attempts.filter((a) => a.dice !== null).map((a) => a.dice!);
   const meanDice = dices.length ? dices.reduce((a, b) => a + b, 0) / dices.length : null;
@@ -869,6 +883,11 @@ export function DetailMahasiswa() {
         </div>
       </section>
 
+      {actErr && (
+        <p role="alert" className="mt-4 rounded-xl border border-bad/30 bg-bad-soft/50 px-4 py-3 text-[13.5px] text-bad-ink">
+          {actErr}
+        </p>
+      )}
       {pw && (
         <section className="mt-4 flex flex-wrap items-center gap-4 rounded-2xl border border-warn/30 bg-warn-soft/60 p-5">
           <KeyRound className="size-5 text-warn-ink" />

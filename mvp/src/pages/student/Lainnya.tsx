@@ -5,7 +5,7 @@ import { useAuth } from '../../auth';
 import JoinClass from '../../components/JoinClass';
 import ReadViewer from '../../components/ReadViewer';
 import Markdown from '../../components/Markdown';
-import { Empty, Loading, Page } from '../../components/Shell';
+import { Empty, LoadError, Loading, Page } from '../../components/Shell';
 
 import { ArrowRight, Check, Search } from 'lucide-react';
 import { AppShell, PageHead } from '@/components/AppShell';
@@ -19,9 +19,12 @@ import { BADGE, FILL, TEXT, TIER, diceTone, nihssTone } from '@/lib/status';
 export function Tugas() {
   const { user } = useAuth();
   const [list, setList] = useState<Assignment[] | null>(null);
-  useEffect(() => {
-    api.assignments().then(setList).catch(() => setList([]));
-  }, []);
+  const [err, setErr] = useState('');
+  const load = () => {
+    setErr('');
+    api.assignments().then(setList).catch((e) => setErr(e.message));
+  };
+  useEffect(load, []);
   // yang belum tuntas di atas, diurutkan dari tenggat terdekat
   const sorted = [...(list ?? [])].sort((a, b) => Number(a.tuntas) - Number(b.tuntas) || (a.due_at ?? 9e12) - (b.due_at ?? 9e12));
   return (
@@ -34,9 +37,11 @@ export function Tugas() {
             <p className="text-[13.5px] text-ink/60">Minta kode kelas kepada dosenmu.</p>
           </div>
           <div className="legacy">
-            <JoinClass onJoined={() => api.assignments().then(setList)} />
+            <JoinClass onJoined={load} />
           </div>
         </section>
+      ) : err ? (
+        <LoadError message={err} onRetry={load} />
       ) : !list ? (
         <Loading />
       ) : list.length === 0 ? (
@@ -60,9 +65,12 @@ export function Tugas() {
 export function Riwayat() {
   const [me, setMe] = useState<Me | null>(null);
   const [kc, setKc] = useState('');
-  useEffect(() => {
-    api.me().then(setMe);
-  }, []);
+  const [err, setErr] = useState('');
+  const load = () => {
+    setErr('');
+    api.me().then(setMe).catch((e) => setErr(e.message));
+  };
+  useEffect(load, []);
   const all = me?.attempts ?? [];
   const rows = all.filter((a) => !kc || a.kc[kc] !== undefined);
   const withDice = rows.filter((r) => r.dice !== null);
@@ -71,7 +79,9 @@ export function Riwayat() {
   return (
     <AppShell>
       <PageHead title="Riwayat latihan" sub="Semua kasus yang sudah kamu kirim. Buka satu percobaan untuk melihat anotasimu di atas kunci jawaban." />
-      {!me ? (
+      {err ? (
+        <LoadError message={err} onRetry={load} />
+      ) : !me ? (
         <Loading />
       ) : (
         <section className="rounded-2xl card-surface p-5 sm:p-6">
@@ -110,7 +120,7 @@ export function Tinjau({ back = '/riwayat' }: { back?: string }) {
   const [jump, setJump] = useState<[number, number, number] | null>(null);
   useEffect(() => {
     api.attempt(Number(id)).then(setD).catch((e) => setErr(e.message));
-    api.kc().then((r) => setKc(r.kc));
+    api.kc().then((r) => setKc(r.kc)).catch(() => {});
   }, [id]);
 
   if (err) return <Page title="Tinjau percobaan"><p className="error">{err}</p><Link to={back}>Kembali</Link></Page>;
@@ -162,7 +172,7 @@ export function Tinjau({ back = '/riwayat' }: { back?: string }) {
                 <div className="missed">
                   <h3>Fokus yang terlewat</h3>
                   {missed.slice(0, 8).map((f, i) => (
-                    <button key={i} className="chip" onClick={() => setJump(f.pusat_voxel.map(Math.round) as [number, number, number])}>
+                    <button key={i} className="chip" onClick={() => setJump([Math.round(f.pusat_voxel[0]), Math.round(f.pusat_voxel[1]), f.slice_terbesar - 1])}>
                       {fmt.num(f.ml)} ml · slice {f.slice_terbesar}
                     </button>
                   ))}
@@ -243,9 +253,12 @@ export function Kasus() {
   const [status, setStatus] = useState<'' | 'belum' | 'sudah'>('');
   const [q, setQ] = useState('');
   const [sort, setSort] = useState<Sort>('D-asc');
-  useEffect(() => {
-    api.cases().then(setCases);
-  }, []);
+  const [err, setErr] = useState('');
+  const load = () => {
+    setErr('');
+    api.cases().then(setCases).catch((e) => setErr(e.message));
+  };
+  useEffect(load, []);
   const all = cases ?? [];
   const [dMin, dMax] = all.length ? [Math.min(...all.map((c) => c.D)), Math.max(...all.map((c) => c.D))] : [0, 1];
   const list = all
@@ -258,7 +271,9 @@ export function Kasus() {
         title="Bank kasus"
         sub={`${cases?.length ?? '…'} kasus latihan dari SOOP. Tingkat kesulitan memakai tersil indeks D = −log₁₀ V + log₂ F dari seluruh 1.451 lesion mask akut. Kasus yang dipilih sendiri tetap memperbarui penguasaanmu.`}
       />
-      {!cases ? (
+      {err ? (
+        <LoadError message={err} onRetry={load} />
+      ) : !cases ? (
         <Loading />
       ) : (
         <>
@@ -333,7 +348,8 @@ export function Kasus() {
                     const v = c.vignette;
                     const nt = nihssTone(v.nihss);
                     const tt = TIER[c.tier] ?? 'none';
-                    const go = () => nav(`/latihan?kasus=${c.id}`);
+                    // kasus yang sudah dikirim tidak bisa dikerjakan ulang (kuncinya sudah terbuka): arahkan ke tinjau ulang
+                    const go = () => nav(c.dikerjakan && c.attempt_id ? `/riwayat/${c.attempt_id}` : `/latihan?kasus=${c.id}`);
                     return (
                       <tr key={c.id} onClick={go} className="group cursor-pointer border-t border-line transition-colors hover:bg-surface">
                         <td className="px-4 py-3">
@@ -373,7 +389,7 @@ export function Kasus() {
                         </td>
                         <td className="px-4 py-3 text-right">
                           <span className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[12.5px] font-medium text-ink/40 transition-colors group-hover:bg-teal group-hover:text-white">
-                            {c.dikerjakan ? 'Ulangi' : 'Kerjakan'} <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+                            {c.dikerjakan ? 'Tinjau' : 'Kerjakan'} <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
                           </span>
                         </td>
                       </tr>

@@ -8,12 +8,14 @@ import re
 import sys
 import time
 from pathlib import Path
+from typing import Annotated
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from fastapi import Depends, FastAPI, Header, HTTPException  # noqa: E402
+from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request  # noqa: E402
+from fastapi import Path as PathParam  # noqa: E402
 from fastapi.responses import Response, StreamingResponse  # noqa: E402
-from pydantic import BaseModel  # noqa: E402
+from pydantic import BaseModel, Field, StrictInt  # noqa: E402
 
 from sinaps import auth, bkt, cases, db, grading, tutor  # noqa: E402
 
@@ -25,6 +27,25 @@ JENJANG = {"praklinik": "Mahasiswa praklinik", "klinik": "Mahasiswa klinik (koas
 TEACHING = {"sub-754": "Restriksi difusi sejati", "sub-1320": "T2 shine-through", "sub-652": "Lesi tiga fokus"}
 LESSON_IDS = ["orientasi", "k1", "k2", "k3", "k6", "k4k5"]
 REVIEW_STATUS = ("disetujui", "perlu_tinjau", "ditolak")
+SUDAH_DIKERJAKAN = "Kasus ini sudah kamu kerjakan. Tinjau di Riwayat."
+SEMUA_DIKERJAKAN = ("Semua kasus latihan sudah kamu kerjakan. Tinjau ulang di Riwayat atau minta dosen menambah "
+                    "kasus.")
+LOGIN_WINDOW, LOGIN_MAX_AKUN, LOGIN_MAX_IP = 600, 8, 30  # IP lebih longgar: satu kelas sering berbagi NAT kampus
+TUTOR_PER_MENIT, TUTOR_PER_HARI = 20, 300
+
+# Validasi masukan: id muat di kolom Integer Postgres, angka harus terhingga (NaN/inf ditolak 422, bukan 500)
+MAX_ID = 2_147_483_647
+Id = Annotated[int, Field(ge=0, le=MAX_ID)]
+IdPath = Annotated[int, PathParam(ge=0, le=MAX_ID)]
+IdQuery = Annotated[int | None, Query(ge=0, le=MAX_ID)]
+Finite = Annotated[float, Field(allow_inf_nan=False)]
+
+# Tanpa SINAPS_SECRET token sesi ditandatangani kunci bawaan. Jangan hentikan fungsi (demo tetap jalan), cukup catat.
+if os.environ.get("VERCEL"):
+    if auth.SECRET_DEFAULT:
+        print("PERINGATAN: SINAPS_SECRET belum di-set, token sesi memakai kunci bawaan", file=sys.stderr)
+    if auth.DOSEN_KEY_DEFAULT:
+        print("PERINGATAN: DOSEN_KEY belum di-set, kode dosen memakai bawaan", file=sys.stderr)
 
 
 # --- util ---------------------------------------------------------------------
@@ -123,7 +144,8 @@ def assignment_status(t, done_cases, lesson_done):
 @app.get("/api/health")
 def health():
     return {"ok": True, "db": db.backend(), "llm": bool(os.environ.get("OPENAI_API_KEY")), "model": tutor.MODEL,
-            "cases": len(cases.all_cases()), "dosen_key_default": auth.DOSEN_KEY_DEFAULT}
+            "cases": len(cases.all_cases()), "dosen_key_default": auth.DOSEN_KEY_DEFAULT,
+            "secret_default": auth.SECRET_DEFAULT}
 
 
 @app.get("/api/kc")
@@ -141,25 +163,28 @@ def stats():
 
 # --- autentikasi --------------------------------------------------------------
 
+Pw = Annotated[str, Field(max_length=256)]  # batas atas supaya PBKDF2 tidak dipakai untuk membebani server
+
+
 class RegisterStudent(BaseModel):
-    nama: str
-    nim: str
-    password: str
-    jenjang: str = "klinik"
-    kode_kelas: str | None = None
+    nama: Annotated[str, Field(max_length=500)]
+    nim: Annotated[str, Field(max_length=64)]
+    password: Pw
+    jenjang: Annotated[str, Field(max_length=32)] = "klinik"
+    kode_kelas: Annotated[str, Field(max_length=32)] | None = None
 
 
 class RegisterDosen(BaseModel):
-    nama: str
-    username: str
-    password: str
-    kode_dosen: str
+    nama: Annotated[str, Field(max_length=500)]
+    username: Annotated[str, Field(max_length=64)]
+    password: Pw
+    kode_dosen: Annotated[str, Field(max_length=200)]
 
 
 class LoginReq(BaseModel):
-    role: str = "mahasiswa"
-    id: str            # NIM (mahasiswa) atau username (dosen)
-    password: str
+    role: Annotated[str, Field(max_length=16)] = "mahasiswa"
+    id: Annotated[str, Field(max_length=64)]            # NIM (mahasiswa) atau username (dosen)
+    password: Pw
 
 
 def _check_pw(pw):
@@ -210,12 +235,26 @@ def register_dosen(body: RegisterDosen):
     return {"token": auth.make_token(a), "user": public_user(a)}
 
 
+def _client_ip(request):
+    fwd = request.headers.get("x-forwarded-for", "")
+    ip = fwd.split(",")[0].strip() or (request.client.host if request.client else "")
+    return ip[:64] or "-"
+
+
 @app.post("/api/auth/login")
-def login(body: LoginReq):
+def login(body: LoginReq, request: Request):
     aid = auth.dosen_id(body.id) if body.role == "dosen" else auth.pseudonym(body.id)
+    keys = [f"akun:{aid}", f"ip:{_client_ip(request)}"]
+    n = db.login_fail_counts(keys, time.time() - LOGIN_WINDOW)
+    if n.get(keys[0], 0) >= LOGIN_MAX_AKUN or n.get(keys[1], 0) >= LOGIN_MAX_IP:
+        raise HTTPException(429, "Terlalu banyak percobaan masuk. Coba lagi beberapa menit lagi.")
     a = db.get_account(aid)
-    if not a or a["role"] != body.role or not auth.check_password(body.password, a["pw_hash"]):
+    # akun tidak ada tetap menjalankan PBKDF2 supaya waktu respons tidak membocorkan NIM/username yang terdaftar
+    pw_ok = auth.check_password(body.password, a["pw_hash"] if a else auth.DUMMY_HASH)
+    if not a or a["role"] != body.role or not pw_ok:
+        db.add_login_fail(keys)
         raise HTTPException(401, ("Username" if body.role == "dosen" else "NIM") + " atau kata sandi salah")
+    db.clear_login_fail(keys[0])
     db.update_account(a["id"], last_seen=time.time())
     return {"token": auth.make_token(a), "user": public_user(a)}
 
@@ -226,8 +265,8 @@ def auth_me(a=Depends(current)):
 
 
 class PasswordReq(BaseModel):
-    lama: str
-    baru: str
+    lama: Pw
+    baru: Pw
 
 
 @app.post("/api/auth/password")
@@ -241,8 +280,8 @@ def change_password(body: PasswordReq, a=Depends(current)):
 
 
 class ProfileReq(BaseModel):
-    nama: str | None = None
-    jenjang: str | None = None
+    nama: Annotated[str, Field(max_length=500)] | None = None
+    jenjang: Annotated[str, Field(max_length=32)] | None = None
 
 
 @app.patch("/api/auth/profile")
@@ -260,7 +299,7 @@ def update_profile(body: ProfileReq, a=Depends(current)):
 
 
 class JoinReq(BaseModel):
-    kode: str
+    kode: Annotated[str, Field(max_length=32)]
 
 
 @app.post("/api/kelas/join")
@@ -305,7 +344,8 @@ def _student_assignments(a, done=None, les=None):
         les = {r["lesson_id"]: r for r in db.list_lessons([a["id"]])}
     out = []
     for t in db.list_assignments([a["kelas_id"]]):
-        done_cases = {x["case_id"] for x in done if x["submitted_at"] >= t["created_at"]}
+        # kasus yang dikirim sebelum tugas dibuat ikut dihitung: kasus terkirim tidak bisa dikerjakan ulang
+        done_cases = {x["case_id"] for x in done}
         lesson_done = {lid for lid, r in les.items() if r["completed_at"]}
         out.append({"id": t["id"], "judul": t["judul"], "catatan": t["catatan"], "due_at": t["due_at"],
                     "created_at": t["created_at"], "case_ids": t["case_ids"] or [], "lesson_ids": t["lesson_ids"] or [],
@@ -321,7 +361,7 @@ def student_assignments(a=Depends(student)):
 
 
 class LessonReq(BaseModel):
-    quiz_score: float | None = None
+    quiz_score: Finite | None = None
     completed: bool = False
 
 
@@ -373,17 +413,20 @@ def _attempt_payload(att, reason, blocked, m):
 
 
 @app.get("/api/next")
-def next_case(kc: str | None = None, baru: bool = False, a=Depends(student)):
+def next_case(kc: Annotated[str, Query(max_length=8)] | None = None, baru: bool = False, a=Depends(student)):
     m, _ = db.get_mastery(a["id"], bkt.initial())
-    atts = db.list_attempts(a["id"], 500)
+    # kasus yang sudah dikirim tidak pernah disajikan lagi: kuncinya (gt_rle) sudah terbuka
+    seen = db.submitted_case_ids(a["id"])
     if not baru and not kc:
         # lanjutkan kasus adaptif yang belum dikirim (mis. setelah memuat ulang halaman)
+        atts = db.list_attempts(a["id"], 50)
         pending = next((x for x in atts if not x["submitted_at"] and x["target_kc"] != "bebas"
                         and time.time() - x["started_at"] < 6 * 3600), None)
-        if pending and pending["case_id"] in cases.secrets():
+        if pending and pending["case_id"] in cases.secrets() and pending["case_id"] not in seen:
             return _attempt_payload(pending, "Melanjutkan kasus yang belum selesai", [], m)
-    seen = {x["case_id"] for x in atts if x["submitted_at"]}
     k, want, tier, case, blocked = bkt.choose_case(practice_cases(), m, seen, kc)
+    if case is None:
+        raise HTTPException(409, SEMUA_DIKERJAKAN)
     if kc and k == kc:
         reason = f"Latihan terarah {k} {bkt.KC[k]['nama']} (penguasaan {m[k]:.0%}) -> tingkat {want}"
     else:
@@ -399,19 +442,25 @@ def open_case(case_id: str, a=Depends(student)):
     if case_id not in cases.secrets() or case_id in TEACHING:
         raise HTTPException(404, "kasus tidak ditemukan")
     m, _ = db.get_mastery(a["id"], bkt.initial())
+    mine = db.attempts_on_case(a["id"], case_id)
+    if any(x["submitted_at"] for x in mine):
+        raise HTTPException(409, SUDAH_DIKERJAKAN)
+    if mine:  # percobaan yang belum dikirim dilanjutkan, bukan dibuat baru
+        return _attempt_payload(mine[0], "Melanjutkan kasus yang belum selesai", [], m)
     pub = cases.public_case(case_id)
     return _open(a, case_id, "bebas", pub["tier"], "Kasus dipilih sendiri dari bank kasus", m, [])
 
 
 @app.get("/api/cases")
 def list_cases(a=Depends(current)):
-    done = {}
+    done = {}  # case_id -> percobaan terkirim terbaru (list_attempts urut id menurun)
     if a["role"] == "mahasiswa":
         for x in db.list_attempts(a["id"], 500):
             if x["submitted_at"]:
-                done.setdefault(x["case_id"], _dl(x).get("dice"))
+                done.setdefault(x["case_id"], x)
     return [{"id": c["id"], "tier": c["tier"], "D": c["D"], "vignette": c["vignette"],
-             "dikerjakan": c["id"] in done, "dice": done.get(c["id"])} for c in practice_cases()]
+             "dikerjakan": c["id"] in done, "dice": _dl(done[c["id"]]).get("dice") if c["id"] in done else None,
+             "attempt_id": done[c["id"]]["id"] if c["id"] in done else None} for c in practice_cases()]
 
 
 def _attempt(sid, aid):
@@ -421,31 +470,46 @@ def _attempt(sid, aid):
     return att
 
 
+K1Ans = Annotated[dict[Annotated[str, Field(max_length=4)], Annotated[str, Field(max_length=16)]],
+                  Field(max_length=8)]
+
+
 class Reveal(BaseModel):
-    attempt_id: int
-    k1: dict[str, str]
+    attempt_id: Id
+    k1: K1Ans
+
+
+def _k1_ok(k1, truth):
+    return bool(k1) and all(k1.get(lbl) == n for lbl, n in truth.items())
 
 
 @app.post("/api/reveal")
 def reveal(body: Reveal, a=Depends(student)):
     """K1: kunci jawaban pengenalan sekuens, lalu buka label seri supaya langkah berikutnya memakai nama sekuens."""
     att = _attempt(a["id"], body.attempt_id)
+    truth = att["seq_order"]
+    if att["submitted_at"]:
+        k1r = ((att["result"] or {}).get("kc") or {}).get("K1") or {}
+        return {"seq_order": truth, "benar": bool(k1r.get("benar"))}
     answers = dict(att["answers"] or {})
     if "k1" not in answers:
+        # label baru dibuka bila setiap seri sudah diberi nama sekuens yang sah
+        names = set(truth.values())
+        if set(body.k1) != set(truth) or any(v not in names for v in body.k1.values()):
+            raise HTTPException(400, "Pilih jenis sekuens untuk setiap seri (" + ", ".join(sorted(truth)) + ") dulu")
         answers["k1"] = body.k1
         db.set_answers(body.attempt_id, answers)
-    truth = att["seq_order"]
-    return {"seq_order": truth, "benar": all(answers["k1"].get(lbl) == n for lbl, n in truth.items())}
+    return {"seq_order": truth, "benar": _k1_ok(answers["k1"], truth)}
 
 
 class Submit(BaseModel):
-    attempt_id: int
-    k1: dict[str, str] | None = None          # {"A": "DWI", "B": "ADC", "C": "FLAIR"}
-    k2_point: list[float] | None = None       # [x, y, z] voxel, berbasis 0
-    k2_hemisfer: str | None = None            # kiri | kanan | bilateral
-    k3_adc_bin: str | None = None
+    attempt_id: Id
+    k1: K1Ans | None = None                   # {"A": "DWI", "B": "ADC", "C": "FLAIR"}
+    k2_point: Annotated[list[Finite], Field(min_length=3, max_length=3)] | None = None  # [x, y, z] voxel, berbasis 0
+    k2_hemisfer: Annotated[str, Field(max_length=16)] | None = None  # kiri | kanan | bilateral
+    k3_adc_bin: Annotated[str, Field(max_length=16)] | None = None
     k3_restriksi: bool | None = None
-    mask_rle: list[int] | None = None
+    mask_rle: list[StrictInt] | None = None
 
 
 def _reveal_payload(att):
@@ -463,31 +527,48 @@ def submit(body: Submit, a=Depends(student)):
     att = _attempt(sid, body.attempt_id)
     if att["submitted_at"]:
         raise HTTPException(409, "jawaban kasus ini sudah dikirim")
-    body.k1 = (att["answers"] or {}).get("k1") or body.k1
     case_id = att["case_id"]
+    # percobaan lain pada kasus yang sama sudah dikirim (kunci terbuka): tidak boleh dinilai lagi
+    if any(x["submitted_at"] for x in db.attempts_on_case(sid, case_id) if x["id"] != att["id"]):
+        raise HTTPException(409, SUDAH_DIKERJAKAN)
+    answers = att["answers"] or {}
+    # K1 yang sudah dikunci lewat /api/reveal tidak bisa diganti
+    body.k1 = answers["k1"] if "k1" in answers else body.k1
     pub = cases.public_case(case_id)
     f = cases.secrets()[case_id]["findings"]
     g = cases.masks(case_id)["gt"]
     shape = tuple(pub["dimensions"])
     res = {"kc": {}}
 
+    # Semua KC aktif selalu dinilai; jawaban yang tidak diisi dihitung salah dan ditandai "kosong"
+    truth = att["seq_order"]
     if body.k1:
-        truth = att["seq_order"]
-        ok = all(body.k1.get(lbl) == name for lbl, name in truth.items())
-        res["kc"]["K1"] = {"benar": ok, "jawaban": body.k1, "kunci": truth}
-    if body.k2_point is not None or body.k2_hemisfer:
+        res["kc"]["K1"] = {"benar": _k1_ok(body.k1, truth), "jawaban": body.k1, "kunci": truth}
+    else:
+        res["kc"]["K1"] = {"benar": False, "kosong": True, "jawaban": None, "kunci": truth}
+    if body.k2_point is None and not body.k2_hemisfer:
+        res["kc"]["K2"] = {"benar": False, "kosong": True, "titik_di_lesi": False, "hemisfer_benar": False,
+                           "jawaban_hemisfer": None, "kunci_hemisfer": f["hemisfer"]}
+    else:
         in_lesion = grading.grade_point(body.k2_point, g)
         hemi_ok = body.k2_hemisfer == f["hemisfer"]
         res["kc"]["K2"] = {"benar": in_lesion and hemi_ok, "titik_di_lesi": in_lesion,
                            "hemisfer_benar": hemi_ok, "jawaban_hemisfer": body.k2_hemisfer, "kunci_hemisfer": f["hemisfer"]}
-    if body.k3_adc_bin or body.k3_restriksi is not None:
-        key_bin = grading.adc_bin(f["adc_relatif_lesi"])
+    key_bin = grading.adc_bin(f["adc_relatif_lesi"])
+    if not body.k3_adc_bin and body.k3_restriksi is None:
+        res["kc"]["K3"] = {"benar": False, "kosong": True, "rentang_benar": False, "restriksi_benar": False,
+                           "jawaban_rentang": None, "kunci_rentang": key_bin,
+                           "adc_relatif_lesi": f["adc_relatif_lesi"], "kunci_restriksi": f["restriksi_sejati"]}
+    else:
         ok_bin = body.k3_adc_bin == key_bin
         ok_r = body.k3_restriksi == f["restriksi_sejati"]
         res["kc"]["K3"] = {"benar": ok_bin and ok_r, "rentang_benar": ok_bin, "restriksi_benar": ok_r,
                            "jawaban_rentang": body.k3_adc_bin, "kunci_rentang": key_bin,
                            "adc_relatif_lesi": f["adc_relatif_lesi"], "kunci_restriksi": f["restriksi_sejati"]}
-    if body.mask_rle is not None:
+    if body.mask_rle is None:  # tanpa delineasi: K6 salah, res["delineasi"] tidak ada
+        res["kc"]["K6"] = {"benar": False, "kosong": True, "dice": None, "lesion_recall": None,
+                           "jenis_kesalahan": None}
+    else:
         try:
             p = cases.rle_decode(body.mask_rle, shape)
         except ValueError as e:
@@ -502,15 +583,16 @@ def submit(body: Submit, a=Depends(student)):
     for k, r in res["kc"].items():
         after[k] = bkt.update(after[k], r["benar"])
         n[k] += 1
-    db.set_mastery(sid, after, n)
     res["mastery_before"], res["mastery_after"] = before, after
-    # mask disimpan supaya bisa ditinjau ulang oleh mahasiswa dan dosen
-    db.finish_attempt(body.attempt_id, body.model_dump(), res, after)
+    # mask disimpan supaya bisa ditinjau ulang oleh mahasiswa dan dosen. Penandaan terkirim bersyarat
+    # (submitted_at IS NULL) dan penguasaan ditulis di transaksi yang sama: kiriman ganda tidak mengubah BKT dua kali.
+    if not db.finish_attempt(body.attempt_id, body.model_dump(), res, after, sid=sid, n_obs=n):
+        raise HTTPException(409, "jawaban kasus ini sudah dikirim")
     return {**res, **_reveal_payload(att)}
 
 
 @app.get("/api/attempts/{aid}")
-def attempt_detail(aid: int, a=Depends(current)):
+def attempt_detail(aid: IdPath, a=Depends(current)):
     """Tinjau ulang satu percobaan yang sudah dikirim (mahasiswa pemiliknya atau dosen kelasnya)."""
     att = db.get_attempt(aid)
     if not att:
@@ -535,17 +617,26 @@ def attempt_detail(aid: int, a=Depends(current)):
 
 
 class TutorReq(BaseModel):
-    attempt_id: int
-    mode: str = "sokratik"
-    message: str
-    image: str | None = None
-    history: list[dict] | None = None
+    attempt_id: Id
+    mode: Annotated[str, Field(max_length=16)] = "sokratik"
+    message: Annotated[str, Field(max_length=8000)]
+    image: str | None = None          # hanya data URL PNG/JPEG < ~2 MB; selain itu diabaikan
+    history: list | None = None       # disaring di tutor.clean_history
+
+
+def _tutor_args(body):
+    return body.mode, body.message[:2000], tutor.clean_history(body.history), tutor.clean_image(body.image)
 
 
 def _tutor_ctx(body, a):
     att = _attempt(a["id"], body.attempt_id)
     if body.mode not in ("sokratik", "penjelasan", "rujukan"):
         raise HTTPException(400, "mode tidak dikenal")
+    now = time.time()
+    if db.count_tutor(a["id"], now - 60) >= TUTOR_PER_MENIT:
+        raise HTTPException(429, "Terlalu banyak pertanyaan ke tutor dalam satu menit. Tunggu sebentar lalu coba lagi.")
+    if db.count_tutor(a["id"], now - 86400) >= TUTOR_PER_HARI:
+        raise HTTPException(429, "Batas harian pertanyaan ke tutor sudah tercapai. Coba lagi besok.")
     phase = "setelah_submit" if att["submitted_at"] else "sebelum_submit"
     m, _ = db.get_mastery(a["id"], bkt.initial())
     facts = tutor.build_facts(cases.public_case(att["case_id"]), cases.secrets()[att["case_id"]], phase,
@@ -554,17 +645,24 @@ def _tutor_ctx(body, a):
 
 
 def _tutor_log(body, a, att, phase, facts, out):
-    db.log_tutor(student_id=a["id"], attempt_id=body.attempt_id, case_id=att["case_id"], mode=body.mode[:16],
-                 phase=phase, message=body.message[:2000], response=out["reply"], model=out["model"],
-                 latency_ms=out["latency_ms"],
-                 facts={"issues": out["issues"], "source": out["source"], "rujukan": facts.get("rujukan")})
-    return {**out, "phase": phase, "rujukan": facts.get("rujukan")}
+    """Catat ke log audit. Gagal mencatat tidak boleh menghilangkan jawaban: ditandai tersimpan = False."""
+    out = {**out, "phase": phase, "rujukan": facts.get("rujukan")}
+    try:
+        db.log_tutor(student_id=a["id"], attempt_id=body.attempt_id, case_id=att["case_id"], mode=body.mode[:16],
+                     phase=phase, message=body.message[:2000], response=out["reply"], model=out["model"],
+                     latency_ms=out["latency_ms"],
+                     facts={"issues": out["issues"], "source": out["source"], "rujukan": facts.get("rujukan")})
+    except Exception as e:  # noqa: BLE001
+        print(f"log tutor gagal: {type(e).__name__}: {e}", file=sys.stderr)
+        out["tersimpan"] = False
+    return out
 
 
 @app.post("/api/tutor")
 def ask_tutor(body: TutorReq, a=Depends(student)):
     att, phase, facts = _tutor_ctx(body, a)
-    out = tutor.ask(body.mode, facts, body.message[:2000], body.history, body.image)
+    mode, message, history, image = _tutor_args(body)
+    out = tutor.ask(mode, facts, message, history, image)
     return _tutor_log(body, a, att, phase, facts, out)
 
 
@@ -572,16 +670,24 @@ def ask_tutor(body: TutorReq, a=Depends(student)):
 def ask_tutor_stream(body: TutorReq, a=Depends(student)):
     """Sama dengan /api/tutor, tetapi jawaban dikirim bertahap sebagai NDJSON: {"delta"}, {"reset"}, lalu {"done"}.
 
-    Bila platform menahan respons sampai selesai, klien tetap menerima baris yang sama sekaligus di akhir.
+    Baris terakhir selalu {"done": ...} atau {"error": "<pesan untuk mahasiswa>"}. Bila platform menahan respons
+    sampai selesai, klien tetap menerima baris yang sama sekaligus di akhir.
     """
     att, phase, facts = _tutor_ctx(body, a)
+    mode, message, history, image = _tutor_args(body)
 
     def gen():
-        for kind, val in tutor.ask_stream(body.mode, facts, body.message[:2000], body.history, body.image):
-            if kind == "done":
-                yield json.dumps({"done": _tutor_log(body, a, att, phase, facts, val)}, ensure_ascii=False) + "\n"
-            else:
+        try:
+            for kind, val in tutor.ask_stream(mode, facts, message, history, image):
+                if kind == "done":
+                    yield json.dumps({"done": _tutor_log(body, a, att, phase, facts, val)}, ensure_ascii=False) + "\n"
+                    return
                 yield json.dumps({kind: val}, ensure_ascii=False) + "\n"
+            err = "Jawaban tutor terputus. Coba kirim ulang pertanyaanmu."
+        except Exception as e:  # noqa: BLE001
+            print(f"tutor stream gagal: {type(e).__name__}: {e}", file=sys.stderr)
+            err = "Tutor gagal menjawab. Coba kirim ulang pertanyaanmu."
+        yield json.dumps({"error": err}, ensure_ascii=False) + "\n"
 
     return StreamingResponse(gen(), media_type="application/x-ndjson",
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
@@ -597,7 +703,7 @@ def _mastery_by(sids):
 
 
 @app.get("/api/dosen/overview")
-def dosen_overview(kelas_id: int | None = None, d=Depends(dosen)):
+def dosen_overview(kelas_id: IdQuery = None, d=Depends(dosen)):
     studs, ks = my_students(d, kelas_id)
     sids = [s["id"] for s in studs]
     by = _mastery_by(sids)
@@ -704,7 +810,7 @@ def dosen_reset_password(sid: str, d=Depends(dosen)):
 
 
 class MoveReq(BaseModel):
-    kelas_id: int | None = None
+    kelas_id: Id | None = None
 
 
 @app.post("/api/dosen/students/{sid}/kelas")
@@ -717,7 +823,7 @@ def dosen_move_student(sid: str, body: MoveReq, d=Depends(dosen)):
 
 
 class ClassReq(BaseModel):
-    nama: str
+    nama: Annotated[str, Field(max_length=500)]
 
 
 @app.get("/api/dosen/kelas")
@@ -740,15 +846,17 @@ def dosen_create_class(body: ClassReq, d=Depends(dosen)):
 
 
 @app.patch("/api/dosen/kelas/{kid}")
-def dosen_rename_class(kid: int, body: ClassReq, d=Depends(dosen)):
+def dosen_rename_class(kid: IdPath, body: ClassReq, d=Depends(dosen)):
     if kid not in my_classes(d):
         raise HTTPException(404, "kelas tidak ditemukan")
+    if len(body.nama.strip()) < 2:
+        raise HTTPException(400, "Nama kelas wajib diisi")
     db.update_class(kid, nama=body.nama.strip()[:120])
     return db.get_class(kid)
 
 
 @app.post("/api/dosen/kelas/{kid}/kode-baru")
-def dosen_new_code(kid: int, d=Depends(dosen)):
+def dosen_new_code(kid: IdPath, d=Depends(dosen)):
     if kid not in my_classes(d):
         raise HTTPException(404, "kelas tidak ditemukan")
     kode = auth.class_code()
@@ -759,7 +867,7 @@ def dosen_new_code(kid: int, d=Depends(dosen)):
 
 
 @app.delete("/api/dosen/kelas/{kid}")
-def dosen_delete_class(kid: int, d=Depends(dosen)):
+def dosen_delete_class(kid: IdPath, d=Depends(dosen)):
     if kid not in my_classes(d):
         raise HTTPException(404, "kelas tidak ditemukan")
     db.delete_class(kid)
@@ -767,12 +875,12 @@ def dosen_delete_class(kid: int, d=Depends(dosen)):
 
 
 class AssignmentReq(BaseModel):
-    kelas_id: int
-    judul: str
-    catatan: str | None = None
-    case_ids: list[str] = []
-    lesson_ids: list[str] = []
-    due_at: float | None = None
+    kelas_id: Id
+    judul: Annotated[str, Field(max_length=1000)]
+    catatan: Annotated[str, Field(max_length=20000)] | None = None
+    case_ids: Annotated[list[Annotated[str, Field(max_length=32)]], Field(max_length=200)] = []
+    lesson_ids: Annotated[list[Annotated[str, Field(max_length=32)]], Field(max_length=50)] = []
+    due_at: Finite | None = None
 
 
 @app.get("/api/dosen/assignments")
@@ -784,7 +892,7 @@ def dosen_assignments(d=Depends(dosen)):
         sids = [s["id"] for s in studs]
         done_by = {}
         for x in db.list_attempts_for(sids):
-            if x["submitted_at"] and x["submitted_at"] >= t["created_at"]:
+            if x["submitted_at"]:  # termasuk yang dikirim sebelum tugas dibuat (kasus tidak bisa dikerjakan ulang)
                 done_by.setdefault(x["student_id"], set()).add(x["case_id"])
         les_by = {}
         for r in db.list_lessons(sids):
@@ -819,7 +927,7 @@ def dosen_create_assignment(body: AssignmentReq, d=Depends(dosen)):
 
 
 @app.delete("/api/dosen/assignments/{tid}")
-def dosen_delete_assignment(tid: int, d=Depends(dosen)):
+def dosen_delete_assignment(tid: IdPath, d=Depends(dosen)):
     t = db.get_assignment(tid)
     if not t or t["kelas_id"] not in my_classes(d):
         raise HTTPException(404, "tugas tidak ditemukan")
@@ -828,7 +936,7 @@ def dosen_delete_assignment(tid: int, d=Depends(dosen)):
 
 
 @app.get("/api/dosen/tutor-logs")
-def dosen_tutor_logs(kelas_id: int | None = None, hanya_ditandai: bool = False, d=Depends(dosen)):
+def dosen_tutor_logs(kelas_id: IdQuery = None, hanya_ditandai: bool = False, d=Depends(dosen)):
     studs, _ = my_students(d, kelas_id)
     names = {s["id"]: s["nama"] for s in studs}
     logs = db.list_tutor_for(list(names), 500)
@@ -881,8 +989,8 @@ def dosen_case_view(case_id: str, d=Depends(dosen)):
 
 
 class ReviewReq(BaseModel):
-    status: str
-    catatan: str | None = None
+    status: Annotated[str, Field(max_length=32)]
+    catatan: Annotated[str, Field(max_length=20000)] | None = None
 
 
 @app.post("/api/dosen/cases/{case_id}/review")
@@ -896,7 +1004,7 @@ def dosen_review_case(case_id: str, body: ReviewReq, d=Depends(dosen)):
 
 
 @app.get("/api/dosen/export")
-def dosen_export(jenis: str = "penguasaan", kelas_id: int | None = None, d=Depends(dosen)):
+def dosen_export(jenis: str = "penguasaan", kelas_id: IdQuery = None, d=Depends(dosen)):
     studs, ks = my_students(d, kelas_id)
     sids = [s["id"] for s in studs]
     buf = io.StringIO()

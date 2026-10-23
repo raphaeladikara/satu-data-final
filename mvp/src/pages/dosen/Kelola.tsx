@@ -43,7 +43,7 @@ import { BADGE, FILL, TEXT, TIER, diceTone, dueStatus, nihssTone, type Tone } fr
 import { cn } from '@/lib/utils';
 import { api, fmt, type DosenAssignment, type DosenCase, type Kelas, type Overview, type TutorLog } from '../../api';
 import ReadViewer from '../../components/ReadViewer';
-import { Empty, Loading } from '../../components/Shell';
+import { Empty, LoadError, Loading } from '../../components/Shell';
 import { LESSONS, lessonById } from '../../content/lessons';
 import { dailyCounts, type Session } from '@/lib/activity';
 import { useKelasFilter } from './Ringkasan';
@@ -85,11 +85,17 @@ export function KelasPage() {
   const [nama, setNama] = useState('');
   const [err, setErr] = useState('');
   const [creating, setCreating] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [loadErr, setLoadErr] = useState('');
   const load = () => {
-    api.classes().then((l) => {
-      setList(l);
-      setSelId((s) => (s && l.some((k) => k.id === s) ? s : l[0]?.id ?? null));
-    });
+    setLoadErr('');
+    api
+      .classes()
+      .then((l) => {
+        setList(l);
+        setSelId((s) => (s && l.some((k) => k.id === s) ? s : l[0]?.id ?? null));
+      })
+      .catch((e) => setLoadErr((e as Error).message));
     api.overview(null).then(setOv).catch(() => setOv(null));
   };
   useEffect(load, []);
@@ -132,7 +138,9 @@ export function KelasPage() {
 
   const create = async (e: FormEvent) => {
     e.preventDefault();
+    if (busy) return;
     setErr('');
+    setBusy(true);
     try {
       const k = await api.createClass(nama);
       setNama('');
@@ -141,6 +149,8 @@ export function KelasPage() {
       load();
     } catch (e) {
       setErr((e as Error).message);
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -189,7 +199,7 @@ export function KelasPage() {
 
           <p className="mb-3 mt-6 text-[13px] font-medium text-ink/50">{cat ? cats.find((c) => c.v === cat)?.label : 'Kelas kamu'}</p>
           {!list ? (
-            <Loading />
+            loadErr ? <LoadError message={loadErr} onRetry={load} /> : <Loading />
           ) : (
             <div className="grid gap-4 sm:grid-cols-2">
               {shown.map((k, i) => {
@@ -253,8 +263,8 @@ export function KelasPage() {
                       <input value={nama} onChange={(e) => setNama(e.target.value)} placeholder="mis. Blok Neurologi – Kelompok A" aria-label="Nama kelas" required minLength={2} autoFocus={creating} className={cn(field, 'mt-4')} />
                       {err && <p className="mt-1.5 text-[12.5px] text-bad-ink">{err}</p>}
                       <div className="mt-auto flex gap-2 pt-3">
-                        <PillButton variant="primary" type="submit" icon={Check}>
-                          Buat kelas
+                        <PillButton variant="primary" type="submit" icon={Check} disabled={busy}>
+                          {busy ? 'Membuat…' : 'Buat kelas'}
                         </PillButton>
                         {all.length > 0 && (
                           <PillButton variant="ghost" type="button" onClick={() => setCreating(false)}>
@@ -535,11 +545,18 @@ export function TugasDosen() {
   const [showForm, setShowForm] = useState(false);
   const [filter, setFilter] = useState<TaskFilter>('');
   const [kf, setKf] = useState<number | null>(null);
-  const load = () => api.dosenAssignments().then(setList);
+  const [loadErr, setLoadErr] = useState('');
+  const load = () => {
+    setLoadErr('');
+    return api
+      .dosenAssignments()
+      .then(setList)
+      .catch((e) => setLoadErr((e as Error).message));
+  };
   useEffect(() => {
     load();
-    api.classes().then(setKelas);
-    api.dosenCases().then(setCases);
+    api.classes().then(setKelas).catch(() => setKelas([]));
+    api.dosenCases().then(setCases).catch(() => setCases([]));
   }, []);
 
   const all = list ?? [];
@@ -597,7 +614,7 @@ export function TugasDosen() {
       </AnimatePresence>
 
       {!list ? (
-        <Loading />
+        loadErr ? <LoadError message={loadErr} onRetry={load} /> : <Loading />
       ) : list.length === 0 ? (
         <div className="mt-6">
           <Empty title="Belum ada tugas">Klik “Tugas baru” untuk membuat paket latihan.</Empty>
@@ -958,7 +975,14 @@ export function VerifikasiKasus() {
   const [tier, setTier] = useState('');
   const [q, setQ] = useState('');
   const [sort, setSort] = useState<VSort>('model-asc');
-  const load = () => api.dosenCases().then(setList);
+  const [loadErr, setLoadErr] = useState('');
+  const load = () => {
+    setLoadErr('');
+    return api
+      .dosenCases()
+      .then(setList)
+      .catch((e) => setLoadErr((e as Error).message));
+  };
   useEffect(() => {
     load();
   }, []);
@@ -981,7 +1005,7 @@ export function VerifikasiKasus() {
       <PageTitle title="Verifikasi kasus" sub="Periksa kunci jawaban (mask ahli) dan temuan terstruktur setiap kasus sebelum dipakai. Kasus yang ditolak dikeluarkan dari latihan adaptif dan bank kasus semua mahasiswa." />
       {sel && <CasePreview id={sel} row={all.find((c) => c.id === sel)} onClose={() => setSel(null)} onSaved={load} />}
       {!list ? (
-        <Loading />
+        loadErr ? <LoadError message={loadErr} onRetry={load} /> : <Loading />
       ) : (
         <>
           <div className="mb-5 mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -1139,13 +1163,25 @@ function CasePreview({ id, row, onClose, onSaved }: { id: string; row?: DosenCas
   const [status, setStatus] = useState(row?.review?.status ?? 'disetujui');
   const [note, setNote] = useState(row?.review?.catatan ?? '');
   const [saved, setSaved] = useState(false);
+  const [viewErr, setViewErr] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [saveErr, setSaveErr] = useState('');
+  const [tick, setTick] = useState(0);
   useEffect(() => {
+    let alive = true;
     setV(null);
+    setViewErr('');
     setStatus(row?.review?.status ?? 'disetujui');
     setNote(row?.review?.catatan ?? '');
-    api.dosenCaseView(id).then(setV);
+    api
+      .dosenCaseView(id)
+      .then((x) => alive && setV(x))
+      .catch((e) => alive && setViewErr((e as Error).message));
+    return () => {
+      alive = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id, tick]);
   useEffect(() => {
     const esc = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
     document.addEventListener('keydown', esc);
@@ -1189,7 +1225,7 @@ function CasePreview({ id, row, onClose, onSaved }: { id: string; row?: DosenCas
         </div>
         {!v ? (
           <div className="p-6">
-            <Loading text="Memuat citra dan kunci…" />
+            {viewErr ? <LoadError message={viewErr} onRetry={() => setTick((t) => t + 1)} /> : <Loading text="Memuat citra dan kunci…" />}
           </div>
         ) : (
           <div className="grid gap-5 p-4 sm:p-6 lg:grid-cols-[minmax(0,1fr)_360px]">
@@ -1232,12 +1268,21 @@ function CasePreview({ id, row, onClose, onSaved }: { id: string; row?: DosenCas
                 </div>
                 <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} placeholder="Catatan (mis. tepi lesi di slice 14 perlu dikoreksi)" className={cn(field, 'mt-3 h-auto py-2.5')} />
                 <button
-                  className={cn('mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl text-[14px] font-semibold text-white transition-colors', saved ? 'bg-ok' : 'bg-teal hover:bg-teal-800')}
+                  className={cn('mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl text-[14px] font-semibold text-white transition-colors disabled:opacity-60', saved ? 'bg-ok' : 'bg-teal hover:bg-teal-800')}
+                  disabled={saving}
                   onClick={async () => {
-                    await api.reviewCase(id, status, note);
-                    setSaved(true);
-                    setTimeout(() => setSaved(false), 1500);
-                    onSaved();
+                    setSaveErr('');
+                    setSaving(true);
+                    try {
+                      await api.reviewCase(id, status, note);
+                      setSaved(true);
+                      setTimeout(() => setSaved(false), 1500);
+                      onSaved();
+                    } catch (e) {
+                      setSaveErr((e as Error).message);
+                    } finally {
+                      setSaving(false);
+                    }
                   }}
                 >
                   {saved ? (
@@ -1248,6 +1293,7 @@ function CasePreview({ id, row, onClose, onSaved }: { id: string; row?: DosenCas
                     'Simpan keputusan'
                   )}
                 </button>
+                {saveErr && <p className="mt-2 text-[12.5px] text-bad-ink">{saveErr}</p>}
                 {row?.review && <p className="mt-2 text-[12px] text-ink/45">Terakhir diputuskan {fmt.dateTime(row.review.updated_at)}</p>}
               </div>
             </aside>
@@ -1271,13 +1317,23 @@ export function AuditTutor() {
   const [q, setQ] = useState('');
   const [open, setOpen] = useState<number | string | null>(null);
   const [logs, setLogs] = useState<TutorLog[] | null>(null);
+  const [logErr, setLogErr] = useState('');
+  const [tick, setTick] = useState(0);
   useEffect(() => {
-    api.classes().then(setOpts);
+    api.classes().then(setOpts).catch(() => setOpts([]));
   }, []);
   useEffect(() => {
+    let alive = true;
     setLogs(null);
-    api.tutorLogs(kelas, flagged).then(setLogs);
-  }, [kelas, flagged]);
+    setLogErr('');
+    api
+      .tutorLogs(kelas, flagged)
+      .then((l) => alive && setLogs(l))
+      .catch((e) => alive && setLogErr((e as Error).message));
+    return () => {
+      alive = false;
+    };
+  }, [kelas, flagged, tick]);
   const all = logs ?? [];
   const f = q.trim().toLowerCase();
   const rows = all.filter(
@@ -1326,7 +1382,7 @@ export function AuditTutor() {
         </div>
         {!logs ? (
           <div className="p-6">
-            <Loading />
+            {logErr ? <LoadError message={logErr} onRetry={() => setTick((t) => t + 1)} /> : <Loading />}
           </div>
         ) : (
           <div className="overflow-x-auto">

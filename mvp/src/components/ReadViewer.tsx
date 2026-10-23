@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Enums as CoreEnums } from '@cornerstonejs/core';
 import type { CasePub, Series } from '../api';
-import { SinapsViewer, initCornerstone, rleDecode, type SegKey } from '../viewer/cs';
+import { SinapsViewer, ViewerAborted, initCornerstone, rleDecode, type SegKey } from '../viewer/cs';
 
 type Masks = Partial<Record<SegKey, number[] | null>>;
 const LABEL: Record<SegKey, string> = { jawaban: 'Jawaban', kunci: 'Kunci ahli', model: 'Model U-Net' };
@@ -34,6 +34,7 @@ export default function ReadViewer(p: {
     let cancelled = false;
     (async () => {
       await initCornerstone();
+      if (cancelled) return;
       viewer.current?.destroy();
       const v = new SinapsViewer(el, p.geom);
       viewer.current = v;
@@ -51,6 +52,7 @@ export default function ReadViewer(p: {
         v.lockAnswer();
         if (p.initialSeries) {
           await v.showSeries(p.initialSeries);
+          if (cancelled) return;
           setSeries(p.initialSeries);
         }
         if (p.jumpTo) v.jumpToVoxel(p.jumpTo);
@@ -58,18 +60,21 @@ export default function ReadViewer(p: {
         setLoading('');
         p.onReady?.(v);
       } catch (e) {
+        if (cancelled || e instanceof ViewerAborted) return;
         setError((e as Error).message);
         setLoading('');
       }
     })();
     const onRender = () => {
       const v = viewer.current;
-      if (v?.volumeIds.length) setSlice(v.currentSlice());
+      if (v?.ready) setSlice(v.currentSlice());
     };
     el.addEventListener(CoreEnums.Events.IMAGE_RENDERED, onRender);
+    el.addEventListener(CoreEnums.Events.CAMERA_MODIFIED, onRender);
     return () => {
       cancelled = true;
       el.removeEventListener(CoreEnums.Events.IMAGE_RENDERED, onRender);
+      el.removeEventListener(CoreEnums.Events.CAMERA_MODIFIED, onRender);
       viewer.current?.destroy();
       viewer.current = null;
     };
@@ -78,7 +83,7 @@ export default function ReadViewer(p: {
   }, [p.geom.id, p.series.map((s) => s.file).join()]);
 
   useEffect(() => {
-    if (p.jumpTo && viewer.current?.volumeIds.length) viewer.current.jumpToVoxel(p.jumpTo);
+    if (p.jumpTo && viewer.current?.ready) viewer.current.jumpToVoxel(p.jumpTo);
   }, [p.jumpTo]);
 
   const show = async (i: number) => {

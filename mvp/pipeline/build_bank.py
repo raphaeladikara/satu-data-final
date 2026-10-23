@@ -5,13 +5,13 @@ Publik (dimuat viewer):   public/cases/<sub>/<seq-id>.bin   volume uint8 ruang D
 Server (kunci jawaban):   server_data/cases/<sub>.npz         mask GT (+ prediksi U-Net bila ada)
                           server_data/cases.json              temuan terstruktur + pemetaan sekuens
 
-Nama berkas sekuens diacak supaya jenis sekuens (soal K1) tidak terbaca dari nama berkas.
+Nama berkas sekuens acak (secrets.token_hex) supaya jenis sekuens (soal K1) tidak terbaca dari nama berkas.
 """
 import gzip
-import hashlib
 import json
 import sys
 from pathlib import Path
+from secrets import token_hex
 
 import nibabel as nib
 import numpy as np
@@ -33,8 +33,23 @@ RAS2LPS = np.diag([-1.0, -1.0, 1.0, 1.0])
 SEX = {"M": "laki-laki", "F": "perempuan"}
 
 
+# Dulu sha256("sinaps-{sub}-{name}") tanpa garam: siapa pun bisa menghitung ulang dan tahu berkas mana DWI/ADC/FLAIR.
+# Sekarang ID acak; pemetaan lama di server_data/cases.json dipakai ulang supaya citra tidak ditulis ulang.
+def _old_ids():
+    p = SRV / "cases.json"
+    if not p.exists():
+        return {}
+    return {sub: c.get("sequences", {}) for sub, c in json.loads(p.read_text(encoding="utf-8")).items()}
+
+
+OLD_IDS = None
+
+
 def seq_id(sub, name):
-    return hashlib.sha256(f"sinaps-{sub}-{name}".encode()).hexdigest()[:10]
+    global OLD_IDS
+    if OLD_IDS is None:
+        OLD_IDS = _old_ids()
+    return OLD_IDS.get(sub, {}).get(name) or token_hex(5)
 
 
 def to_u8(vol, lo, hi):

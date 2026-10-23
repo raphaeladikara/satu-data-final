@@ -10,18 +10,12 @@ import time
 from functools import lru_cache
 from pathlib import Path
 
-from sqlalchemy import (JSON, Column, Float, Integer, MetaData, String, Table, Text, create_engine, delete,
-                        insert, select, update)
+from sqlalchemy import (JSON, Column, Float, Integer, MetaData, String, Table, Text, create_engine, delete, func,
+                        insert, select, text, update)
 from sqlalchemy.pool import NullPool
 
 meta = MetaData()
 
-students = Table(
-    "sinaps_students", meta,
-    Column("id", String(32), primary_key=True),
-    Column("kelas", String(64)),
-    Column("created_at", Float),
-)
 mastery = Table(
     "sinaps_mastery", meta,
     Column("student_id", String(32), primary_key=True),
@@ -111,6 +105,13 @@ case_reviews = Table(
     Column("dosen_id", String(32)),
     Column("updated_at", Float),
 )
+# percobaan masuk yang gagal (pembatas laju): key = "akun:<id>" atau "ip:<alamat>"
+login_fails = Table(
+    "sinaps_login_fail", meta,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("key", String(80), index=True),
+    Column("ts", Float),
+)
 
 
 def _url():
@@ -134,24 +135,24 @@ def engine():
         # pooler Supabase/Neon mode transaksi: tanpa prepared statement, tanpa pool di sisi fungsi
         kw = {"poolclass": NullPool, "connect_args": {"prepare_threshold": None, "connect_timeout": 10}}
     eng = create_engine(url, **kw)
-    meta.create_all(eng)
+    meta.create_all(eng)  # checkfirst: hanya membuat tabel yang belum ada
     if url.startswith("postgresql"):
         # Supabase membuka schema public lewat REST API (anon key). RLS tanpa policy menutup akses itu;
-        # API ini konek sebagai pemilik tabel sehingga tidak terkena RLS.
+        # API ini konek sebagai pemilik tabel sehingga tidak terkena RLS. ALTER hanya untuk tabel yang belum ber-RLS
+        # supaya fungsi dingin tidak mengambil kunci ACCESS EXCLUSIVE setiap kali.
+        names = [t.name for t in meta.sorted_tables]
         with eng.begin() as c:
-            for t in meta.sorted_tables:
-                c.exec_driver_sql(f"ALTER TABLE {t.name} ENABLE ROW LEVEL SECURITY")
+            on = {r[0]: r[1] for r in c.execute(text(
+                "SELECT c.relname, c.relrowsecurity FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
+                "WHERE n.nspname = current_schema() AND c.relkind = 'r' AND c.relname = ANY(:names)"), {"names": names})}
+            for name in names:
+                if not on.get(name):
+                    c.exec_driver_sql(f"ALTER TABLE {name} ENABLE ROW LEVEL SECURITY")
     return eng
 
 
 def backend():
     return "postgres" if _url().startswith("postgresql") else "sqlite"
-
-
-def ensure_student(sid, kelas):
-    with engine().begin() as c:
-        if not c.execute(select(students.c.id).where(students.c.id == sid)).first():
-            c.execute(insert(students).values(id=sid, kelas=kelas, created_at=time.time()))
 
 
 def get_mastery(sid, initial):
@@ -165,14 +166,18 @@ def get_mastery(sid, initial):
     return m, n
 
 
-def set_mastery(sid, values, n_obs):
+def _write_mastery(c, sid, values, n_obs):
     now = time.time()
+    for kc, p in values.items():
+        res = c.execute(update(mastery).where((mastery.c.student_id == sid) & (mastery.c.kc == kc))
+                        .values(p=p, n_obs=n_obs[kc], updated_at=now))
+        if res.rowcount == 0:
+            c.execute(insert(mastery).values(student_id=sid, kc=kc, p=p, n_obs=n_obs[kc], updated_at=now))
+
+
+def set_mastery(sid, values, n_obs):
     with engine().begin() as c:
-        for kc, p in values.items():
-            res = c.execute(update(mastery).where((mastery.c.student_id == sid) & (mastery.c.kc == kc))
-                            .values(p=p, n_obs=n_obs[kc], updated_at=now))
-            if res.rowcount == 0:
-                c.execute(insert(mastery).values(student_id=sid, kc=kc, p=p, n_obs=n_obs[kc], updated_at=now))
+        _write_mastery(c, sid, values, n_obs)
 
 
 def start_attempt(sid, case_id, target_kc, tier, mastery_before, seq_order):
@@ -191,13 +196,34 @@ def get_attempt(aid):
 
 def set_answers(aid, answers):
     with engine().begin() as c:
-        c.execute(update(attempts).where(attempts.c.id == aid).values(answers=answers))
+        c.execute(update(attempts).where((attempts.c.id == aid) & attempts.c.submitted_at.is_(None))
+                  .values(answers=answers))
 
 
-def finish_attempt(aid, answers, result, mastery_after):
+def finish_attempt(aid, answers, result, mastery_after, sid=None, n_obs=None):
+    """Tandai percobaan terkirim hanya bila belum terkirim; penguasaan BKT ditulis di transaksi yang sama.
+
+    Kembalikan jumlah baris yang berubah (0 = sudah dikirim oleh permintaan lain, penguasaan tidak disentuh).
+    """
     with engine().begin() as c:
-        c.execute(update(attempts).where(attempts.c.id == aid).values(
-            submitted_at=time.time(), answers=answers, result=result, mastery_after=mastery_after))
+        n = c.execute(update(attempts).where((attempts.c.id == aid) & attempts.c.submitted_at.is_(None)).values(
+            submitted_at=time.time(), answers=answers, result=result, mastery_after=mastery_after)).rowcount
+        if n and sid is not None:
+            _write_mastery(c, sid, mastery_after, n_obs)
+        return n
+
+
+def attempts_on_case(sid, case_id):
+    q = (select(attempts).where((attempts.c.student_id == sid) & (attempts.c.case_id == case_id))
+         .order_by(attempts.c.id.desc()))
+    with engine().connect() as c:
+        return [dict(r) for r in c.execute(q).mappings().all()]
+
+
+def submitted_case_ids(sid):
+    q = select(attempts.c.case_id).where((attempts.c.student_id == sid) & attempts.c.submitted_at.is_not(None))
+    with engine().connect() as c:
+        return {r[0] for r in c.execute(q).all()}
 
 
 def list_attempts(sid=None, limit=500):
@@ -224,11 +250,32 @@ def list_tutor(limit=200, sid=None, attempt_id=None):
         return [dict(r) for r in c.execute(q).mappings().all()]
 
 
-def all_mastery():
+def count_tutor(sid, since):
+    q = select(func.count()).select_from(tutor_logs).where(
+        (tutor_logs.c.student_id == sid) & (tutor_logs.c.created_at >= since))
     with engine().connect() as c:
-        rows = c.execute(select(mastery)).mappings().all()
-        studs = c.execute(select(students)).mappings().all()
-    return [dict(r) for r in rows], [dict(s) for s in studs]
+        return int(c.execute(q).scalar() or 0)
+
+
+# --- pembatas laju masuk ---------------------------------------------------------
+
+def login_fail_counts(keys, since):
+    q = (select(login_fails.c.key, func.count()).where(login_fails.c.key.in_(keys) & (login_fails.c.ts >= since))
+         .group_by(login_fails.c.key))
+    with engine().connect() as c:
+        return {k: int(n) for k, n in c.execute(q).all()}
+
+
+def add_login_fail(keys):
+    now = time.time()
+    with engine().begin() as c:
+        c.execute(insert(login_fails), [{"key": k[:80], "ts": now} for k in keys])
+        c.execute(delete(login_fails).where(login_fails.c.ts < now - 86400))  # bersihkan catatan lama
+
+
+def clear_login_fail(key):
+    with engine().begin() as c:
+        c.execute(delete(login_fails).where(login_fails.c.key == key))
 
 
 # --- akun & kelas -------------------------------------------------------------
