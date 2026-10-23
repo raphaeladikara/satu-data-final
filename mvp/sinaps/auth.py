@@ -12,8 +12,12 @@ import secrets
 import time
 
 PEPPER = os.environ.get("SINAPS_PEPPER", "sinaps-icc-2026")
-SECRET = (os.environ.get("SINAPS_SECRET") or f"token:{PEPPER}").encode()
-SECRET_DEFAULT = not os.environ.get("SINAPS_SECRET")
+# Tanpa SINAPS_SECRET, kunci token diturunkan dari DATABASE_URL (rahasia di Vercel, tidak ada di repo) supaya token
+# tidak bisa dipalsukan dari kode publik. Kunci bawaan hanya untuk SQLite lokal.
+_SECRET_SRC = os.environ.get("SINAPS_SECRET") or os.environ.get("DATABASE_URL")
+SECRET = (hashlib.sha256(f"token:{_SECRET_SRC}".encode()).hexdigest() if not os.environ.get("SINAPS_SECRET")
+          and _SECRET_SRC else (_SECRET_SRC or f"token:{PEPPER}")).encode()
+SECRET_DEFAULT = not _SECRET_SRC
 # kode untuk mendaftar sebagai dosen; set DOSEN_KEY di produksi
 DOSEN_KEY = os.environ.get("DOSEN_KEY") or "SINAPS2026"
 DOSEN_KEY_DEFAULT = not os.environ.get("DOSEN_KEY")

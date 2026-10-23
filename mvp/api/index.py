@@ -40,7 +40,7 @@ IdPath = Annotated[int, PathParam(ge=0, le=MAX_ID)]
 IdQuery = Annotated[int | None, Query(ge=0, le=MAX_ID)]
 Finite = Annotated[float, Field(allow_inf_nan=False)]
 
-# Tanpa SINAPS_SECRET token sesi ditandatangani kunci bawaan. Jangan hentikan fungsi (demo tetap jalan), cukup catat.
+# Tanpa SINAPS_SECRET maupun DATABASE_URL token sesi ditandatangani kunci bawaan. Jangan hentikan fungsi (demo tetap jalan), cukup catat.
 if os.environ.get("VERCEL"):
     if auth.SECRET_DEFAULT:
         print("PERINGATAN: SINAPS_SECRET belum di-set, token sesi memakai kunci bawaan", file=sys.stderr)
