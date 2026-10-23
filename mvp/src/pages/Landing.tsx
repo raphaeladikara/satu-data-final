@@ -11,6 +11,7 @@ import { Wordmark } from '@/components/BrandMark';
 import Hero from './landing/Hero';
 import CycleShowcase from './landing/CycleShowcase';
 import Features from './landing/Features';
+import VideoTour from './landing/VideoTour';
 import { CountUp, EASE, Reveal, ScrollWords } from './landing/bits';
 
 const ContributionSkyline = lazy(() => import('@/components/ui/contribution-skyline'));
@@ -50,6 +51,7 @@ export default function Landing() {
       <Nav />
       <main>
         <Hero cases={stats?.cases ?? 36} />
+        <VideoTour />
         <Problem />
 
         <section id="cara-kerja" className="mx-auto max-w-[1320px] scroll-mt-10 px-4 pt-28 sm:px-6 lg:pt-40">
